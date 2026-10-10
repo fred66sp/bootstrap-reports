@@ -37,6 +37,7 @@ pnpm-debug.log*
 
 # Generated site, package, test, and coverage output
 /dist/
+/docengine-docs/dist/
 /build/
 /public/build/
 /coverage/

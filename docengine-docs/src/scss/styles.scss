@@ -1,0 +1,1123 @@
+// docengine documentation site — custom layer on top of Bootstrap 6 Alpha 1.
+// Compiled from source, so token references are unprefixed (no `--bs-` prefix).
+
+@use "bootstrap/scss/bootstrap";
+
+@layer custom {
+  :root {
+    --doc-measure: 68ch;
+    --docengine-size-copy: 1rem;
+    --docengine-size-supporting: 1rem;
+    // Coherent typographic scale (px at a 16px root): 48 / 32 / 18 / 16 / 14 / 12.
+    // Custom tokens isolate the design from Bootstrap's fluid --font-size-* map,
+    // so upstream defaults cannot silently resize the page.
+    --docengine-size-display: clamp(2.375rem, 1.7rem + 2.6vw, 3rem); // 38–48px
+    --docengine-size-section: clamp(1.625rem, 1.35rem + 1vw, 2rem); // 26–32px
+    --docengine-size-lead: 1.125rem; // 18px
+    --docengine-size-heading: 1.125rem; // 18px
+    --docengine-size-meta: 0.875rem; // 14px
+    --docengine-size-code: 0.875rem; // 14px
+    --docengine-size-caption: 0.75rem; // 12px
+    --docengine-font-body: "Roboto", system-ui, sans-serif;
+    --docengine-font-display: "Roboto Condensed", "Arial Narrow", sans-serif;
+    --docengine-font-code: "JetBrains Mono", ui-monospace, monospace;
+    --docengine-header-height: 3.75rem;
+    --docengine-hero-glow-accent: color-mix(in oklch, var(--accent-bg-subtle) 55%, transparent);
+    --docengine-hero-glow-info: color-mix(in oklch, var(--info-bg-subtle) 45%, transparent);
+    --docengine-code-bg: light-dark(oklch(24% 0.02 260), oklch(20% 0.02 260));
+    --docengine-code-fg: light-dark(oklch(90% 0.02 260), oklch(92% 0.02 260));
+    --docengine-code-muted: light-dark(oklch(65% 0.02 260), oklch(60% 0.02 260));
+    --docengine-code-border: light-dark(oklch(36% 0.02 260), oklch(30% 0.02 260));
+    --docengine-header-backdrop: color-mix(in oklch, var(--bg-body) 82%, transparent);
+  }
+
+  // Smooth anchor scrolling, offset for the sticky header.
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: calc(var(--docengine-header-height) + var(--spacer-5));
+    overflow-x: clip;
+  }
+
+  body {
+    font-family: var(--docengine-font-body);
+    font-size: var(--docengine-size-copy);
+    line-height: 1.5;
+    overflow-x: clip;
+  }
+
+  :where(h1, h2, h3, h4, h5, h6) {
+    font-family: var(--docengine-font-display);
+    font-weight: 700;
+    text-wrap: balance;
+  }
+
+  :where(code, kbd, pre, samp) {
+    font-family: var(--docengine-font-code);
+  }
+
+  // Clear, consistent keyboard focus everywhere.
+  :where(a, button, input, [tabindex]):focus-visible {
+    outline: var(--focus-ring-width, 2px) solid var(--theme-focus-ring, var(--focus-ring-color, Highlight));
+    outline-offset: 2px;
+    border-radius: var(--radius-5, 0.5rem);
+  }
+
+  // Reusable reading measure; long-form prose is constrained, grids are not.
+  .measure {
+    max-inline-size: var(--doc-measure);
+  }
+
+  // Accessible skip link.
+  .skip-link {
+    position: absolute;
+    inset-block-start: var(--spacer-3);
+    inset-inline-start: var(--spacer-3);
+    z-index: 1030;
+    padding: var(--spacer-3) var(--spacer-4);
+    background-color: var(--primary-bg, Highlight);
+    color: var(--primary-contrast, var(--white));
+    border-radius: var(--radius-5, 0.5rem);
+    transform: translateY(-200%);
+    transition: transform 0.2s ease;
+  }
+
+  .skip-link:focus-visible {
+    transform: translateY(0);
+  }
+
+  // ---------------------------------------------------------------- header
+  .site-header {
+    position: sticky;
+    inset-block-start: 0;
+    z-index: 1020;
+    backdrop-filter: blur(14px) saturate(1.6);
+    -webkit-backdrop-filter: blur(14px) saturate(1.6);
+    background-color: var(--docengine-header-backdrop);
+    border-block-end: var(--border-width, 1px) solid var(--border-subtle, var(--border-color));
+  }
+
+  .site-header__bar {
+    min-block-size: var(--docengine-header-height);
+  }
+
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacer-3);
+    color: var(--fg-body);
+    font-weight: var(--font-weight-semibold, 600);
+    text-decoration: none;
+    letter-spacing: -0.01em;
+  }
+
+  .brand,
+  .site-menu__title,
+  .step__title,
+  .doc-card__title,
+  .finding-group__title {
+    font-family: var(--docengine-font-display);
+  }
+
+  .brand:hover {
+    color: var(--fg-body);
+  }
+
+  .brand__mark {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: 2.125rem;
+    block-size: 2.125rem;
+    border-radius: 0.625rem;
+    color: var(--white);
+    background: linear-gradient(135deg, var(--accent-bg, var(--indigo-500)), var(--info-bg, var(--cyan-500)));
+    font-weight: var(--font-weight-bold, 700);
+    font-size: 1rem;
+    box-shadow: var(--shadow-sm, 0 4px 12px color-mix(in oklch, var(--bg-black) 12%, transparent));
+  }
+
+  .brand__tag {
+    font-size: var(--docengine-size-caption);
+    font-weight: var(--font-weight-medium, 500);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--fg-3);
+  }
+
+  // Icon-only controls in the header.
+  .control-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacer-2);
+    inline-size: 2.25rem;
+    block-size: 2.25rem;
+    padding-inline: var(--spacer-2);
+    border-radius: var(--radius-5, 0.5rem);
+    color: var(--fg-2);
+    background-color: var(--bg-1);
+    border: var(--border-width, 1px) solid var(--border-subtle, var(--border-color));
+    transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
+  }
+
+  .control-button:hover {
+    color: var(--fg-body);
+    background-color: var(--bg-2);
+    border-color: var(--border-muted, var(--border-emphasized, var(--border-color)));
+  }
+
+  .control-button__icon {
+    inline-size: 1.1rem;
+    block-size: 1.1rem;
+  }
+
+  // ------------------------------------------------------- responsive menu
+  // The navigation remains a focused Bootstrap Drawer below lg. On desktop the
+  // sticky table of contents is the primary navigation surface.
+  .site-menu {
+    --drawer-width: min(22rem, calc(100vw - 1rem));
+    background-color: var(--bg-body);
+    color: var(--fg-body);
+  }
+
+  .site-menu-toggle {
+    display: inline-flex;
+  }
+
+  .site-toc {
+    display: none;
+  }
+
+  @media (min-width: 1024px) {
+    .site-menu-toggle {
+      display: none;
+    }
+
+    .site-toc {
+      display: block;
+    }
+  }
+
+  .site-menu__header {
+    border-block-end: var(--border-width, 1px) solid var(--border-subtle, var(--border-color));
+  }
+
+  .site-menu__eyebrow {
+    display: block;
+    margin-block-end: var(--spacer-1);
+    color: var(--fg-3);
+    font-size: var(--docengine-size-caption);
+    font-weight: var(--font-weight-semibold, 600);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .site-menu__title {
+    margin: 0;
+    color: var(--fg-body);
+    font-size: var(--docengine-size-heading);
+    line-height: 1.2;
+    font-weight: var(--font-weight-semibold, 600);
+  }
+
+  .site-menu__body {
+    padding: 0;
+  }
+
+  .site-menu__inner {
+    display: grid;
+    gap: var(--spacer-1);
+    padding: var(--spacer-4);
+  }
+
+  .site-menu__link {
+    display: flex;
+    align-items: center;
+    min-block-size: 2.75rem;
+    padding: var(--spacer-3) var(--spacer-3);
+    color: var(--fg-1);
+    text-decoration: none;
+    font-weight: var(--font-weight-medium, 500);
+    border-radius: var(--radius-5, 0.5rem);
+    transition: color 0.15s ease, background-color 0.15s ease, transform 0.15s ease;
+  }
+
+  .site-menu__link::before {
+    content: "";
+    inline-size: 0.35rem;
+    block-size: 0.35rem;
+    margin-inline-end: var(--spacer-3);
+    border-radius: 50%;
+    background-color: var(--border-emphasized, var(--border-color));
+    transition: background-color 0.15s ease, transform 0.15s ease;
+  }
+
+  .site-menu__link:hover,
+  .site-menu__link.active,
+  .site-menu__link[aria-current="true"] {
+    color: var(--fg-body);
+    background-color: var(--bg-2);
+  }
+
+  .site-menu__link.active::before,
+  .site-menu__link[aria-current="true"]::before {
+    background-color: var(--accent-bg, var(--indigo-500));
+    transform: scale(1.45);
+  }
+
+  .back-to-top {
+    position: fixed;
+    inset-inline-end: clamp(var(--spacer-4), 3vw, var(--spacer-7));
+    inset-block-end: clamp(var(--spacer-4), 3vw, var(--spacer-7));
+    z-index: 1010;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: 3rem;
+    block-size: 3rem;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    color: var(--primary-contrast, var(--white));
+    background-color: var(--primary-bg, var(--accent-bg, var(--indigo-500)));
+    box-shadow: var(--shadow-lg, 0 0.75rem 2rem color-mix(in oklch, var(--bg-black) 18%, transparent));
+    transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+  }
+
+  .back-to-top:hover {
+    background-color: var(--primary-bg-emphasis, var(--accent-bg-emphasis, var(--indigo-600)));
+    transform: translateY(-2px);
+  }
+
+  .back-to-top svg {
+    inline-size: 1.25rem;
+    block-size: 1.25rem;
+  }
+
+  // ---------------------------------------------------------------- hero
+  .hero {
+    position: relative;
+    overflow: hidden;
+    background:
+      radial-gradient(60rem 42rem at 86% -14%, var(--docengine-hero-glow-accent), transparent 60%),
+      radial-gradient(52rem 38rem at -8% 110%, var(--docengine-hero-glow-info), transparent 58%);
+  }
+
+  .hero::after {
+    content: "";
+    position: absolute;
+    inset-inline: 0;
+    inset-block-end: 0;
+    block-size: 1px;
+    background: linear-gradient(90deg, transparent, var(--border-emphasized, var(--border-muted, var(--border-color))), transparent);
+  }
+
+  .hero__inner {
+    position: relative;
+    padding-block: clamp(3rem, 8vw, 6rem);
+    max-inline-size: 52rem;
+  }
+
+  .hero__title {
+    margin-block-start: var(--spacer-5);
+    font-size: var(--docengine-size-display);
+    line-height: 1.08;
+    letter-spacing: -0.025em;
+    font-weight: var(--font-weight-bold, 700);
+    text-wrap: balance;
+  }
+
+  .hero__title .accent {
+    background: linear-gradient(120deg, var(--accent-fg, var(--accent-bg)), var(--info-fg, var(--info-bg)));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .hero__lead {
+    margin-block-start: var(--spacer-4);
+    font-size: var(--docengine-size-lead);
+    line-height: 1.55;
+    color: var(--fg-2);
+    text-wrap: pretty;
+  }
+
+  .hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacer-3);
+    margin-block-start: var(--spacer-5);
+  }
+
+  .hero__facts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacer-2);
+    margin-block-start: var(--spacer-5);
+  }
+
+  // Status pill in the hero eyebrow.
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacer-2);
+    padding: 0.375rem 0.75rem;
+    border: var(--border-width, 1px) solid var(--border-muted, var(--border-emphasized, var(--border-color)));
+    border-radius: 50rem;
+    background-color: var(--bg-1);
+    color: var(--fg-2);
+    font-size: var(--docengine-size-caption);
+    font-weight: var(--font-weight-semibold, 600);
+    letter-spacing: 0.01em;
+  }
+
+  .pill__dot {
+    inline-size: 0.5rem;
+    block-size: 0.5rem;
+    border-radius: 50%;
+    background-color: var(--success-bg, var(--green-500));
+    box-shadow: 0 0 0 3px color-mix(in oklch, var(--success-bg, var(--green-500)) 22%, transparent);
+  }
+
+  // Prominent evidence/status strip under the hero actions.
+  .status-strip {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacer-3);
+    max-inline-size: 46rem;
+    margin-block-start: var(--spacer-5);
+    padding: var(--spacer-3) var(--spacer-4);
+    border: var(--border-width, 1px) solid color-mix(in oklch, var(--success-bg, var(--green-500)) 40%, var(--border-subtle, var(--border-color)));
+    border-radius: var(--radius-6, 0.625rem);
+    background-color: color-mix(in oklch, var(--success-bg-subtle, var(--green-100)) 60%, var(--bg-1));
+  }
+
+  .status-strip__mark {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: 2rem;
+    block-size: 2rem;
+    border-radius: var(--radius-5, 0.5rem);
+    background-color: var(--success-bg-subtle, var(--green-100));
+    color: var(--success-fg, var(--green-600));
+    font-size: var(--docengine-size-caption);
+    font-weight: var(--font-weight-bold, 700);
+    letter-spacing: 0.04em;
+  }
+
+  .status-strip strong {
+    display: block;
+    font-size: var(--docengine-size-meta);
+    color: var(--fg-1);
+  }
+
+  .status-strip span:not(.status-strip__mark) {
+    display: block;
+    margin-block-start: 0.125rem;
+    color: var(--fg-2);
+    font-size: var(--docengine-size-caption);
+    line-height: 1.5;
+  }
+
+  // ---------------------------------------------------------------- layout
+  .layout {
+    padding-block-start: clamp(2.5rem, 6vw, 4rem);
+  }
+
+  // Sidebar table of contents (desktop context navigation).
+  .toc {
+    position: sticky;
+    inset-block-start: calc(var(--docengine-header-height) + var(--spacer-4));
+    max-block-size: calc(100vh - var(--docengine-header-height) - var(--spacer-7));
+    overflow-y: auto;
+    padding-inline-start: var(--spacer-3);
+    border-inline-start: var(--border-width, 1px) solid var(--border-subtle, var(--border-color));
+    counter-reset: toc;
+  }
+
+  .toc__title {
+    font-size: var(--docengine-size-caption);
+    font-weight: var(--font-weight-semibold, 600);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--fg-3);
+    margin-block-end: var(--spacer-3);
+  }
+
+  .toc__link {
+    display: flex;
+    align-items: center;
+    min-block-size: 2.25rem;
+    gap: var(--spacer-2);
+    padding: var(--spacer-2) var(--spacer-3);
+    margin-inline-start: calc(-1 * var(--spacer-3) - var(--border-width, 1px));
+    border-inline-start: 2px solid transparent;
+    color: var(--fg-3);
+    font-size: var(--docengine-size-supporting);
+    font-weight: var(--font-weight-medium, 500);
+    text-decoration: none;
+    transition: color 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
+    counter-increment: toc;
+  }
+
+  .toc__link::before {
+    content: counter(toc, decimal-leading-zero);
+    flex: 0 0 1.5rem;
+    color: var(--fg-3);
+    font-family: var(--docengine-font-code);
+    font-size: var(--docengine-size-caption);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .toc__link:hover {
+    color: var(--fg-body);
+    text-decoration: none;
+  }
+
+  .toc__link.active {
+    color: var(--accent-fg, var(--accent-bg));
+    border-inline-start-color: var(--accent-bg, var(--indigo-500));
+    background-color: var(--accent-bg-subtle);
+    border-start-end-radius: var(--radius-5, 0.5rem);
+    border-end-end-radius: var(--radius-5, 0.5rem);
+  }
+
+  .toc__link.active::before {
+    color: currentColor;
+  }
+
+  // ---------------------------------------------------------------- sections
+  .section {
+    padding-block: clamp(2.5rem, 6vw, 4.5rem);
+  }
+
+  .section + .section {
+    border-block-start: var(--border-width, 1px) solid var(--border-subtle, var(--border-color));
+  }
+
+  .section-head {
+    display: flex;
+    align-items: center;
+    gap: var(--spacer-3);
+    margin-block-end: var(--spacer-2);
+  }
+
+  .section-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: 1.875rem;
+    block-size: 1.875rem;
+    border-radius: var(--radius-5, 0.5rem);
+    background-color: var(--accent-bg-subtle);
+    color: var(--accent-fg, var(--accent-bg));
+    font-size: var(--docengine-size-caption);
+    font-weight: var(--font-weight-bold, 700);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    font-size: var(--docengine-size-caption);
+    font-weight: var(--font-weight-semibold, 600);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--fg-3);
+  }
+
+  .section-title {
+    font-size: var(--docengine-size-section);
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    font-weight: var(--font-weight-bold, 700);
+    text-wrap: balance;
+  }
+
+  .section-lead {
+    color: var(--fg-2);
+    font-size: var(--docengine-size-lead);
+    line-height: 1.55;
+    text-wrap: pretty;
+    max-inline-size: var(--doc-measure);
+  }
+
+  .codes-caption {
+    font-size: var(--docengine-size-caption);
+    font-weight: var(--font-weight-medium, 500);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--fg-3);
+  }
+
+  // ---------------------------------------------------------------- cards
+  .doc-card {
+    block-size: 100%;
+    border: var(--border-width, 1px) solid var(--border-subtle, var(--border-color));
+    background-color: var(--bg-1);
+    border-radius: var(--radius-7, 0.75rem);
+    box-shadow: var(--shadow-sm, 0 1px 2px color-mix(in oklch, var(--bg-black) 4%, transparent));
+    transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .doc-card:hover {
+    border-color: var(--border-muted, var(--border-emphasized, var(--border-color)));
+    transform: translateY(-2px);
+    box-shadow: var(--shadow, 0 8px 24px -12px color-mix(in oklch, var(--bg-black) 18%, transparent));
+  }
+
+  .doc-card__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: 2.25rem;
+    block-size: 2.25rem;
+    border-radius: var(--radius-6, 0.625rem);
+    color: var(--accent-fg, var(--accent-bg));
+    background-color: var(--accent-bg-subtle);
+  }
+
+  .doc-card__icon svg {
+    inline-size: 1.125rem;
+    block-size: 1.125rem;
+  }
+
+  .doc-card__badge {
+    display: inline-flex;
+    margin-block-end: var(--spacer-3);
+    padding: 0.125rem 0.5rem;
+    border-radius: var(--radius-5, 0.5rem);
+    font-family: var(--docengine-font-code);
+    font-size: var(--docengine-size-caption);
+    font-weight: var(--font-weight-bold, 700);
+    letter-spacing: 0.04em;
+    color: var(--info-fg, var(--info-bg));
+    background-color: var(--info-bg-subtle);
+  }
+
+  .doc-card__title {
+    font-weight: var(--font-weight-semibold, 600);
+    font-size: var(--docengine-size-heading);
+    line-height: 1.2;
+  }
+
+  .doc-card__text {
+    color: var(--fg-2);
+    font-size: var(--docengine-size-supporting);
+  }
+
+  // ------------------------------------------------------------------ chips
+  .fact-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacer-2);
+    padding: var(--spacer-2) var(--spacer-3);
+    font-size: var(--docengine-size-meta);
+    font-weight: var(--font-weight-medium, 500);
+    color: var(--fg-2);
+    background-color: var(--bg-2);
+    border: var(--border-width, 1px) solid var(--border-subtle, var(--border-color));
+    border-radius: var(--radius-pill, 50rem);
+  }
+
+  .fact-chip__dot {
+    inline-size: 0.5rem;
+    block-size: 0.5rem;
+    border-radius: 50%;
+    background-color: var(--accent-bg, var(--indigo-500));
+  }
+
+  // Monospace code chip used for finding codes and identifiers.
+  .doc-chip {
+    display: inline-block;
+    padding: var(--spacer-1) var(--spacer-3);
+    font-family: var(--docengine-font-code);
+    font-size: var(--docengine-size-caption);
+    color: var(--accent-fg, var(--accent-bg));
+    background-color: var(--accent-bg-subtle);
+    border: var(--border-width, 1px) solid var(--accent-border, var(--border-subtle, var(--border-color)));
+    border-radius: var(--radius-5, 0.5rem);
+  }
+
+  // ---------------------------------------------------- finding catalog
+  // Deterministic finding codes grouped by semantic ownership: three authored
+  // panels (document rules, coverage, facts), each holding a two-column grid of
+  // code + meaning items rather than a single flat strip of chips.
+  .finding-catalog {
+    display: grid;
+    gap: var(--spacer-4);
+  }
+
+  .finding-group--facts .finding-group__list > li {
+    flex: 0 0 auto;
+    width: 100%;
+  }
+
+  .finding-group--coverage .finding-group__list > li {
+    flex: 0 0 auto;
+    width: 100%;
+  }
+
+  .finding-group {
+    padding: var(--spacer-4) var(--spacer-5);
+    border: var(--border-width, 1px) solid var(--border-subtle, var(--border-color));
+    border-radius: var(--radius-7, 0.75rem);
+    background-color: var(--bg-1);
+  }
+
+  .finding-group__head {
+    margin-block-end: var(--spacer-4);
+    padding-block-end: var(--spacer-3);
+    border-block-end: var(--border-width, 1px) solid var(--border-subtle, var(--border-color));
+  }
+
+  .finding-group__title {
+    margin-block-end: var(--spacer-1);
+    font-size: var(--docengine-size-heading);
+    line-height: 1.2;
+    font-weight: var(--font-weight-semibold, 600);
+  }
+
+  .finding-group__desc {
+    color: var(--fg-2);
+    font-size: var(--docengine-size-supporting);
+    max-inline-size: var(--doc-measure);
+  }
+
+  .finding-item {
+    block-size: 100%;
+    padding: var(--spacer-3);
+    border: var(--border-width, 1px) solid var(--border-subtle, var(--border-color));
+    border-radius: var(--radius-6, 0.625rem);
+    background-color: var(--bg-2);
+  }
+
+  .finding-item__code {
+    display: inline-block;
+    margin-block-end: var(--spacer-2);
+    font-family: var(--docengine-font-code);
+    font-size: var(--docengine-size-caption);
+    font-weight: var(--font-weight-semibold, 600);
+    letter-spacing: 0.02em;
+    color: var(--accent-fg, var(--accent-bg));
+  }
+
+  .finding-item__text {
+    color: var(--fg-2);
+    font-size: var(--docengine-size-supporting);
+    line-height: 1.5;
+  }
+
+  @media (min-width: 1024px) {
+    .finding-catalog {
+      grid-template-columns: minmax(0, 1.65fr) minmax(16rem, 0.85fr);
+      align-items: start;
+    }
+
+    .finding-group--facts {
+      grid-column: 1 / -1;
+    }
+
+    .finding-group--facts .finding-group__list > li {
+      width: 33.333333%;
+    }
+  }
+
+  // ------------------------------------------------------- code block
+  .code-block {
+    overflow: hidden;
+    border: var(--border-width, 1px) solid var(--docengine-code-border);
+    border-radius: var(--radius-7, 0.75rem);
+    background-color: var(--docengine-code-bg);
+    color: var(--docengine-code-fg);
+    color-scheme: dark;
+  }
+
+  .code-block__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacer-3);
+    padding: var(--spacer-2) var(--spacer-3);
+    border-block-end: var(--border-width, 1px) solid var(--docengine-code-border);
+    background-color: color-mix(in oklch, var(--docengine-code-bg) 60%, var(--bg-black));
+  }
+
+  .code-block__dots {
+    display: inline-flex;
+    gap: var(--spacer-2);
+  }
+
+  .code-block__dot {
+    inline-size: 0.6rem;
+    block-size: 0.6rem;
+    border-radius: 50%;
+    background-color: var(--docengine-code-muted);
+  }
+
+  .code-block__label {
+    font-size: var(--docengine-size-caption);
+    font-weight: var(--font-weight-medium, 500);
+    letter-spacing: 0.03em;
+    color: var(--docengine-code-muted);
+    text-transform: uppercase;
+  }
+
+  .code-block__copy {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacer-2);
+    padding: var(--spacer-1) var(--spacer-3);
+    font-size: var(--docengine-size-meta);
+    font-weight: var(--font-weight-medium, 500);
+    color: var(--docengine-code-fg);
+    background-color: transparent;
+    border: var(--border-width, 1px) solid var(--docengine-code-border);
+    border-radius: var(--radius-5, 0.5rem);
+    cursor: pointer;
+    transition: background-color 0.15s ease, color 0.15s ease;
+  }
+
+  .code-block__copy:hover {
+    background-color: var(--docengine-code-border);
+  }
+
+  .code-block__copy[data-copied="true"] {
+    color: var(--success-fg, var(--green-400));
+    border-color: var(--success-border, var(--green-600));
+  }
+
+  .code-block pre {
+    margin: 0;
+    padding: var(--spacer-4) var(--spacer-4);
+    overflow-x: auto;
+  }
+
+  .code-block code {
+    font-family: var(--docengine-font-code);
+    font-size: var(--docengine-size-code);
+    line-height: 1.55;
+    color: inherit;
+  }
+
+  .quickstart-grid > div {
+    display: flex;
+  }
+
+  .quickstart-grid .code-block {
+    inline-size: 100%;
+  }
+
+  // ---------------------------------------------------------- workflow phases
+  .workflow-phases {
+    display: grid;
+    gap: var(--spacer-4);
+  }
+
+  .workflow-phase {
+    display: flex;
+    flex-direction: column;
+    min-block-size: 100%;
+    padding: var(--spacer-5);
+    border: var(--border-width, 1px) solid var(--border-subtle, var(--border-color));
+    border-radius: var(--radius-7, 0.75rem);
+    background-color: var(--bg-1);
+  }
+
+  .workflow-phase__head {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--spacer-3);
+    align-items: start;
+    padding-block-end: var(--spacer-4);
+    border-block-end: var(--border-width, 1px) solid var(--border-subtle, var(--border-color));
+  }
+
+  .workflow-phase__number,
+  .workflow-phase__step-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    border-radius: var(--radius-6, 0.625rem);
+    color: var(--accent-fg, var(--accent-bg));
+    background-color: var(--accent-bg-subtle);
+    font-family: var(--docengine-font-code);
+    font-size: var(--docengine-size-caption);
+    font-weight: var(--font-weight-semibold, 600);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .workflow-phase__number {
+    inline-size: 2.25rem;
+    block-size: 2.25rem;
+  }
+
+  .workflow-phase__title {
+    margin-block-end: var(--spacer-1);
+    font-size: var(--docengine-size-heading);
+    line-height: 1.2;
+  }
+
+  .workflow-phase__text,
+  .workflow-phase__step-text {
+    color: var(--fg-2);
+    font-size: var(--docengine-size-supporting);
+    line-height: 1.5;
+  }
+
+  .workflow-phase__list {
+    display: grid;
+    gap: var(--spacer-4);
+    margin: var(--spacer-4) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .workflow-phase__step {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--spacer-3);
+    align-items: start;
+  }
+
+  .workflow-phase__step-number {
+    inline-size: 1.75rem;
+    block-size: 1.75rem;
+    border-radius: 50%;
+    background-color: var(--bg-2);
+    color: var(--fg-2);
+  }
+
+  .workflow-phase__step-title {
+    font-family: var(--docengine-font-display);
+    font-weight: var(--font-weight-semibold, 600);
+  }
+
+  @media (min-width: 1024px) {
+    .workflow-phases {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      align-items: stretch;
+    }
+  }
+
+  // ---------------------------------------------------------------- tables
+  .table-wrap {
+    overflow-x: auto;
+    border: var(--border-width, 1px) solid var(--border-subtle, var(--border-color));
+    border-radius: var(--radius-7, 0.75rem);
+    background-color: var(--bg-1);
+    box-shadow: var(--shadow-sm, 0 1px 2px color-mix(in oklch, var(--bg-black) 4%, transparent));
+  }
+
+  .doc-table {
+    --bs-table-bg: transparent;
+    border-radius: var(--radius-7, 0.75rem);
+    overflow: hidden;
+  }
+
+  .doc-table th {
+    font-weight: var(--font-weight-semibold, 600);
+    font-size: var(--docengine-size-caption);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--fg-3);
+    background-color: var(--bg-2);
+    white-space: nowrap;
+  }
+
+  .doc-table td {
+    color: var(--fg-2);
+    font-size: var(--docengine-size-meta);
+    vertical-align: top;
+  }
+
+  .doc-table code,
+  .doc-table kbd {
+    font-size: var(--docengine-size-caption);
+    color: var(--accent-fg, var(--accent-bg));
+  }
+
+  .exit-code {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-inline-size: 1.75rem;
+    min-block-size: 1.75rem;
+    padding-inline: var(--spacer-2);
+    border-radius: var(--radius-5, 0.5rem);
+    font-size: var(--docengine-size-code);
+    font-weight: var(--font-weight-bold, 700);
+    font-family: var(--docengine-font-code);
+    background-color: var(--bg-3);
+    color: var(--fg-1);
+  }
+
+  .exit-code--ok {
+    background-color: var(--success-bg-subtle, var(--green-100));
+    color: var(--success-fg, var(--green-600));
+  }
+
+  .exit-code--error {
+    background-color: var(--danger-bg-subtle, var(--red-100));
+    color: var(--danger-fg, var(--red-600));
+  }
+
+  .exit-code--warn {
+    background-color: var(--warning-bg-subtle, var(--yellow-100));
+    color: var(--warning-fg, var(--yellow-700));
+  }
+
+  // Exit codes rendered as responsive cards; the badge grows to anchor the card.
+  .exit-card .exit-code {
+    min-inline-size: 2.25rem;
+    min-block-size: 2.25rem;
+  }
+
+  // ---------------------------------------------------------------- tabs
+  .tabs-panel {
+    overflow: hidden;
+    border: var(--border-width, 1px) solid var(--border-subtle, var(--border-color));
+    border-radius: var(--radius-7, 0.75rem);
+    background-color: var(--bg-1);
+  }
+
+  .tabs-panel .nav-tabs {
+    padding-inline: var(--spacer-3);
+    background-color: var(--bg-2);
+    border-block-end: var(--border-width, 1px) solid var(--border-subtle, var(--border-color));
+  }
+
+  .tabs-panel .nav-link {
+    padding-block: var(--spacer-3);
+    color: var(--fg-3);
+    font-size: var(--docengine-size-meta);
+    font-weight: var(--font-weight-medium, 500);
+    border: 0;
+    border-block-end: 2px solid transparent;
+    background-color: transparent;
+  }
+
+  .tabs-panel .nav-link:hover {
+    color: var(--fg-body);
+  }
+
+  .tabs-panel .nav-link.active {
+    color: var(--accent-fg, var(--accent-bg));
+    border-block-end-color: var(--accent-bg, var(--indigo-500));
+    background-color: transparent;
+  }
+
+  .tabs-panel .tab-content {
+    padding: var(--spacer-4) var(--spacer-5);
+  }
+
+  .tab-pane__text {
+    color: var(--fg-2);
+    font-size: var(--docengine-size-supporting);
+    max-inline-size: var(--doc-measure);
+  }
+
+  // ----------------------------------------------------------- Diátaxis grid
+  .diataxis-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacer-4);
+  }
+
+  .diataxis-card {
+    block-size: 100%;
+    padding: var(--spacer-5);
+    border: var(--border-width, 1px) solid var(--border-subtle, var(--border-color));
+    border-radius: var(--radius-7, 0.75rem);
+    background-color: var(--bg-1);
+    border-block-start: 3px solid var(--diataxis-accent, var(--accent-bg, var(--indigo-500)));
+    transition: transform 0.15s ease, border-color 0.15s ease;
+  }
+
+  .diataxis-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--border-muted, var(--border-emphasized, var(--border-color)));
+  }
+
+  .diataxis-card--tutorial { --diataxis-accent: var(--blue-500); }
+  .diataxis-card--howto    { --diataxis-accent: var(--green-500); }
+  .diataxis-card--reference{ --diataxis-accent: var(--indigo-500); }
+  .diataxis-card--explain  { --diataxis-accent: var(--amber-500); }
+
+  .diataxis-card__tag {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacer-2);
+    font-size: var(--docengine-size-caption);
+    font-weight: var(--font-weight-semibold, 600);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--diataxis-accent);
+  }
+
+  // Bootstrap alerts carry the semantic context of supporting notes. Keep their
+  // content aligned with the site's reading measure instead of recreating a
+  // parallel callout component.
+  .alert {
+    max-inline-size: var(--doc-measure);
+  }
+
+  .alert-heading {
+    display: block;
+    margin-block-end: var(--spacer-1);
+    font-family: var(--docengine-font-display);
+    font-size: var(--docengine-size-heading);
+    line-height: 1.2;
+    font-weight: var(--font-weight-semibold, 600);
+  }
+
+  .alert > div {
+    flex: 1 1 auto;
+  }
+
+  // ---------------------------------------------------------------- footer
+  .site-footer {
+    border-block-start: var(--border-width, 1px) solid var(--border-subtle, var(--border-color));
+    background-color: var(--bg-1);
+    color: var(--fg-3);
+    font-size: var(--docengine-size-meta);
+  }
+
+  .site-footer a {
+    color: var(--fg-2);
+  }
+
+  // ---------------------------------------------------------------- layout
+  @media (min-width: 768px) {
+    .diataxis-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  // ------------------------------------------------------- reduced motion
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    .skip-link,
+    .doc-card,
+    .diataxis-card,
+    .code-block__copy,
+    .back-to-top,
+    .control-button,
+    .toc__link,
+    .tabs-panel .nav-link {
+      transition: none;
+    }
+
+    .doc-card:hover,
+    .diataxis-card:hover {
+      transform: none;
+    }
+  }
+}

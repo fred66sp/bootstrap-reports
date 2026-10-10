@@ -1,6 +1,6 @@
 # Instrucciones del repositorio
 
-Este repositorio es un workspace de informes, documentación y ejemplos de integración; todavía no contiene una aplicación ejecutable.
+Este repositorio es un workspace de informes, documentación y ejemplos de integración. Las aplicaciones con identidad propia viven en subdirectorios, actualmente `docengine-docs/`.
 
 ## Leer antes de trabajar
 
@@ -8,16 +8,16 @@ Este repositorio es un workspace de informes, documentación y ejemplos de integ
 - `docs/CONTRATO_FLUJO_GIT_VERSIONADO.md` — reglas de ramas, commits, verificación y operaciones remotas.
 - `docs/INTEGRACION_BOOTSTRAP_6_ALPHA.md` — decisiones y límites de Bootstrap.
 - `docs/inference-protocol.md` — protocolo obligatorio de evidencia, inferencia y trazabilidad.
-- `package.json`, `package-lock.json` y `skills-lock.json` — dependencias y skills reproducibles.
+- `docengine-docs/package.json`, `docengine-docs/package-lock.json` y `skills-lock.json` — dependencias de la aplicación y skills reproducibles.
 - `odd/tasks/` — tarea ODD activa y evidencia recuperable.
 
 ## Comandos de trabajo
 
 ```sh
-npm install
-npm ci
-npm ls bootstrap --depth=0
-npm audit
+npm --prefix docengine-docs install
+npm --prefix docengine-docs ci
+npm --prefix docengine-docs ls bootstrap --depth=0
+npm --prefix docengine-docs audit
 npx skills experimental_install
 npx skills list --agent opencode
 ```
@@ -27,7 +27,7 @@ npx skills list --agent opencode
 - Para Sass, usar `@use` y mapas de tokens; no iniciar código nuevo con `@import`.
 - Añadir `@floating-ui/dom` o `vanilla-calendar-pro` solo cuando el ejemplo use las capacidades que requieren esos peer dependencies.
 - Para cualquier decisión o cambio de Bootstrap, apoyarse siempre en la documentación oficial: <https://getbootstrap.com/docs/6.0/> y en la `SKILL.md` oficial aplicable; no usar resúmenes como única fuente.
-- No existen scripts npm, aplicación, servidor, CI, lint, typecheck ni suite de tests en este momento. No inventar comandos: documentar cualquier verificación no disponible.
+- La aplicación `docengine-docs/` tiene scripts `dev`, `build` y `preview`; no existe lint, typecheck ni suite de tests. No inventar comandos: documentar cualquier verificación no disponible.
 
 ## Evidencia y no inferencia
 
@@ -52,4 +52,4 @@ npx skills list --agent opencode
 
 ## Gotcha importante
 
-Crear o comprobar primero el `package.json` del repositorio antes de ejecutar npm. Sin un manifiesto local, npm puede subir al `package.json` de un directorio padre e instalar dependencias fuera de este workspace.
+Crear o comprobar primero `docengine-docs/package.json` antes de ejecutar npm para esa aplicación. El workspace raíz no tiene un manifiesto npm intencionadamente; usar `npm --prefix docengine-docs ...` para evitar que npm suba a un `package.json` de un directorio padre.

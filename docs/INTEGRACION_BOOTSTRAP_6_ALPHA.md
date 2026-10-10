@@ -2,22 +2,23 @@
 
 ## Estado actual
 
-El workspace usa Bootstrap `6.0.0-alpha.1` como dependencia npm exacta. La
-integración de aplicación todavía no fija un bundler: primero se establece una
-base reproducible para informes, ejemplos y documentación.
+La aplicación `docengine-docs/` usa Bootstrap `6.0.0-alpha.1` como dependencia
+npm exacta y Vite como bundler. El workspace raíz conserva documentación,
+informes y tareas compartidas para futuros proyectos.
 
 ```sh
-npm install
+npm --prefix docengine-docs install
 ```
 
-La dependencia está declarada en `package.json` y fijada en
-`package-lock.json`. `node_modules/` permanece excluido por `.gitignore`.
+La dependencia está declarada y fijada en
+`docengine-docs/package.json` y `docengine-docs/package-lock.json`.
+`node_modules/` permanece excluido por `.gitignore`.
 
 ## Ruta recomendada
 
 1. Mantener la versión exacta `6.0.0-alpha.1` mientras se evalúa la alpha.
-2. Elegir después entre npm sin bundler, Vite, Parcel o Webpack según el tipo
-   de ejemplo que se quiera documentar.
+2. Mantener Vite para `docengine-docs/` y elegir de forma independiente el
+   bundler de futuras aplicaciones según el tipo de ejemplo que se documente.
 3. Usar ESM para el JavaScript y `@use` para Sass.
 4. Verificar el resultado en navegadores compatibles antes de publicar un
    informe.
@@ -68,9 +69,8 @@ El paquete declara estos peer dependencies:
 | `@floating-ui/dom` | Menús, popovers o tooltips con el build no empaquetado. |
 | `vanilla-calendar-pro` | Datepicker. |
 
-No se añaden todavía porque el workspace no tiene una aplicación ni utiliza
-esos componentes. El build `bootstrap.bundle` incluye esas dependencias para
-los casos que correspondan.
+No se añaden porque `docengine-docs/` no utiliza esos componentes. Cada futura
+aplicación deberá declarar únicamente los peer dependencies que necesite.
 
 ## Compatibilidad de navegador
 

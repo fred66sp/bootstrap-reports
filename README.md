@@ -16,6 +16,8 @@ redactar informes y documentación técnica trazables.
    empezar una tarea.
 4. Verifica los cambios y deja constancia del resultado antes de proponer un
    commit.
+5. Arranca la documentación web local de docengine desde `docengine-docs/`
+   con `npm run dev` cuando quieras revisar el sitio.
 
 ## Objetivo del repositorio
 
@@ -37,13 +39,16 @@ La referencia inicial del trabajo es el anuncio oficial:
 | `docs/` | Contratos, documentación e informes del proyecto. |
 | `docs/CONTRATO_FLUJO_GIT_VERSIONADO.md` | Referencia operativa para Git, commits, versionado e integración. |
 | `docs/INTEGRACION_BOOTSTRAP_6_ALPHA.md` | Instalación, decisiones y fuentes para Bootstrap 6 Alpha. |
+| `docengine-docs/` | Aplicación web de documentación de docengine, autocontenida (Vite + Bootstrap). |
 | `odd/tasks/` | Tareas de trabajo recuperables del flujo ODD. |
-| `package.json` | Dependencia npm exacta de Bootstrap 6 Alpha 1. |
-| `package-lock.json` | Resolución reproducible de dependencias npm. |
 | `skills-lock.json` | Selección y hashes de las skills oficiales instaladas para el proyecto. |
 | `.agents/skills/` | Copias locales de las skills del agente; no se versionan. |
 | `.gitattributes` | Normalización de finales de línea y ficheros binarios concretos. |
 | `.gitignore` | Exclusiones de secretos, estado local y artefactos generados. |
+
+Cada aplicación o informe con identidad propia vive en su propio directorio
+hermano (por ejemplo `docengine-docs/`); el resto de directorios de este
+workspace son documentación y tareas compartidas.
 
 ## Convenciones
 
@@ -60,14 +65,28 @@ La referencia inicial del trabajo es el anuncio oficial:
 
 ## Estado
 
-Bootstrap `6.0.0-alpha.1` ya está fijado como dependencia npm. La integración
-de aplicación todavía está en preparación; las decisiones y límites actuales
-están documentados en
+Bootstrap `6.0.0-alpha.1` ya está fijado como dependencia npm dentro de la
+aplicación `docengine-docs/`. La integración de la documentación web de
+docengine está implementada en `docengine-docs/src/`, con Sass compilado por
+Vite, tema claro/oscuro y cambio de idioma ES/EN con español por defecto. Las
+decisiones y límites de Bootstrap están documentados en
 [`docs/INTEGRACION_BOOTSTRAP_6_ALPHA.md`](docs/INTEGRACION_BOOTSTRAP_6_ALPHA.md).
+
+Para revisarla localmente, desde `docengine-docs/`:
+
+```sh
+npm install
+npm run dev
+```
+
+El build de producción se comprueba con `npm run build` y escribe la salida
+generada en `docengine-docs/dist/`, que no se versiona.
 
 ## Próximos pasos
 
-- fijar el alcance de la integración y las preguntas técnicas;
-- preparar un primer ejemplo reproducible;
-- registrar hallazgos y decisiones en documentos versionados;
+- ampliar la cobertura visual o dividir el sitio en páginas cuando exista una
+  necesidad documental comprobada;
+- mantener las afirmaciones del sitio alineadas con la documentación fuente de
+  `docengine`;
+- registrar nuevos hallazgos y decisiones en documentos versionados;
 - crear informes a medida que existan resultados verificables.
