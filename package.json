@@ -1,0 +1,10 @@
+{
+  "name": "bootstrap-reports",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Workspace for Bootstrap 6 Alpha integration reports and documentation.",
+  "type": "module",
+  "dependencies": {
+    "bootstrap": "6.0.0-alpha.1"
+  }
+}

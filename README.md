@@ -36,7 +36,12 @@ La referencia inicial del trabajo es el anuncio oficial:
 | --- | --- |
 | `docs/` | Contratos, documentación e informes del proyecto. |
 | `docs/CONTRATO_FLUJO_GIT_VERSIONADO.md` | Referencia operativa para Git, commits, versionado e integración. |
+| `docs/INTEGRACION_BOOTSTRAP_6_ALPHA.md` | Instalación, decisiones y fuentes para Bootstrap 6 Alpha. |
 | `odd/tasks/` | Tareas de trabajo recuperables del flujo ODD. |
+| `package.json` | Dependencia npm exacta de Bootstrap 6 Alpha 1. |
+| `package-lock.json` | Resolución reproducible de dependencias npm. |
+| `skills-lock.json` | Selección y hashes de las skills oficiales instaladas para el proyecto. |
+| `.agents/skills/` | Copias locales de las skills del agente; no se versionan. |
 | `.gitattributes` | Normalización de finales de línea y ficheros binarios concretos. |
 | `.gitignore` | Exclusiones de secretos, estado local y artefactos generados. |
 
@@ -50,12 +55,15 @@ La referencia inicial del trabajo es el anuncio oficial:
   `main` sin autorización explícita.
 - No se versionan secretos, dependencias instaladas, cachés ni salidas
   generadas.
+- Las skills del agente se recuperan desde `skills-lock.json`; no se editan a
+  mano dentro de `.agents/skills/`.
 
 ## Estado
 
-La integración de Bootstrap 6 Alpha todavía está en preparación. Este README
-define el punto de entrada del workspace; los resultados técnicos se añadirán
-junto con la documentación y los ejemplos que se validen.
+Bootstrap `6.0.0-alpha.1` ya está fijado como dependencia npm. La integración
+de aplicación todavía está en preparación; las decisiones y límites actuales
+están documentados en
+[`docs/INTEGRACION_BOOTSTRAP_6_ALPHA.md`](docs/INTEGRACION_BOOTSTRAP_6_ALPHA.md).
 
 ## Próximos pasos
 
