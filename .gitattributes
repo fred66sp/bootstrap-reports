@@ -1,0 +1,7 @@
+# Todo el texto se guarda con LF, también al clonar en Windows: evita que el
+# checkout convierta a CRLF y que `gofmt -l .` marque archivos formateados.
+* text=auto eol=lf
+
+# La referencia dorada se compara byte a byte: no se le tocan los saltos de
+# línea, aunque el repositorio esté en Windows.
+testdata/golden/*.json -text
