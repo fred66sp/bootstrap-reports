@@ -24,7 +24,7 @@
     <script type="module" src="./js/main.js"></script>
   </head>
   <body id="top" data-bs-spy="scroll" data-bs-target="#toc">
-    <a class="skip-link" href="#contenido" data-i18n="skip.toContent">Saltar al contenido</a>
+    <a class="skip-link btn btn-primary" href="#contenido" data-i18n="skip.toContent">Saltar al contenido</a>
 
     <header class="site-header">
       <div class="container">
@@ -38,25 +38,22 @@
           </a>
 
           <div class="d-flex align-items-center gap-2">
-            <button type="button" class="control-button" id="language-toggle" data-language-toggle
-              aria-label="Cambiar a inglés" data-i18n-aria-label="controls.language.toEn">
-              <svg class="control-button__icon" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
-                <path d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0zM4.29 2.2A7 7 0 0 0 1.1 7h2.4a18 18 0 0 1 .8-4.8zM8 1a7 7 0 0 1 3.7 1H4.3A7 7 0 0 1 8 1zM1.1 8a7 7 0 0 0 3.2 4.8A18 18 0 0 1 3.5 8H1.1zm0 1h2.4a18 18 0 0 0 .8 4.8A7 7 0 0 1 1.1 9zm5.9 6a7 7 0 0 1-3.7-1h7.4A7 7 0 0 1 8 15zM12.9 13.8A18 18 0 0 0 13.7 9h2.4a7 7 0 0 1-3.2 4.8zM14.9 8h-2.4a18 18 0 0 0-.8-4.8A7 7 0 0 1 14.9 8z"/>
-              </svg>
-              <span class="fw-semibold" data-language-label>EN</span>
-            </button>
+            <div class="site-controls" role="group" data-i18n-aria-label="controls.group">
+              <div class="segmented" role="group" data-i18n-aria-label="controls.language.label">
+                <button type="button" class="segmented__option focus-ring" data-language-option="es" aria-pressed="true" data-i18n-aria-label="controls.language.es">ES</button>
+                <button type="button" class="segmented__option focus-ring" data-language-option="en" aria-pressed="false" data-i18n-aria-label="controls.language.en">EN</button>
+              </div>
+              <div class="segmented" role="group" data-i18n-aria-label="controls.theme.label">
+                <button type="button" class="segmented__option focus-ring" data-theme-option="light" aria-pressed="false" data-i18n-aria-label="controls.theme.light">
+                  <svg class="segmented__icon" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6zm0 1a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM8 0a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 0zm0 13a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 13zm8-5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2a.5.5 0 0 1 .5.5zM3 8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2A.5.5 0 0 1 3 8zm10.657-5.657a.5.5 0 0 1 0 .707l-1.414 1.415a.5.5 0 1 1-.707-.708l1.414-1.414a.5.5 0 0 1 .707 0zm-9.193 9.193a.5.5 0 0 1 0 .707L3.05 13.657a.5.5 0 0 1-.707-.707l1.414-1.414a.5.5 0 0 1 .707 0zm9.193 2.121a.5.5 0 0 1-.707 0l-1.414-1.414a.5.5 0 0 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .707zM4.464 4.465a.5.5 0 0 1-.707 0L2.343 3.05a.5.5 0 1 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .708z"/></svg>
+                </button>
+                <button type="button" class="segmented__option focus-ring" data-theme-option="dark" aria-pressed="false" data-i18n-aria-label="controls.theme.dark">
+                  <svg class="segmented__icon" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M6 .278a.768.768 0 0 1 .08.858 7.208 7.208 0 0 0-.878 3.46c0 4.021 3.278 7.277 7.318 7.277.527 0 1.04-.055 1.533-.16a.787.787 0 0 1 .81.316.733.733 0 0 1-.031.893A8.349 8.349 0 0 1 8.344 16C3.734 16 0 12.286 0 7.71 0 4.266 2.114 1.312 5.124.06A.752.752 0 0 1 6 .278z"/></svg>
+                </button>
+              </div>
+            </div>
 
-            <button type="button" class="control-button" id="theme-toggle" data-theme-toggle
-              aria-label="Cambiar a tema oscuro" data-i18n-aria-label="controls.theme.toDark">
-              <svg class="control-button__icon" data-theme-icon="dark" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
-                <path d="M6 .278a.768.768 0 0 1 .08.858 7.208 7.208 0 0 0-.878 3.46c0 4.021 3.278 7.277 7.318 7.277.527 0 1.04-.055 1.533-.16a.787.787 0 0 1 .81.316.733.733 0 0 1-.031.893A8.349 8.349 0 0 1 8.344 16C3.734 16 0 12.286 0 7.71 0 4.266 2.114 1.312 5.124.06A.752.752 0 0 1 6 .278z"/>
-              </svg>
-              <svg class="control-button__icon" data-theme-icon="light" hidden viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
-                <path d="M8 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6zm0 1a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM8 0a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 0zm0 13a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 13zm8-5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2a.5.5 0 0 1 .5.5zM3 8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2A.5.5 0 0 1 3 8zm10.657-5.657a.5.5 0 0 1 0 .707l-1.414 1.415a.5.5 0 1 1-.707-.708l1.414-1.414a.5.5 0 0 1 .707 0zm-9.193 9.193a.5.5 0 0 1 0 .707L3.05 13.657a.5.5 0 0 1-.707-.707l1.414-1.414a.5.5 0 0 1 .707 0zm9.193 2.121a.5.5 0 0 1-.707 0l-1.414-1.414a.5.5 0 0 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .707zM4.464 4.465a.5.5 0 0 1-.707 0L2.343 3.05a.5.5 0 1 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .708z"/>
-              </svg>
-            </button>
-
-            <button type="button" class="control-button site-menu-toggle" id="menu-toggle" data-bs-toggle="drawer"
+            <button type="button" class="control-button site-menu-toggle focus-ring" id="menu-toggle" data-bs-toggle="drawer"
               data-bs-target="#site-menu" aria-expanded="false" aria-controls="site-menu"
               aria-label="Abrir menú" data-i18n-aria-label="controls.menuOpen">
               <svg class="control-button__icon" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
@@ -77,16 +74,16 @@
           </div>
           <div class="drawer-body site-menu__body">
             <div class="site-menu__inner">
-            <a class="site-menu__link" href="#overview" data-i18n="nav.overview">Qué es</a>
-            <a class="site-menu__link" href="#workflow" data-i18n="nav.workflow">Flujo</a>
-            <a class="site-menu__link" href="#quickstart" data-i18n="nav.quickstart">Inicio rápido</a>
-            <a class="site-menu__link" href="#adoption" data-i18n="nav.adoption">Adopción</a>
-            <a class="site-menu__link" href="#contracts" data-i18n="nav.contracts">Contratos</a>
-            <a class="site-menu__link" href="#capabilities" data-i18n="nav.capabilities">Capacidades</a>
-            <a class="site-menu__link" href="#exit-codes" data-i18n="nav.exitcodes">Salidas</a>
-            <a class="site-menu__link" href="#profile-report" data-i18n="nav.profile">Perfil</a>
-            <a class="site-menu__link" href="#diataxis" data-i18n="nav.diataxis">Diátaxis</a>
-            <a class="site-menu__link" href="#evidence" data-i18n="nav.evidence">Evidencia</a>
+            <a class="site-menu__link focus-ring" href="#overview" data-i18n="nav.overview">Qué es</a>
+            <a class="site-menu__link focus-ring" href="#workflow" data-i18n="nav.workflow">Flujo</a>
+            <a class="site-menu__link focus-ring" href="#quickstart" data-i18n="nav.quickstart">Inicio rápido</a>
+            <a class="site-menu__link focus-ring" href="#adoption" data-i18n="nav.adoption">Adopción</a>
+            <a class="site-menu__link focus-ring" href="#contracts" data-i18n="nav.contracts">Contratos</a>
+            <a class="site-menu__link focus-ring" href="#capabilities" data-i18n="nav.capabilities">Capacidades</a>
+            <a class="site-menu__link focus-ring" href="#exit-codes" data-i18n="nav.exitcodes">Salidas</a>
+            <a class="site-menu__link focus-ring" href="#profile-report" data-i18n="nav.profile">Perfil</a>
+            <a class="site-menu__link focus-ring" href="#diataxis" data-i18n="nav.diataxis">Diátaxis</a>
+            <a class="site-menu__link focus-ring" href="#evidence" data-i18n="nav.evidence">Evidencia</a>
             </div>
           </div>
         </dialog>
@@ -97,8 +94,7 @@
     <section class="hero" aria-label="Presentación">
       <div class="container">
         <div class="hero__inner">
-          <span class="pill">
-            <span class="pill__dot" aria-hidden="true"></span>
+          <span class="badge badge-subtle rounded-pill theme-accent">
             <span data-i18n="hero.pill">Motor determinista · evidencia comprobable</span>
           </span>
 
@@ -108,26 +104,25 @@
             <span data-i18n="hero.title.rest">para tu repositorio</span>
           </h1>
 
-          <p class="hero__lead measure" data-i18n="hero.lead">docengine evalúa y mantiene la documentación a partir de un perfil versionado: comprueba contratos, referencias y cobertura, contrasta hechos contra fuentes declaradas y, opcionalmente, analiza el impacto de cambios Git y la recuperación léxica BM25.</p>
+          <p class="hero__lead measure fs-lg" data-i18n="hero.lead">docengine evalúa y mantiene la documentación a partir de un perfil versionado: comprueba contratos, referencias y cobertura, contrasta hechos contra fuentes declaradas y, opcionalmente, analiza el impacto de cambios Git y la recuperación léxica BM25.</p>
 
           <div class="hero__actions">
             <a class="btn btn-solid theme-primary btn-lg" href="#quickstart" data-i18n="hero.cta.primary">Inicio rápido</a>
             <a class="btn btn-outline theme-primary btn-lg" href="#contracts" data-i18n="hero.cta.secondary">Ver los contratos</a>
           </div>
 
-          <div class="status-strip" role="status">
-            <span class="status-strip__mark" aria-hidden="true">OK</span>
-            <div>
-              <strong data-i18n="hero.status.title">Fuentes locales comprobadas</strong>
-              <span data-i18n="hero.status.desc">El contenido de esta página se basa en la documentación comprobada del repositorio local de docengine. No se afirma aquí ninguna versión publicada.</span>
+          <div class="alert theme-success" role="status">
+            <div class="flex-grow-1">
+              <strong class="d-block mb-1" data-i18n="hero.status.title">v0.2.1 etiquetada</strong>
+              <span class="d-block fs-sm" data-i18n="hero.status.desc">docengine está en la versión v0.2.1: integrada en <code>main</code>, etiquetada y con release en GitHub. La instalación publicada (<code>go install @latest</code> o binarios de release) requiere acceso al módulo; compilar desde el código fuente está disponible.</span>
             </div>
           </div>
 
           <div class="hero__facts">
-            <span class="fact-chip"><span class="fact-chip__dot" aria-hidden="true"></span><span data-i18n="hero.fact1">Sin red ni Python</span></span>
-            <span class="fact-chip"><span class="fact-chip__dot" aria-hidden="true"></span><span data-i18n="hero.fact2">Solo lectura</span></span>
-            <span class="fact-chip"><span class="fact-chip__dot" aria-hidden="true"></span><span data-i18n="hero.fact3">Go 1.27</span></span>
-            <span class="fact-chip"><span class="fact-chip__dot" aria-hidden="true"></span><span data-i18n="hero.fact4">Git y BM25 opt-in</span></span>
+            <span class="badge rounded-pill fs-sm"><span data-i18n="hero.fact1">Sin red</span></span>
+            <span class="badge rounded-pill fs-sm"><span data-i18n="hero.fact2">Solo lectura</span></span>
+            <span class="badge rounded-pill fs-sm"><span data-i18n="hero.fact3">Go 1.27</span></span>
+            <span class="badge rounded-pill fs-sm"><span data-i18n="hero.fact4">Git y BM25 opt-in</span></span>
           </div>
         </div>
       </div>
@@ -139,16 +134,16 @@
         <div class="lg:col-3">
             <nav class="toc site-toc" id="toc" aria-label="Índice">
             <h2 class="toc__title" data-i18n="toc.title">En esta página</h2>
-            <a class="toc__link" href="#overview" data-i18n="nav.overview">Qué es</a>
-            <a class="toc__link" href="#workflow" data-i18n="nav.workflow">Flujo</a>
-            <a class="toc__link" href="#quickstart" data-i18n="nav.quickstart">Inicio rápido</a>
-            <a class="toc__link" href="#adoption" data-i18n="nav.adoption">Adopción</a>
-            <a class="toc__link" href="#contracts" data-i18n="nav.contracts">Contratos</a>
-            <a class="toc__link" href="#capabilities" data-i18n="nav.capabilities">Capacidades</a>
-            <a class="toc__link" href="#exit-codes" data-i18n="nav.exitcodes">Salidas</a>
-            <a class="toc__link" href="#profile-report" data-i18n="nav.profile">Perfil</a>
-            <a class="toc__link" href="#diataxis" data-i18n="nav.diataxis">Diátaxis</a>
-            <a class="toc__link" href="#evidence" data-i18n="nav.evidence">Evidencia</a>
+            <a class="toc__link focus-ring" href="#overview" data-i18n="nav.overview">Qué es</a>
+            <a class="toc__link focus-ring" href="#workflow" data-i18n="nav.workflow">Flujo</a>
+            <a class="toc__link focus-ring" href="#quickstart" data-i18n="nav.quickstart">Inicio rápido</a>
+            <a class="toc__link focus-ring" href="#adoption" data-i18n="nav.adoption">Adopción</a>
+            <a class="toc__link focus-ring" href="#contracts" data-i18n="nav.contracts">Contratos</a>
+            <a class="toc__link focus-ring" href="#capabilities" data-i18n="nav.capabilities">Capacidades</a>
+            <a class="toc__link focus-ring" href="#exit-codes" data-i18n="nav.exitcodes">Salidas</a>
+            <a class="toc__link focus-ring" href="#profile-report" data-i18n="nav.profile">Perfil</a>
+            <a class="toc__link focus-ring" href="#diataxis" data-i18n="nav.diataxis">Diátaxis</a>
+            <a class="toc__link focus-ring" href="#evidence" data-i18n="nav.evidence">Evidencia</a>
           </nav>
         </div>
 
@@ -157,46 +152,53 @@
             <!-- ============================================== OVERVIEW -->
             <section class="section" id="overview" aria-labelledby="overview-title">
               <div class="section-head">
-                <span class="section-num" aria-hidden="true">1</span>
-                <p class="eyebrow mb-0" data-i18n="overview.eyebrow">Propuesta</p>
+                <span class="badge badge-subtle theme-accent" aria-hidden="true">1</span>
               </div>
               <h2 class="section-title mb-3" id="overview-title" data-i18n="overview.title">Un motor, un contrato</h2>
-              <p class="section-lead measure" data-i18n="overview.lead">docengine es un motor determinista en Go que evalúa y mantiene la documentación de un repositorio a partir de un perfil versionado. Cada comprobación parte de un contrato explícito, nunca de inferencias.</p>
+              <p class="section-lead measure fs-lg" data-i18n="overview.lead">docengine es un motor determinista en Go que evalúa y mantiene la documentación de un repositorio a partir de un perfil versionado. Cada comprobación parte de un contrato explícito, nunca de inferencias.</p>
               <div class="row g-3 md:g-4 mt-1">
-                <div class="md:col-6 xl:col-6">
-                  <div class="doc-card p-4">
-                    <span class="doc-card__icon mb-3" aria-hidden="true">
-                      <svg viewBox="0 0 16 16" fill="currentColor"><path d="M9.293 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.707A1 1 0 0 0 13.707 4L10 .293A1 1 0 0 0 9.293 0zM9.5 3.5v-2l3 3h-2a1 1 0 0 1-1-1zM7 7.5a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 0 1h-2a.5.5 0 0 1-.5-.5zm0 2.5a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 0 1h-2a.5.5 0 0 1-.5-.5zm-3-3a.5.5 0 0 1 .5-.5h.5a.5.5 0 0 1 0 1h-.5a.5.5 0 0 1-.5-.5zm0 2.5a.5.5 0 0 1 .5-.5h.5a.5.5 0 0 1 0 1h-.5a.5.5 0 0 1-.5-.5z"/></svg>
-                    </span>
-                    <h3 class="doc-card__title" data-i18n="overview.card1.title">Contratos documentales</h3>
-                    <p class="doc-card__text mb-0" data-i18n="overview.card1.text">Comprueba identificadores, referencias [[ID]], encabezados y cobertura sobre los documentos gobernados.</p>
+                <div class="md:col-6">
+                  <div class="card h-100">
+                    <div class="card-body">
+                      <span class="card-icon" aria-hidden="true">
+                        <svg viewBox="0 0 16 16" fill="currentColor"><path d="M9.293 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.707A1 1 0 0 0 13.707 4L10 .293A1 1 0 0 0 9.293 0zM9.5 3.5v-2l3 3h-2a1 1 0 0 1-1-1zM7 7.5a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 0 1h-2a.5.5 0 0 1-.5-.5zm0 2.5a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 0 1h-2a.5.5 0 0 1-.5-.5zm-3-3a.5.5 0 0 1 .5-.5h.5a.5.5 0 0 1 0 1h-.5a.5.5 0 0 1-.5-.5zm0 2.5a.5.5 0 0 1 .5-.5h.5a.5.5 0 0 1 0 1h-.5a.5.5 0 0 1-.5-.5z"/></svg>
+                      </span>
+                      <h3 class="h4" data-i18n="overview.card1.title">Contratos documentales</h3>
+                      <p class="fg-2 mb-0" data-i18n="overview.card1.text">Comprueba identificadores, referencias [[ID]], encabezados y cobertura sobre los documentos gobernados.</p>
+                    </div>
                   </div>
                 </div>
-                <div class="md:col-6 xl:col-6">
-                  <div class="doc-card p-4">
-                    <span class="doc-card__icon mb-3" aria-hidden="true">
-                      <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 4.754a3.246 3.246 0 1 0 0 6.492 3.246 3.246 0 0 0 0-6.492zM5.754 8a2.246 2.246 0 1 1 4.492 0 2.246 2.246 0 0 1-4.492 0z"/><path d="M9.796 1.343c-.527-1.79-3.065-1.79-3.592 0l-.094.319a.873.873 0 0 1-1.255.52l-.292-.16c-1.64-.892-3.433.902-2.54 2.541l.159.292a.873.873 0 0 1-.52 1.255l-.319.094c-1.79.527-1.79 3.065 0 3.592l.319.094a.873.873 0 0 1 .52 1.255l-.16.292c-.892 1.64.902 3.433 2.541 2.54l.292-.159a.873.873 0 0 1 1.255.52l.094.319c.527 1.79 3.065 1.79 3.592 0l.094-.319a.873.873 0 0 1 1.255-.52l.292.16c1.64.893 3.434-.902 2.54-2.541l-.159-.292a.873.873 0 0 1 .52-1.255l.319-.094c1.79-.527 1.79-3.065 0-3.592l-.319-.094a.873.873 0 0 1-.52-1.255l.16-.292c.893-1.64-.902-3.433-2.541-2.54l-.292.159a.873.873 0 0 1-1.255-.52l-.094-.319z"/></svg>
-                    </span>
-                    <h3 class="doc-card__title" data-i18n="overview.card2.title">Hechos contrastados</h3>
-                    <p class="doc-card__text mb-0" data-i18n="overview.card2.text">Extrae valores de fuentes declaradas y contrasta cada afirmación del documento contra esas fuentes.</p>
+                <div class="md:col-6">
+                  <div class="card h-100">
+                    <div class="card-body">
+                      <span class="card-icon" aria-hidden="true">
+                        <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 4.754a3.246 3.246 0 1 0 0 6.492 3.246 3.246 0 0 0 0-6.492zM5.754 8a2.246 2.246 0 1 1 4.492 0 2.246 2.246 0 0 1-4.492 0z"/><path d="M9.796 1.343c-.527-1.79-3.065-1.79-3.592 0l-.094.319a.873.873 0 0 1-1.255.52l-.292-.16c-1.64-.892-3.433.902-2.54 2.541l.159.292a.873.873 0 0 1-.52 1.255l-.319.094c-1.79.527-1.79 3.065 0 3.592l.319.094a.873.873 0 0 1 .52 1.255l-.16.292c-.892 1.64.902 3.433 2.541 2.54l.292-.159a.873.873 0 0 1 1.255.52l.094.319c.527 1.79 3.065 1.79 3.592 0l.094-.319a.873.873 0 0 1 1.255-.52l.292.16c1.64.893 3.434-.902 2.54-2.541l-.159-.292a.873.873 0 0 1 .52-1.255l.319-.094c1.79-.527 1.79-3.065 0-3.592l-.319-.094a.873.873 0 0 1-.52-1.255l.16-.292c.893-1.64-.902-3.433-2.541-2.54l-.292.159a.873.873 0 0 1-1.255-.52l-.094-.319z"/></svg>
+                      </span>
+                      <h3 class="h4" data-i18n="overview.card2.title">Hechos contrastados</h3>
+                      <p class="fg-2 mb-0" data-i18n="overview.card2.text">Extrae valores de fuentes declaradas y contrasta cada afirmación del documento contra esas fuentes.</p>
+                    </div>
                   </div>
                 </div>
-                <div class="md:col-6 xl:col-6">
-                  <div class="doc-card p-4">
-                    <span class="doc-card__icon mb-3" aria-hidden="true">
-                      <svg viewBox="0 0 16 16" fill="currentColor"><path d="M9.405 1.05c-.413-1.4-2.397-1.4-2.81 0l-.1.34a1.464 1.464 0 0 1-2.105.872l-.31-.17c-1.283-.698-2.686.705-1.987 1.987l.169.311c.446.82.023 1.841-.872 2.105l-.34.1c-1.4.413-1.4 2.397 0 2.81l.34.1a1.464 1.464 0 0 1 .872 2.105l-.17.31c-.698 1.283.705 2.686 1.987 1.987l.311-.169a1.464 1.464 0 0 1 2.105.872l.1.34c.413 1.4 2.397 1.4 2.81 0l.1-.34a1.464 1.464 0 0 1 2.105-.872l.31.17c1.283.698 2.686-.705 1.987-1.987l-.169-.311a1.464 1.464 0 0 1 .872-2.105l.34-.1c1.4-.413 1.4-2.397 0-2.81l-.34-.1a1.464 1.464 0 0 1-.872-2.105l.17-.31c.698-1.283-.705-2.686-1.987-1.987l-.311.169a1.464 1.464 0 0 1-2.105-.872l-.1-.34z"/></svg>
-                    </span>
-                    <h3 class="doc-card__title" data-i18n="overview.card3.title">Capacidades opcionales</h3>
-                    <p class="doc-card__text mb-0" data-i18n="overview.card3.text">Impacto de cambios Git y recuperación léxica BM25, ambos desactivables por ejecución.</p>
+                <div class="md:col-6">
+                  <div class="card h-100">
+                    <div class="card-body">
+                      <span class="card-icon" aria-hidden="true">
+                        <svg viewBox="0 0 16 16" fill="currentColor"><path d="M9.405 1.05c-.413-1.4-2.397-1.4-2.81 0l-.1.34a1.464 1.464 0 0 1-2.105.872l-.31-.17c-1.283-.698-2.686.705-1.987 1.987l.169.311c.446.82.023 1.841-.872 2.105l-.34.1c-1.4.413-1.4 2.397 0 2.81l.34.1a1.464 1.464 0 0 1 .872 2.105l-.17.31c-.698 1.283.705 2.686 1.987 1.987l.311-.169a1.464 1.464 0 0 1 2.105.872l.1.34c.413 1.4 2.397 1.4 2.81 0l.1-.34a1.464 1.464 0 0 1 2.105-.872l.31.17c1.283.698 2.686-.705 1.987-1.987l-.169-.311a1.464 1.464 0 0 1 .872-2.105l.34-.1c1.4-.413 1.4-2.397 0-2.81l-.34-.1a1.464 1.464 0 0 1-.872-2.105l.17-.31c.698-1.283-.705-2.686-1.987-1.987l-.311.169a1.464 1.464 0 0 1-2.105-.872l-.1-.34z"/></svg>
+                      </span>
+                      <h3 class="h4" data-i18n="overview.card3.title">Capacidades opcionales</h3>
+                      <p class="fg-2 mb-0" data-i18n="overview.card3.text">Impacto de cambios Git y recuperación léxica BM25, ambos desactivables por ejecución.</p>
+                    </div>
                   </div>
                 </div>
-                <div class="md:col-6 xl:col-6">
-                  <div class="doc-card p-4">
-                    <span class="doc-card__icon mb-3" aria-hidden="true">
-                      <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/></svg>
-                    </span>
-                    <h3 class="doc-card__title" data-i18n="overview.card4.title">Solo lectura</h3>
-                    <p class="doc-card__text mb-0" data-i18n="overview.card4.text">La auditoría no escribe archivos, no modifica el índice Git y nunca accede a la red.</p>
+                <div class="md:col-6">
+                  <div class="card h-100">
+                    <div class="card-body">
+                      <span class="card-icon" aria-hidden="true">
+                        <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/></svg>
+                      </span>
+                      <h3 class="h4" data-i18n="overview.card4.title">Solo lectura</h3>
+                      <p class="fg-2 mb-0" data-i18n="overview.card4.text">La auditoría no escribe archivos, no modifica el índice Git y nunca accede a la red.</p>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -205,108 +207,121 @@
             <!-- ============================================== WORKFLOW -->
             <section class="section" id="workflow" aria-labelledby="workflow-title">
               <div class="section-head">
-                <span class="section-num" aria-hidden="true">2</span>
-                <p class="eyebrow mb-0" data-i18n="workflow.eyebrow">Flujo</p>
+                <span class="badge badge-subtle theme-accent" aria-hidden="true">2</span>
               </div>
               <h2 class="section-title mb-3" id="workflow-title" data-i18n="workflow.title">Cómo audita docengine</h2>
-              <p class="section-lead measure" data-i18n="workflow.lead">Una auditoría recorre fases secuenciales y deterministas. El núcleo no importa paquetes de CLI, Git ni skill; los adaptadores dependen del núcleo, nunca al revés.</p>
+              <p class="section-lead measure fs-lg" data-i18n="workflow.lead">Una auditoría recorre fases secuenciales y deterministas. El núcleo no importa paquetes de CLI, Git ni skill; los adaptadores dependen del núcleo, nunca al revés.</p>
 
               <div class="alert theme-info mb-5" role="note">
-                <div>
-                  <h3 class="alert-heading" data-i18n="workflow.note.title">Arquitectura hexagonal ligera</h3>
+                <div class="flex-grow-1">
+                  <h3 class="alert-heading h4 mb-1" data-i18n="workflow.note.title">Arquitectura hexagonal ligera</h3>
                   <p class="mb-0" data-i18n="workflow.note.text">El núcleo recibe datos normalizados y produce resultados; la CLI, el sistema de archivos, Git y la salida son adaptadores.</p>
                 </div>
               </div>
 
-              <div class="workflow-phases">
-                <section class="workflow-phase" aria-labelledby="workflow-phase1-title">
-                  <header class="workflow-phase__head">
-                    <span class="workflow-phase__number">01</span>
-                    <div>
-                      <h3 class="workflow-phase__title" id="workflow-phase1-title" data-i18n="workflow.phase1.title">Preparar</h3>
-                      <p class="workflow-phase__text mb-0" data-i18n="workflow.phase1.text">Define el alcance y reúne solo la documentación autorizada.</p>
+              <div class="row g-4">
+                <div class="lg:col-4">
+                  <div class="card h-100">
+                    <div class="card-body">
+                      <div class="d-flex align-items-start gap-3">
+                        <span class="badge badge-subtle theme-accent fs-sm" aria-hidden="true">01</span>
+                        <div>
+                          <h3 class="h4 mb-1" id="workflow-phase1-title" data-i18n="workflow.phase1.title">Preparar</h3>
+                          <p class="mb-0 fg-2" data-i18n="workflow.phase1.text">Define el alcance y reúne solo la documentación autorizada.</p>
+                        </div>
+                      </div>
+                      <hr class="my-4">
+                      <ol class="list-unstyled mb-0 d-flex flex-column gap-3">
+                        <li class="d-flex align-items-start gap-3">
+                          <span class="badge rounded-pill" aria-hidden="true">1</span>
+                          <div>
+                            <p class="fw-semibold mb-1" data-i18n="workflow.step1.title">Cargar y validar el perfil</p>
+                            <p class="mb-0 fg-2" data-i18n="workflow.step1.text">Rechaza campos desconocidos y normaliza las rutas relativas antes de leer el corpus.</p>
+                          </div>
+                        </li>
+                        <li class="d-flex align-items-start gap-3">
+                          <span class="badge rounded-pill" aria-hidden="true">2</span>
+                          <div>
+                            <p class="fw-semibold mb-1" data-i18n="workflow.step2.title">Resolver los documentos</p>
+                            <p class="mb-0 fg-2" data-i18n="workflow.step2.text">Selecciona los documentos en orden de ruta y lee solo Markdown dentro de la raíz autorizada.</p>
+                          </div>
+                        </li>
+                      </ol>
                     </div>
-                  </header>
-                  <ol class="workflow-phase__list">
-                    <li class="workflow-phase__step">
-                      <span class="workflow-phase__step-number">1</span>
-                      <div>
-                        <p class="workflow-phase__step-title mb-1" data-i18n="workflow.step1.title">Cargar y validar el perfil</p>
-                        <p class="workflow-phase__step-text mb-0" data-i18n="workflow.step1.text">Rechaza campos desconocidos y normaliza las rutas relativas antes de leer el corpus.</p>
-                      </div>
-                    </li>
-                    <li class="workflow-phase__step">
-                      <span class="workflow-phase__step-number">2</span>
-                      <div>
-                        <p class="workflow-phase__step-title mb-1" data-i18n="workflow.step2.title">Resolver los documentos</p>
-                        <p class="workflow-phase__step-text mb-0" data-i18n="workflow.step2.text">Selecciona los documentos en orden de ruta y lee solo Markdown dentro de la raíz autorizada.</p>
-                      </div>
-                    </li>
-                  </ol>
-                </section>
+                  </div>
+                </div>
 
-                <section class="workflow-phase" aria-labelledby="workflow-phase2-title">
-                  <header class="workflow-phase__head">
-                    <span class="workflow-phase__number">02</span>
-                    <div>
-                      <h3 class="workflow-phase__title" id="workflow-phase2-title" data-i18n="workflow.phase2.title">Comprobar</h3>
-                      <p class="workflow-phase__text mb-0" data-i18n="workflow.phase2.text">Aplica contratos deterministas y contrasta los hechos declarados.</p>
+                <div class="lg:col-4">
+                  <div class="card h-100">
+                    <div class="card-body">
+                      <div class="d-flex align-items-start gap-3">
+                        <span class="badge badge-subtle theme-accent fs-sm" aria-hidden="true">02</span>
+                        <div>
+                          <h3 class="h4 mb-1" id="workflow-phase2-title" data-i18n="workflow.phase2.title">Comprobar</h3>
+                          <p class="mb-0 fg-2" data-i18n="workflow.phase2.text">Aplica contratos deterministas y contrasta los hechos declarados.</p>
+                        </div>
+                      </div>
+                      <hr class="my-4">
+                      <ol class="list-unstyled mb-0 d-flex flex-column gap-3">
+                        <li class="d-flex align-items-start gap-3">
+                          <span class="badge rounded-pill" aria-hidden="true">3</span>
+                          <div>
+                            <p class="fw-semibold mb-1" data-i18n="workflow.step3.title">Aplicar reglas deterministas</p>
+                            <p class="mb-0 fg-2" data-i18n="workflow.step3.text">Identificadores, referencias, cobertura y secciones, en el orden definido por el contrato.</p>
+                          </div>
+                        </li>
+                        <li class="d-flex align-items-start gap-3">
+                          <span class="badge rounded-pill" aria-hidden="true">4</span>
+                          <div>
+                            <p class="fw-semibold mb-1" data-i18n="workflow.step4.title">Evaluar hechos</p>
+                            <p class="mb-0 fg-2" data-i18n="workflow.step4.text">Resuelve cada fact, exige concordancia entre fuentes y evalúa los targets configurados.</p>
+                          </div>
+                        </li>
+                      </ol>
                     </div>
-                  </header>
-                  <ol class="workflow-phase__list">
-                    <li class="workflow-phase__step">
-                      <span class="workflow-phase__step-number">3</span>
-                      <div>
-                        <p class="workflow-phase__step-title mb-1" data-i18n="workflow.step3.title">Aplicar reglas deterministas</p>
-                        <p class="workflow-phase__step-text mb-0" data-i18n="workflow.step3.text">Identificadores, referencias, cobertura y secciones, en el orden definido por el contrato.</p>
-                      </div>
-                    </li>
-                    <li class="workflow-phase__step">
-                      <span class="workflow-phase__step-number">4</span>
-                      <div>
-                        <p class="workflow-phase__step-title mb-1" data-i18n="workflow.step4.title">Evaluar hechos</p>
-                        <p class="workflow-phase__step-text mb-0" data-i18n="workflow.step4.text">Resuelve cada fact, exige concordancia entre fuentes y evalúa los targets configurados.</p>
-                      </div>
-                    </li>
-                  </ol>
-                </section>
+                  </div>
+                </div>
 
-                <section class="workflow-phase" aria-labelledby="workflow-phase3-title">
-                  <header class="workflow-phase__head">
-                    <span class="workflow-phase__number">03</span>
-                    <div>
-                      <h3 class="workflow-phase__title" id="workflow-phase3-title" data-i18n="workflow.phase3.title">Emitir</h3>
-                      <p class="workflow-phase__text mb-0" data-i18n="workflow.phase3.text">Agrega capacidades opcionales y produce el informe final.</p>
+                <div class="lg:col-4">
+                  <div class="card h-100">
+                    <div class="card-body">
+                      <div class="d-flex align-items-start gap-3">
+                        <span class="badge badge-subtle theme-accent fs-sm" aria-hidden="true">03</span>
+                        <div>
+                          <h3 class="h4 mb-1" id="workflow-phase3-title" data-i18n="workflow.phase3.title">Emitir</h3>
+                          <p class="mb-0 fg-2" data-i18n="workflow.phase3.text">Agrega capacidades opcionales y produce el informe final.</p>
+                        </div>
+                      </div>
+                      <hr class="my-4">
+                      <ol class="list-unstyled mb-0 d-flex flex-column gap-3">
+                        <li class="d-flex align-items-start gap-3">
+                          <span class="badge rounded-pill" aria-hidden="true">5</span>
+                          <div>
+                            <p class="fw-semibold mb-1" data-i18n="workflow.step5.title">Agregar capacidades opt-in</p>
+                            <p class="mb-0 fg-2" data-i18n="workflow.step5.text">Git impact y BM25 añaden resultados sin cambiar la semántica de los findings deterministas.</p>
+                          </div>
+                        </li>
+                        <li class="d-flex align-items-start gap-3">
+                          <span class="badge rounded-pill" aria-hidden="true">6</span>
+                          <div>
+                            <p class="fw-semibold mb-1" data-i18n="workflow.step6.title">Serializar y salir</p>
+                            <p class="mb-0 fg-2" data-i18n="workflow.step6.text">Emite el informe en terminal o JSON y devuelve el código de salida derivado del resultado.</p>
+                          </div>
+                        </li>
+                      </ol>
                     </div>
-                  </header>
-                  <ol class="workflow-phase__list">
-                    <li class="workflow-phase__step">
-                      <span class="workflow-phase__step-number">5</span>
-                      <div>
-                        <p class="workflow-phase__step-title mb-1" data-i18n="workflow.step5.title">Agregar capacidades opt-in</p>
-                        <p class="workflow-phase__step-text mb-0" data-i18n="workflow.step5.text">Git impact y BM25 añaden resultados sin cambiar la semántica de los findings deterministas.</p>
-                      </div>
-                    </li>
-                    <li class="workflow-phase__step">
-                      <span class="workflow-phase__step-number">6</span>
-                      <div>
-                        <p class="workflow-phase__step-title mb-1" data-i18n="workflow.step6.title">Serializar y salir</p>
-                        <p class="workflow-phase__step-text mb-0" data-i18n="workflow.step6.text">Emite el informe en terminal o JSON y devuelve el código de salida derivado del resultado.</p>
-                      </div>
-                    </li>
-                  </ol>
-                </section>
+                  </div>
+                </div>
               </div>
             </section>
 
             <!-- ============================================== QUICKSTART -->
             <section class="section" id="quickstart" aria-labelledby="quickstart-title">
               <div class="section-head">
-                <span class="section-num" aria-hidden="true">3</span>
-                <p class="eyebrow mb-0" data-i18n="quickstart.eyebrow">Inicio rápido</p>
+                <span class="badge badge-subtle theme-accent" aria-hidden="true">3</span>
               </div>
               <h2 class="section-title mb-3" id="quickstart-title" data-i18n="quickstart.title">Tu primera auditoría</h2>
-              <p class="section-lead measure" data-i18n="quickstart.lead">Compila la CLI desde el código fuente, inicializa el proyecto y ejecuta tu primera auditoría.</p>
+              <p class="section-lead measure fs-lg" data-i18n="quickstart.lead">Compila la CLI desde el código fuente, inicializa el proyecto y ejecuta tu primera auditoría.</p>
 
               <div class="row g-3 md:g-4 quickstart-grid">
                 <div class="lg:col-6">
@@ -316,9 +331,9 @@
                         <span class="code-block__dots" aria-hidden="true"><span class="code-block__dot"></span><span class="code-block__dot"></span><span class="code-block__dot"></span></span>
                         <span class="code-block__label" data-i18n="quickstart.primaryLabel">Primera auditoría</span>
                       </div>
-                      <button type="button" class="code-block__copy" data-copy-button data-i18n-aria-label="controls.copy"><span data-i18n="controls.copy">Copiar</span></button>
+                      <button type="button" class="code-block__copy focus-ring" data-copy-button data-i18n-aria-label="controls.copy"><span data-i18n="controls.copy">Copiar</span></button>
                     </div>
-                    <pre><code>go build -o docengine ./cmd/docengine
+                    <pre><code class="language-bash">go build -o docengine ./cmd/docengine
 ./docengine init --root .
 ./docengine status --root .
 ./docengine audit --root . \
@@ -333,9 +348,9 @@
                         <span class="code-block__dots" aria-hidden="true"><span class="code-block__dot"></span><span class="code-block__dot"></span><span class="code-block__dot"></span></span>
                         <span class="code-block__label" data-i18n="quickstart.followupLabel">Después de la primera auditoría</span>
                       </div>
-                      <button type="button" class="code-block__copy" data-copy-button data-i18n-aria-label="controls.copy"><span data-i18n="controls.copy">Copiar</span></button>
+                      <button type="button" class="code-block__copy focus-ring" data-copy-button data-i18n-aria-label="controls.copy"><span data-i18n="controls.copy">Copiar</span></button>
                     </div>
-                    <pre><code>./docengine plan --root .
+                    <pre><code class="language-bash">./docengine plan --root .
 ./docengine apply --root . --yes
 ./docengine version</code></pre>
                   </div>
@@ -343,8 +358,8 @@
               </div>
 
               <div class="alert theme-info mt-4" role="note">
-                <div>
-                  <h3 class="alert-heading" data-i18n="quickstart.note.title">Importante</h3>
+                <div class="flex-grow-1">
+                  <h3 class="alert-heading h4 mb-1" data-i18n="quickstart.note.title">Importante</h3>
                   <p class="mb-0" data-i18n="quickstart.note.text"><code>audit</code> recibe siempre <code>--profile</code> de forma explícita; el perfil mínimo que propone <code>init</code> no declara documentos y audita cero archivos. Añade reglas para que el motor compruebe contratos.</p>
                 </div>
               </div>
@@ -353,22 +368,21 @@
             <!-- ============================================== ADOPTION -->
             <section class="section" id="adoption" aria-labelledby="adoption-title">
               <div class="section-head">
-                <span class="section-num" aria-hidden="true">4</span>
-                <p class="eyebrow mb-0" data-i18n="adoption.eyebrow">Adopción</p>
+                <span class="badge badge-subtle theme-accent" aria-hidden="true">4</span>
               </div>
               <h2 class="section-title mb-3" id="adoption-title" data-i18n="adoption.title">Activos que genera <code>init</code></h2>
-              <p class="section-lead measure" data-i18n="adoption.lead"><code>init</code> prepara el proyecto para la adopción dirigida por el agente y no sobrescribe archivos existentes sin autorización explícita.</p>
+              <p class="section-lead measure fs-lg" data-i18n="adoption.lead"><code>init</code> prepara el proyecto para la adopción dirigida por el agente y no sobrescribe archivos existentes sin autorización explícita.</p>
               <div class="row g-3 mt-1">
-                <div class="md:col-6 xl:col-4"><div class="doc-card p-4"><p class="doc-card__title mb-1"><code data-i18n="adoption.item1.code">.docengine/profile.json</code></p><p class="doc-card__text mb-0" data-i18n="adoption.item1.text">Perfil mínimo con el <code>language</code> elegido.</p></div></div>
-                <div class="md:col-6 xl:col-4"><div class="doc-card p-4"><p class="doc-card__title mb-1"><code data-i18n="adoption.item2.code">.docengine/manifest.json</code></p><p class="doc-card__text mb-0" data-i18n="adoption.item2.text">Manifiesto y <code>rules.md</code>.</p></div></div>
-                <div class="md:col-6 xl:col-4"><div class="doc-card p-4"><p class="doc-card__title mb-1"><code data-i18n="adoption.item3.code">tutorials/ how-to/ reference/ explanation/</code></p><p class="doc-card__text mb-0" data-i18n="adoption.item3.text">Directorios de documentación Diátaxis.</p></div></div>
-                <div class="md:col-6 xl:col-4"><div class="doc-card p-4"><p class="doc-card__title mb-1"><code data-i18n="adoption.item4.code">templates/</code></p><p class="doc-card__text mb-0" data-i18n="adoption.item4.text">Cuatro plantillas de documentación.</p></div></div>
-                <div class="md:col-6 xl:col-4"><div class="doc-card p-4"><p class="doc-card__title mb-1"><span data-i18n="adoption.item5.code">Skills integradas</span></p><p class="doc-card__text mb-0" data-i18n="adoption.item5.text"><code>software-documentalist</code>, <code>diataxis</code> y <code>commit-preparation</code>.</p></div></div>
-                <div class="md:col-6 xl:col-4"><div class="doc-card p-4"><p class="doc-card__title mb-1"><code data-i18n="adoption.item6.code">.docengine/README.md</code></p><p class="doc-card__text mb-0" data-i18n="adoption.item6.text">Guía para la persona y bloque puntero idempotente en <code>AGENTS.md</code>.</p></div></div>
+                <div class="md:col-6 xl:col-4"><div class="card h-100"><div class="card-body"><h3 class="h5 mb-0"><code data-i18n="adoption.item1.code">.docengine/profile.json</code></h3><p class="fg-2 mb-0" data-i18n="adoption.item1.text">Perfil mínimo con el <code>language</code> elegido.</p></div></div></div>
+                <div class="md:col-6 xl:col-4"><div class="card h-100"><div class="card-body"><h3 class="h5 mb-0"><code data-i18n="adoption.item2.code">.docengine/manifest.json</code></h3><p class="fg-2 mb-0" data-i18n="adoption.item2.text">Manifiesto y <code>rules.md</code>.</p></div></div></div>
+                <div class="md:col-6 xl:col-4"><div class="card h-100"><div class="card-body"><h3 class="h5 mb-0"><code data-i18n="adoption.item3.code">tutorials/ how-to/ reference/ explanation/</code></h3><p class="fg-2 mb-0" data-i18n="adoption.item3.text">Directorios de documentación Diátaxis.</p></div></div></div>
+                <div class="md:col-6 xl:col-4"><div class="card h-100"><div class="card-body"><h3 class="h5 mb-0"><code data-i18n="adoption.item4.code">templates/</code></h3><p class="fg-2 mb-0" data-i18n="adoption.item4.text">Cuatro plantillas de documentación.</p></div></div></div>
+                <div class="md:col-6 xl:col-4"><div class="card h-100"><div class="card-body"><h3 class="h5 mb-0"><span data-i18n="adoption.item5.code">Skills integradas</span></h3><p class="fg-2 mb-0" data-i18n="adoption.item5.text"><code>software-documentalist</code>, <code>diataxis</code> y <code>commit-preparation</code>.</p></div></div></div>
+                <div class="md:col-6 xl:col-4"><div class="card h-100"><div class="card-body"><h3 class="h5 mb-0"><code data-i18n="adoption.item6.code">.docengine/README.md</code></h3><p class="fg-2 mb-0" data-i18n="adoption.item6.text">Guía para la persona y bloque puntero idempotente en <code>AGENTS.md</code>.</p></div></div></div>
               </div>
               <div class="alert theme-warning mt-4" role="note">
-                <div>
-                  <h3 class="alert-heading" data-i18n="adoption.hook.title">Hook de pre-commit</h3>
+                <div class="flex-grow-1">
+                  <h3 class="alert-heading h4 mb-1" data-i18n="adoption.hook.title">Hook de pre-commit</h3>
                   <p class="mb-0" data-i18n="adoption.hook.text">Opcional y solo tras autorización explícita (No por defecto). <code>init</code> no instala CI.</p>
                 </div>
               </div>
@@ -377,181 +391,164 @@
             <!-- ============================================== CONTRACTS -->
             <section class="section" id="contracts" aria-labelledby="contracts-title">
               <div class="section-head">
-                <span class="section-num" aria-hidden="true">5</span>
-                <p class="eyebrow mb-0" data-i18n="contracts.eyebrow">Contratos</p>
+                <span class="badge badge-subtle theme-accent" aria-hidden="true">5</span>
               </div>
               <h2 class="section-title mb-3" id="contracts-title" data-i18n="contracts.title">Contratos deterministas</h2>
-              <p class="section-lead measure" data-i18n="contracts.lead">El perfil es el contrato del proyecto: acepta la semántica v1 y todos sus campos se validan antes de leer el corpus.</p>
+              <p class="section-lead measure fs-lg" data-i18n="contracts.lead">El perfil es el contrato del proyecto: un archivo JSON donde declaras qué documentos gobiernas y qué debe comprobar docengine. Sus campos se validan antes de leer el corpus.</p>
+              <p class="measure fg-2 mb-4" data-i18n="contracts.howto">El perfil agrupa las comprobaciones en bloques. Cada bloque es opcional: si no aparece, esa comprobación no se ejecuta, así que puedes empezar con un perfil mínimo y añadir reglas.</p>
 
-              <div class="tabs-panel">
-                <ul class="nav nav-tabs" role="tablist" data-i18n-aria-label="contracts.tabs.label">
-                  <li class="nav-item" role="presentation">
-                    <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#contracts-documents" type="button" role="tab" aria-selected="true"><code>documents</code></button>
-                  </li>
-                  <li class="nav-item" role="presentation">
-                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#contracts-coverage" type="button" role="tab" aria-selected="false"><code>coverage</code></button>
-                  </li>
-                  <li class="nav-item" role="presentation">
-                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#contracts-facts" type="button" role="tab" aria-selected="false"><code>facts</code></button>
-                  </li>
-                  <li class="nav-item" role="presentation">
-                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#contracts-exclusions" type="button" role="tab" aria-selected="false"><code>exclusions</code></button>
-                  </li>
-                  <li class="nav-item" role="presentation">
-                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#contracts-impact" type="button" role="tab" aria-selected="false"><code>impact</code></button>
-                  </li>
-                  <li class="nav-item" role="presentation">
-                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#contracts-bm25" type="button" role="tab" aria-selected="false"><code>bm25</code></button>
-                  </li>
-                </ul>
-                <div class="tab-content">
-                  <div class="tab-pane fade show active" id="contracts-documents" role="tabpanel" tabindex="0">
-                    <p class="tab-pane__text mb-0" data-i18n="contracts.documents">Reglas sobre Markdown seleccionado por globs: <code>id_pattern</code>, <code>severity</code>, <code>required_headings</code>, <code>language</code> y <code>checks</code>.</p>
-                  </div>
-                  <div class="tab-pane fade" id="contracts-coverage" role="tabpanel" tabindex="0">
-                    <p class="tab-pane__text mb-0" data-i18n="contracts.coverage">Relaciones fuente→target; un identificador sin referencia produce <code>COVERAGE_MISSING</code>.</p>
-                  </div>
-                  <div class="tab-pane fade" id="contracts-facts" role="tabpanel" tabindex="0">
-                    <p class="tab-pane__text mb-0" data-i18n="contracts.facts">Fuentes (<code>path_count</code>, <code>path_set</code>, <code>directory_set</code>, <code>frontmatter_set</code>, <code>text_value</code>, <code>json_count</code>) y targets (<code>value</code>, <code>set</code>, <code>contains_source_set</code>).</p>
-                  </div>
-                  <div class="tab-pane fade" id="contracts-exclusions" role="tabpanel" tabindex="0">
-                    <p class="tab-pane__text mb-0" data-i18n="contracts.exclusions">Globs excluidos de toda comprobación, con una razón declarada.</p>
-                  </div>
-                  <div class="tab-pane fade" id="contracts-impact" role="tabpanel" tabindex="0">
-                    <p class="tab-pane__text mb-0" data-i18n="contracts.impact">Relaciones de impacto Git; requieren <code>--base-ref</code> para ejecutarse.</p>
-                  </div>
-                  <div class="tab-pane fade" id="contracts-bm25" role="tabpanel" tabindex="0">
-                    <p class="tab-pane__text mb-0" data-i18n="contracts.bm25">Capacidades léxicas advisory y sus parámetros versionados.</p>
-                  </div>
+              <div class="row g-3 md:g-4 mb-4">
+                <div class="md:col-6 xl:col-4">
+                  <div class="card h-100"><div class="card-body">
+                    <div class="d-flex align-items-baseline justify-content-between gap-2 mb-2">
+                      <h3 class="h5 mb-0" data-i18n="contracts.block.documents">Documentos</h3>
+                      <code class="fg-accent fs-sm">documents</code>
+                    </div>
+                    <p class="fg-2 mb-0" data-i18n="contracts.documents">Reglas que cada documento gobernado debe cumplir: identificadores, referencias, encabezados e idioma.</p>
+                  </div></div>
+                </div>
+                <div class="md:col-6 xl:col-4">
+                  <div class="card h-100"><div class="card-body">
+                    <div class="d-flex align-items-baseline justify-content-between gap-2 mb-2">
+                      <h3 class="h5 mb-0" data-i18n="contracts.block.coverage">Cobertura</h3>
+                      <code class="fg-accent fs-sm">coverage</code>
+                    </div>
+                    <p class="fg-2 mb-0" data-i18n="contracts.coverage">Cada identificador definido en un documento origen debe estar referenciado por un documento destino.</p>
+                  </div></div>
+                </div>
+                <div class="md:col-6 xl:col-4">
+                  <div class="card h-100"><div class="card-body">
+                    <div class="d-flex align-items-baseline justify-content-between gap-2 mb-2">
+                      <h3 class="h5 mb-0" data-i18n="contracts.block.facts">Hechos</h3>
+                      <code class="fg-accent fs-sm">facts</code>
+                    </div>
+                    <p class="fg-2 mb-0" data-i18n="contracts.facts">Afirmaciones del documento contrastadas contra valores leídos de fuentes declaradas.</p>
+                  </div></div>
+                </div>
+                <div class="md:col-6 xl:col-4">
+                  <div class="card h-100"><div class="card-body">
+                    <div class="d-flex align-items-baseline justify-content-between gap-2 mb-2">
+                      <h3 class="h5 mb-0" data-i18n="contracts.block.exclusions">Exclusiones</h3>
+                      <code class="fg-accent fs-sm">exclusions</code>
+                    </div>
+                    <p class="fg-2 mb-0" data-i18n="contracts.exclusions">Rutas fuera de toda comprobación, cada una con un motivo declarado.</p>
+                  </div></div>
+                </div>
+                <div class="md:col-6 xl:col-4">
+                  <div class="card h-100"><div class="card-body">
+                    <div class="d-flex align-items-baseline justify-content-between gap-2 mb-2">
+                      <h3 class="h5 mb-0" data-i18n="contracts.block.impact">Impacto Git</h3>
+                      <code class="fg-accent fs-sm">impact_relations</code>
+                    </div>
+                    <p class="fg-2 mb-0" data-i18n="contracts.impact">Relaciona cambios de código con documentos para recomendar su revisión; requiere <code>--base-ref</code>.</p>
+                  </div></div>
+                </div>
+                <div class="md:col-6 xl:col-4">
+                  <div class="card h-100"><div class="card-body">
+                    <div class="d-flex align-items-baseline justify-content-between gap-2 mb-2">
+                      <h3 class="h5 mb-0" data-i18n="contracts.block.bm25">BM25</h3>
+                      <code class="fg-accent fs-sm">bm25</code>
+                    </div>
+                    <p class="fg-2 mb-0" data-i18n="contracts.bm25">Búsqueda léxica advisory que propone posibles duplicados o cobertura; nunca crea findings.</p>
+                  </div></div>
                 </div>
               </div>
 
-              <p class="measure mt-4 mb-4" data-i18n="contracts.severity">La severidad es <code>error</code>, <code>warning</code> o <code>info</code>; solo los findings <code>error</code> cambian el código de salida.</p>
+              <p class="measure fs-sm fg-2 mt-4 mb-4" data-i18n="contracts.severity">La severidad es <code>error</code>, <code>warning</code> o <code>info</code>; solo los findings <code>error</code> cambian el código de salida.</p>
 
-              <h3 class="codes-caption mb-3" data-i18n="contracts.codesCaption">Códigos de finding deterministas</h3>
+              <h3 class="h5 mb-2" data-i18n="contracts.codesCaption">Códigos de finding deterministas</h3>
+              <p class="measure fg-2 mb-4" data-i18n="contracts.findings.intro">Cuando una comprobación no se cumple, docengine emite un finding: un aviso con un código estable, su ubicación y su mensaje.</p>
 
-              <div class="finding-catalog">
-                  <section class="finding-group finding-group--docs" aria-labelledby="finding-docs-title">
-                  <header class="finding-group__head">
-                    <h4 class="finding-group__title" id="finding-docs-title" data-i18n="contracts.codes.docs.title">Reglas de documento</h4>
-                    <p class="finding-group__desc mb-0" data-i18n="contracts.codes.docs.desc">Identificadores, referencias, encabezados e idioma sobre el Markdown gobernado.</p>
-                  </header>
-                  <ul class="finding-group__list row g-3 list-unstyled mb-0">
-                    <li class="sm:col-6">
-                      <div class="finding-item">
-                        <code class="finding-item__code">ID_MISSING</code>
-                        <p class="finding-item__text mb-0" data-i18n="contracts.codes.docs.ID_MISSING">Un encabezado gobernado no tiene token de identificador.</p>
-                      </div>
-                    </li>
-                    <li class="sm:col-6">
-                      <div class="finding-item">
-                        <code class="finding-item__code">ID_MALFORMED</code>
-                        <p class="finding-item__text mb-0" data-i18n="contracts.codes.docs.ID_MALFORMED">El token de identificador no coincide con el <code>id_pattern</code> de la regla.</p>
-                      </div>
-                    </li>
-                    <li class="sm:col-6">
-                      <div class="finding-item">
-                        <code class="finding-item__code">ID_DUPLICATE</code>
-                        <p class="finding-item__text mb-0" data-i18n="contracts.codes.docs.ID_DUPLICATE">El mismo identificador está definido en más de un lugar.</p>
-                      </div>
-                    </li>
-                    <li class="sm:col-6">
-                      <div class="finding-item">
-                        <code class="finding-item__code">REFERENCE_MALFORMED</code>
-                        <p class="finding-item__text mb-0" data-i18n="contracts.codes.docs.REFERENCE_MALFORMED">Un token <code>[[…]]</code> no es una referencia <code>[[ID]]</code> válida.</p>
-                      </div>
-                    </li>
-                    <li class="sm:col-6">
-                      <div class="finding-item">
-                        <code class="finding-item__code">REFERENCE_TARGET_MISSING</code>
-                        <p class="finding-item__text mb-0" data-i18n="contracts.codes.docs.REFERENCE_TARGET_MISSING">Una referencia válida no tiene definición de identificador coincidente.</p>
-                      </div>
-                    </li>
-                    <li class="sm:col-6">
-                      <div class="finding-item">
-                        <code class="finding-item__code">SECTION_MISSING</code>
-                        <p class="finding-item__text mb-0" data-i18n="contracts.codes.docs.SECTION_MISSING">Falta un encabezado requerido declarado por la regla.</p>
-                      </div>
-                    </li>
-                    <li class="sm:col-6">
-                      <div class="finding-item">
-                        <code class="finding-item__code">LANGUAGE_MISMATCH</code>
-                        <p class="finding-item__text mb-0" data-i18n="contracts.codes.docs.LANGUAGE_MISMATCH">La prosa detectada difiere del <code>language</code> configurado.</p>
-                      </div>
-                    </li>
-                    <li class="sm:col-6">
-                      <div class="finding-item">
-                        <code class="finding-item__code">LANGUAGE_UNDETERMINED</code>
-                        <p class="finding-item__text mb-0" data-i18n="contracts.codes.docs.LANGUAGE_UNDETERMINED">La prosa no tiene señal de idioma decisiva; el <code>language</code> no puede comprobarse.</p>
-                      </div>
-                    </li>
-                  </ul>
+              <div class="d-flex flex-column gap-4">
+                  <section class="card" aria-labelledby="finding-docs-title">
+                  <div class="card-body">
+                    <h4 class="h4 mb-2" id="finding-docs-title" data-i18n="contracts.codes.docs.title">Reglas de documento</h4>
+                    <p class="fg-2 mb-4" data-i18n="contracts.codes.docs.desc">Identificadores, referencias, encabezados e idioma sobre el Markdown gobernado.</p>
+                    <ul class="row g-3 list-unstyled mb-0">
+                      <li class="sm:col-6">
+                        <code class="d-block fs-sm fg-accent mb-2">ID_MISSING</code>
+                        <p class="fg-2 mb-0" data-i18n="contracts.codes.docs.ID_MISSING">Un encabezado gobernado no tiene su identificador.</p>
+                      </li>
+                      <li class="sm:col-6">
+                        <code class="d-block fs-sm fg-accent mb-2">ID_MALFORMED</code>
+                        <p class="fg-2 mb-0" data-i18n="contracts.codes.docs.ID_MALFORMED">El identificador no sigue el patrón (<code>id_pattern</code>) que exige la regla.</p>
+                      </li>
+                      <li class="sm:col-6">
+                        <code class="d-block fs-sm fg-accent mb-2">ID_DUPLICATE</code>
+                        <p class="fg-2 mb-0" data-i18n="contracts.codes.docs.ID_DUPLICATE">El mismo identificador está definido en más de un lugar.</p>
+                      </li>
+                      <li class="sm:col-6">
+                        <code class="d-block fs-sm fg-accent mb-2">REFERENCE_MALFORMED</code>
+                        <p class="fg-2 mb-0" data-i18n="contracts.codes.docs.REFERENCE_MALFORMED">Un token <code>[[…]]</code> no es una referencia <code>[[ID]]</code> válida.</p>
+                      </li>
+                      <li class="sm:col-6">
+                        <code class="d-block fs-sm fg-accent mb-2">REFERENCE_TARGET_MISSING</code>
+                        <p class="fg-2 mb-0" data-i18n="contracts.codes.docs.REFERENCE_TARGET_MISSING">Una referencia apunta a un identificador que no existe en ningún documento.</p>
+                      </li>
+                      <li class="sm:col-6">
+                        <code class="d-block fs-sm fg-accent mb-2">SECTION_MISSING</code>
+                        <p class="fg-2 mb-0" data-i18n="contracts.codes.docs.SECTION_MISSING">Falta un encabezado requerido declarado por la regla.</p>
+                      </li>
+                      <li class="sm:col-6">
+                        <code class="d-block fs-sm fg-accent mb-2">LANGUAGE_MISMATCH</code>
+                        <p class="fg-2 mb-0" data-i18n="contracts.codes.docs.LANGUAGE_MISMATCH">El idioma detectado no es el que declara el perfil (<code>language</code>).</p>
+                      </li>
+                      <li class="sm:col-6">
+                        <code class="d-block fs-sm fg-accent mb-2">LANGUAGE_UNDETERMINED</code>
+                        <p class="fg-2 mb-0" data-i18n="contracts.codes.docs.LANGUAGE_UNDETERMINED">El idioma detectado no es concluyente, así que no puede comprobarse.</p>
+                      </li>
+                    </ul>
+                  </div>
                 </section>
 
-                 <section class="finding-group finding-group--coverage" aria-labelledby="finding-coverage-title">
-                  <header class="finding-group__head">
-                    <h4 class="finding-group__title" id="finding-coverage-title" data-i18n="contracts.codes.coverage.title">Cobertura</h4>
-                    <p class="finding-group__desc mb-0" data-i18n="contracts.codes.coverage.desc">Relaciones fuente→destino, independientes del contrato de documento.</p>
-                  </header>
-                  <ul class="finding-group__list row g-3 list-unstyled mb-0">
-                    <li class="sm:col-6">
-                      <div class="finding-item">
-                        <code class="finding-item__code">COVERAGE_MISSING</code>
-                        <p class="finding-item__text mb-0" data-i18n="contracts.codes.coverage.COVERAGE_MISSING">Un identificador de origen no es referenciado por ningún documento destino.</p>
-                      </div>
-                    </li>
-                  </ul>
+                 <section class="card" aria-labelledby="finding-coverage-title">
+                  <div class="card-body">
+                    <h4 class="h4 mb-2" id="finding-coverage-title" data-i18n="contracts.codes.coverage.title">Cobertura</h4>
+                    <p class="fg-2 mb-4" data-i18n="contracts.codes.coverage.desc">Relaciones fuente→destino, independientes del contrato de documento.</p>
+                    <ul class="row g-3 list-unstyled mb-0">
+                      <li class="sm:col-6">
+                        <code class="d-block fs-sm fg-accent mb-2">COVERAGE_MISSING</code>
+                        <p class="fg-2 mb-0" data-i18n="contracts.codes.coverage.COVERAGE_MISSING">Ningún documento destino menciona un identificador definido en el origen.</p>
+                      </li>
+                    </ul>
+                  </div>
                 </section>
 
-                   <section class="finding-group finding-group--facts" aria-labelledby="finding-facts-title">
-                  <header class="finding-group__head">
-                    <h4 class="finding-group__title" id="finding-facts-title" data-i18n="contracts.codes.facts.title">Hechos</h4>
-                    <p class="finding-group__desc mb-0" data-i18n="contracts.codes.facts.desc">Hechos contrastados contra fuentes declaradas; los fallos de fuente son siempre <code>error</code>.</p>
-                  </header>
-                  <ul class="finding-group__list row g-3 list-unstyled mb-0">
-                    <li class="sm:col-6">
-                      <div class="finding-item">
-                        <code class="finding-item__code">FACT_SOURCE_MISSING</code>
-                        <p class="finding-item__text mb-0" data-i18n="contracts.codes.facts.FACT_SOURCE_MISSING">Una ruta o glob de fuente no coincidió con nada.</p>
-                      </div>
-                    </li>
-                    <li class="sm:col-6">
-                      <div class="finding-item">
-                        <code class="finding-item__code">FACT_SOURCE_INVALID</code>
-                        <p class="finding-item__text mb-0" data-i18n="contracts.codes.facts.FACT_SOURCE_INVALID">Una fuente no pudo leerse ni analizarse.</p>
-                      </div>
-                    </li>
-                    <li class="sm:col-6">
-                      <div class="finding-item">
-                        <code class="finding-item__code">FACT_SOURCE_MISMATCH</code>
-                        <p class="finding-item__text mb-0" data-i18n="contracts.codes.facts.FACT_SOURCE_MISMATCH">Las fuentes produjeron valores en desacuerdo.</p>
-                      </div>
-                    </li>
-                    <li class="sm:col-6">
-                      <div class="finding-item">
-                        <code class="finding-item__code">FACT_CLAIM_MISSING</code>
-                        <p class="finding-item__text mb-0" data-i18n="contracts.codes.facts.FACT_CLAIM_MISSING">Un target de hecho no tiene afirmación coincidente.</p>
-                      </div>
-                    </li>
-                    <li class="sm:col-6">
-                      <div class="finding-item">
-                        <code class="finding-item__code">FACT_CLAIM_AMBIGUOUS</code>
-                        <p class="finding-item__text mb-0" data-i18n="contracts.codes.facts.FACT_CLAIM_AMBIGUOUS">Un target contiene afirmaciones distintas repetidas para un hecho.</p>
-                      </div>
-                    </li>
-                    <li class="sm:col-6">
-                      <div class="finding-item">
-                        <code class="finding-item__code">FACT_VALUE_MISMATCH</code>
-                        <p class="finding-item__text mb-0" data-i18n="contracts.codes.facts.FACT_VALUE_MISMATCH">Una afirmación escalar difiere del valor de la fuente.</p>
-                      </div>
-                    </li>
-                    <li class="sm:col-6">
-                      <div class="finding-item">
-                        <code class="finding-item__code">FACT_SET_MISMATCH</code>
-                        <p class="finding-item__text mb-0" data-i18n="contracts.codes.facts.FACT_SET_MISMATCH">Una afirmación de conjunto difiere del conjunto de la fuente.</p>
-                      </div>
-                    </li>
-                  </ul>
+                   <section class="card" aria-labelledby="finding-facts-title">
+                  <div class="card-body">
+                    <h4 class="h4 mb-2" id="finding-facts-title" data-i18n="contracts.codes.facts.title">Hechos</h4>
+                    <p class="fg-2 mb-4" data-i18n="contracts.codes.facts.desc">Hechos contrastados contra fuentes declaradas; los fallos de fuente son siempre <code>error</code>.</p>
+                    <ul class="row g-3 list-unstyled mb-0">
+                      <li class="sm:col-6">
+                        <code class="d-block fs-sm fg-accent mb-2">FACT_SOURCE_MISSING</code>
+                        <p class="fg-2 mb-0" data-i18n="contracts.codes.facts.FACT_SOURCE_MISSING">Una ruta o glob de fuente no coincidió con nada.</p>
+                      </li>
+                      <li class="sm:col-6">
+                        <code class="d-block fs-sm fg-accent mb-2">FACT_SOURCE_INVALID</code>
+                        <p class="fg-2 mb-0" data-i18n="contracts.codes.facts.FACT_SOURCE_INVALID">Una fuente no pudo leerse ni analizarse.</p>
+                      </li>
+                      <li class="sm:col-6">
+                        <code class="d-block fs-sm fg-accent mb-2">FACT_SOURCE_MISMATCH</code>
+                        <p class="fg-2 mb-0" data-i18n="contracts.codes.facts.FACT_SOURCE_MISMATCH">Las fuentes produjeron valores en desacuerdo.</p>
+                      </li>
+                      <li class="sm:col-6">
+                        <code class="d-block fs-sm fg-accent mb-2">FACT_CLAIM_MISSING</code>
+                        <p class="fg-2 mb-0" data-i18n="contracts.codes.facts.FACT_CLAIM_MISSING">El documento no contiene la afirmación esperada para el hecho.</p>
+                      </li>
+                      <li class="sm:col-6">
+                        <code class="d-block fs-sm fg-accent mb-2">FACT_CLAIM_AMBIGUOUS</code>
+                        <p class="fg-2 mb-0" data-i18n="contracts.codes.facts.FACT_CLAIM_AMBIGUOUS">Un target contiene afirmaciones distintas repetidas para un hecho.</p>
+                      </li>
+                      <li class="sm:col-6">
+                        <code class="d-block fs-sm fg-accent mb-2">FACT_VALUE_MISMATCH</code>
+                        <p class="fg-2 mb-0" data-i18n="contracts.codes.facts.FACT_VALUE_MISMATCH">El valor afirmado no coincide con el de la fuente.</p>
+                      </li>
+                      <li class="sm:col-6">
+                        <code class="d-block fs-sm fg-accent mb-2">FACT_SET_MISMATCH</code>
+                        <p class="fg-2 mb-0" data-i18n="contracts.codes.facts.FACT_SET_MISMATCH">La lista afirmada no coincide con la de la fuente.</p>
+                      </li>
+                    </ul>
+                  </div>
                 </section>
               </div>
             </section>
@@ -559,29 +556,30 @@
             <!-- ============================================== CAPABILITIES -->
             <section class="section" id="capabilities" aria-labelledby="capabilities-title">
               <div class="section-head">
-                <span class="section-num" aria-hidden="true">6</span>
-                <p class="eyebrow mb-0" data-i18n="capabilities.eyebrow">Capacidades</p>
+                <span class="badge badge-subtle theme-accent" aria-hidden="true">6</span>
               </div>
-              <h2 class="section-title mb-3" id="capabilities-title" data-i18n="capabilities.title">Opt-in: Git impact y BM25</h2>
-              <p class="section-lead measure" data-i18n="capabilities.lead">Un módulo opcional no se ejecuta si no está habilitado; si está habilitado pero no puede ejecutarse, devuelve un error operativo, nunca se omite silenciosamente.</p>
+              <h2 class="section-title mb-3" id="capabilities-title" data-i18n="capabilities.title">Capacidades opcionales</h2>
+              <p class="section-lead measure fs-lg" data-i18n="capabilities.lead">Estas dos comprobaciones están desactivadas por defecto: solo se ejecutan si las habilitas en el perfil. Si las habilitas pero no pueden ejecutarse, docengine devuelve un error operativo; nunca las omite en silencio.</p>
               <div class="row g-3 md:g-4 mb-4">
                 <div class="md:col-6">
-                  <div class="doc-card p-4">
-                    <span class="doc-card__badge">GIT</span>
-                    <h3 class="doc-card__title mb-2" data-i18n="capabilities.git.title">Impacto Git</h3>
-                    <p class="doc-card__text mb-0" data-i18n="capabilities.git.text">Con <code>--base-ref</code>, marca los documentos relacionados con rutas cambiadas con un aviso <code>GIT_IMPACT</code> (severidad <code>warning</code>). Es una recomendación de revisión: nunca cambia el código de salida.</p>
+                  <div class="card h-100">
+                    <div class="card-body">
+                      <h3 class="h4 mb-2" data-i18n="capabilities.git.title">Impacto Git</h3>
+                      <p class="fg-2 mb-0" data-i18n="capabilities.git.text">Recomienda revisar los documentos que tocan las rutas cambiadas. Requiere <code>--base-ref</code> y nunca cambia el código de salida: es una recomendación, no un error. En el informe el código es <code>GIT_IMPACT</code> (severidad <code>warning</code>) y en terminal se imprime con el prefijo <code>ADVISORY Git impact</code>.</p>
+                    </div>
                   </div>
                 </div>
                 <div class="md:col-6">
-                  <div class="doc-card p-4">
-                    <span class="doc-card__badge">BM25</span>
-                    <h3 class="doc-card__title mb-2" data-i18n="capabilities.bm25.title">BM25</h3>
-                    <p class="doc-card__text mb-0" data-i18n="capabilities.bm25.text">Recuperación léxica advisory: relaciones <code>possible_duplicate</code>, <code>potential_coverage</code> y <code>potential_impact</code>, todas con estado <code>needs_review</code>. Nunca crea findings ni cambia el código de salida.</p>
+                  <div class="card h-100">
+                    <div class="card-body">
+                      <h3 class="h4 mb-2" data-i18n="capabilities.bm25.title">Búsqueda léxica (BM25)</h3>
+                      <p class="fg-2 mb-0" data-i18n="capabilities.bm25.text">Propone documentos candidatos a revisar por parecido léxico: posibles duplicados (<code>possible_duplicate</code>), cobertura (<code>potential_coverage</code>) o impacto (<code>potential_impact</code>). Cada candidato llega con estado <code>needs_review</code> y en terminal se imprime con el prefijo <code>ADVISORY BM25</code>. El perfil puede filtrarlos con <code>min_score</code> y <code>acknowledged</code>. Nunca crea findings ni cambia el código de salida.</p>
+                    </div>
                   </div>
                 </div>
               </div>
               <div class="alert theme-info" role="note">
-                <div>
+                <div class="flex-grow-1">
                   <p class="mb-0" data-i18n="capabilities.note"><code>exit 0</code> no equivale a ausencia de findings: revisa el informe completo y conserva visibles todos los findings con su severidad, ubicación, código y mensaje.</p>
                 </div>
               </div>
@@ -590,91 +588,237 @@
             <!-- ============================================== EXIT CODES -->
             <section class="section" id="exit-codes" aria-labelledby="exitcodes-title">
               <div class="section-head">
-                <span class="section-num" aria-hidden="true">7</span>
-                <p class="eyebrow mb-0" data-i18n="exitcodes.eyebrow">Códigos de salida</p>
+                <span class="badge badge-subtle theme-accent" aria-hidden="true">7</span>
               </div>
               <h2 class="section-title mb-3" id="exitcodes-title" data-i18n="exitcodes.title">Códigos de salida estables</h2>
-              <p class="section-lead measure" data-i18n="exitcodes.lead">La CLI devuelve un código derivado del resultado, nunca una mera ausencia de error malinterpretada.</p>
+              <p class="section-lead measure fs-lg" data-i18n="exitcodes.lead">Cada ejecución termina con un código que resume el resultado: los scripts y los hooks deciden con él si continuar o detenerse.</p>
               <div class="row g-3 md:g-4">
                 <div class="sm:col-6 xl:col-3">
-                  <div class="doc-card exit-card p-4">
-                    <span class="exit-code exit-code--ok mb-3">0</span>
-                    <h3 class="doc-card__title" data-i18n="exitcodes.0.title">Sin errores deterministas</h3>
-                    <p class="doc-card__text mb-0" data-i18n="exitcodes.0">Sin findings deterministas de severidad <code>error</code>; puede incluir <code>warning</code>. No significa ausencia de findings.</p>
+                  <div class="card h-100">
+                    <div class="card-body">
+                      <span class="badge badge-subtle theme-success fs-sm">0</span>
+                      <h3 class="h4" data-i18n="exitcodes.0.title">Sin errores deterministas</h3>
+                      <p class="fg-2 mb-0" data-i18n="exitcodes.0">Sin findings deterministas de severidad <code>error</code>; puede incluir <code>warning</code>. No significa ausencia de findings.</p>
+                    </div>
                   </div>
                 </div>
                 <div class="sm:col-6 xl:col-3">
-                  <div class="doc-card exit-card p-4">
-                    <span class="exit-code exit-code--error mb-3">1</span>
-                    <h3 class="doc-card__title" data-i18n="exitcodes.1.title">Hallazgos de error</h3>
-                    <p class="doc-card__text mb-0" data-i18n="exitcodes.1">Existe al menos un finding determinista de severidad <code>error</code>.</p>
+                  <div class="card h-100">
+                    <div class="card-body">
+                      <span class="badge badge-subtle theme-danger fs-sm">1</span>
+                      <h3 class="h4" data-i18n="exitcodes.1.title">Hallazgos de error</h3>
+                      <p class="fg-2 mb-0" data-i18n="exitcodes.1">Existe al menos un finding determinista de severidad <code>error</code>.</p>
+                    </div>
                   </div>
                 </div>
                 <div class="sm:col-6 xl:col-3">
-                  <div class="doc-card exit-card p-4">
-                    <span class="exit-code exit-code--warn mb-3">2</span>
-                    <h3 class="doc-card__title" data-i18n="exitcodes.2.title">Uso o configuración inválidos</h3>
-                    <p class="doc-card__text mb-0" data-i18n="exitcodes.2">Uso o configuración inválidos: flags, JSON, rutas, versión de perfil o colisión no autorizada de <code>init</code>.</p>
+                  <div class="card h-100">
+                    <div class="card-body">
+                      <span class="badge badge-subtle theme-warning fs-sm">2</span>
+                      <h3 class="h4" data-i18n="exitcodes.2.title">Uso o configuración inválidos</h3>
+                      <p class="fg-2 mb-0" data-i18n="exitcodes.2">Uso o configuración inválidos: flags, JSON, rutas, versión de perfil o colisión no autorizada de <code>init</code>.</p>
+                    </div>
                   </div>
                 </div>
                 <div class="sm:col-6 xl:col-3">
-                  <div class="doc-card exit-card p-4">
-                    <span class="exit-code exit-code--warn mb-3">3</span>
-                    <h3 class="doc-card__title" data-i18n="exitcodes.3.title">Fallo operativo</h3>
-                    <p class="doc-card__text mb-0" data-i18n="exitcodes.3">Fallo operativo no representable: I/O, Git solicitado no disponible o un módulo opcional fallido.</p>
+                  <div class="card h-100">
+                    <div class="card-body">
+                      <span class="badge badge-subtle theme-warning fs-sm">3</span>
+                      <h3 class="h4" data-i18n="exitcodes.3.title">Fallo operativo</h3>
+                      <p class="fg-2 mb-0" data-i18n="exitcodes.3">Fallo operativo no representable: I/O, Git solicitado no disponible o un módulo opcional fallido.</p>
+                    </div>
                   </div>
                 </div>
               </div>
-              <p class="measure fg-3 mt-4 mb-0" data-i18n="exitcodes.note">Un fallo nunca devuelve <code>0</code>. Los códigos <code>2</code> y <code>3</code> no se mezclan con findings del repositorio.</p>
+              <p class="measure fs-sm fg-3 mt-4 mb-0" data-i18n="exitcodes.note">Un fallo nunca devuelve <code>0</code>. Los códigos <code>2</code> y <code>3</code> no se mezclan con findings del repositorio.</p>
             </section>
 
             <!-- ============================================== PROFILE & REPORT -->
             <section class="section" id="profile-report" aria-labelledby="profile-title">
               <div class="section-head">
-                <span class="section-num" aria-hidden="true">8</span>
-                <p class="eyebrow mb-0" data-i18n="profile.eyebrow">Perfil e informe</p>
+                <span class="badge badge-subtle theme-accent" aria-hidden="true">8</span>
               </div>
-              <h2 class="section-title mb-3" id="profile-title" data-i18n="profile.title">Dos contratos JSON</h2>
-              <p class="section-lead measure" data-i18n="profile.lead">El perfil define qué se comprueba; el informe declara qué se encontró. Ambos son contratos estables y versionados.</p>
+              <h2 class="section-title mb-3" id="profile-title" data-i18n="profile.title">El perfil y el informe</h2>
+              <p class="section-lead measure fs-lg" data-i18n="profile.lead">El perfil declara qué se comprueba; el informe declara qué se encontró. Son los dos JSON estables con los que trabajas.</p>
 
-              <div class="tabs-panel">
-                <ul class="nav nav-tabs" role="tablist" data-i18n-aria-label="profile.tabs.label">
-                  <li class="nav-item" role="presentation">
-                    <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#profile-pane" type="button" role="tab" aria-selected="true" data-i18n="profile.profileTitle">Perfil (v1)</button>
-                  </li>
-                  <li class="nav-item" role="presentation">
-                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#report-pane" type="button" role="tab" aria-selected="false" data-i18n="profile.reportTitle">Informe</button>
-                  </li>
-                </ul>
-                <div class="tab-content">
-                  <div class="tab-pane fade show active" id="profile-pane" role="tabpanel" tabindex="0">
-                    <p class="tab-pane__text" data-i18n="profile.profileText">Campos de nivel superior: <code>version</code> (obligatorio, <code>1</code>), <code>language</code> (obligatorio, <code>en</code> o <code>es</code>), <code>strict_confirmation</code> (opcional), más <code>documents</code>, <code>coverage</code>, <code>facts</code>, <code>exclusions</code>, <code>impact_relations</code> y <code>bm25</code>.</p>
-                    <div class="code-block" data-code-block>
-                      <div class="code-block__header">
-                        <div class="d-flex align-items-center gap-3">
-                          <span class="code-block__label" data-i18n="profile.profileLabel">Perfil mínimo</span>
+              <div class="card">
+                <div class="card-header">
+                  <ul class="nav nav-tabs card-header-tabs" role="tablist" data-i18n-aria-label="profile.tabs.label">
+                    <li class="nav-item" role="presentation">
+                      <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#profile-pane" type="button" role="tab" aria-selected="true" data-i18n="profile.profileTitle">Perfil (v1)</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                      <button class="nav-link" data-bs-toggle="tab" data-bs-target="#report-pane" type="button" role="tab" aria-selected="false" data-i18n="profile.reportTitle">Informe</button>
+                    </li>
+                  </ul>
+                </div>
+                <div class="card-body">
+                  <div class="tab-content">
+                    <div class="tab-pane fade show active" id="profile-pane" role="tabpanel" tabindex="0">
+                      <p class="fg-2" data-i18n="profile.profileText">El perfil es el contrato que viste en Contratos. Estos son todos sus campos.</p>
+                      <ul class="d-flex flex-column gap-3 list-unstyled mb-4">
+                        <li>
+                          <div class="d-flex align-items-center flex-wrap gap-2 mb-1"><code class="fg-accent">version</code><span class="badge badge-subtle theme-accent fs-sm" data-i18n="profile.required">obligatorio</span></div>
+                          <p class="fg-2 mb-0" data-i18n="profile.field.version">Siempre <code>1</code>; identifica la versión del contrato.</p>
+                        </li>
+                        <li>
+                          <div class="d-flex align-items-center flex-wrap gap-2 mb-1"><code class="fg-accent">language</code><span class="badge badge-subtle theme-accent fs-sm" data-i18n="profile.required">obligatorio</span></div>
+                          <p class="fg-2 mb-0" data-i18n="profile.field.language">Idioma de la prosa gobernada: <code>en</code> o <code>es</code>. Las reglas sin <code>language</code> propio lo heredan.</p>
+                        </li>
+                        <li>
+                          <div class="d-flex align-items-center flex-wrap gap-2 mb-1"><code class="fg-accent">strict_confirmation</code><span class="badge badge-subtle fs-sm" data-i18n="profile.optional">opcional</span></div>
+                          <p class="fg-2 mb-0" data-i18n="profile.field.strict">Si es <code>true</code> (valor por defecto), la skill pide confirmar antes de cada commit.</p>
+                        </li>
+                        <li>
+                          <div class="d-flex align-items-center flex-wrap gap-2 mb-1"><code class="fg-accent">documents</code><span class="badge badge-subtle fs-sm" data-i18n="profile.optional">opcional</span></div>
+                          <p class="fg-2 mb-0" data-i18n="profile.field.documents">Reglas por documento. Cada regla lleva <code>globs</code> (qué archivos), <code>id_pattern</code> (patrón del identificador), <code>severity</code> (<code>error</code> por defecto), <code>required_headings</code>, <code>language</code> y <code>checks</code> (<code>ids</code>, <code>references</code>, <code>headings</code>, <code>language</code>).</p>
+                        </li>
+                        <li>
+                          <div class="d-flex align-items-center flex-wrap gap-2 mb-1"><code class="fg-accent">coverage</code><span class="badge badge-subtle fs-sm" data-i18n="profile.optional">opcional</span></div>
+                          <p class="fg-2 mb-0" data-i18n="profile.field.coverage">Relaciones <code>sources</code> → <code>targets</code> con <code>severity</code>: cada identificador del origen debe estar referenciado en el destino, o el motor emite <code>COVERAGE_MISSING</code>.</p>
+                        </li>
+                        <li>
+                          <div class="d-flex align-items-center flex-wrap gap-2 mb-1"><code class="fg-accent">facts</code><span class="badge badge-subtle fs-sm" data-i18n="profile.optional">opcional</span></div>
+                          <p class="fg-2 mb-0" data-i18n="profile.field.facts">Hechos a contrastar. Cada hecho lleva <code>id</code>, <code>sources</code> (tipos <code>path_count</code>, <code>path_set</code>, <code>directory_set</code>, <code>frontmatter_set</code>, <code>text_value</code>, <code>json_count</code>) y <code>targets</code> (<code>value</code>, <code>set</code>, <code>contains_source_set</code>).</p>
+                        </li>
+                        <li>
+                          <div class="d-flex align-items-center flex-wrap gap-2 mb-1"><code class="fg-accent">exclusions</code><span class="badge badge-subtle fs-sm" data-i18n="profile.optional">opcional</span></div>
+                          <p class="fg-2 mb-0" data-i18n="profile.field.exclusions">Globs excluidos de toda comprobación. La <code>reason</code> es obligatoria.</p>
+                        </li>
+                        <li>
+                          <div class="d-flex align-items-center flex-wrap gap-2 mb-1"><code class="fg-accent">impact_relations</code><span class="badge badge-subtle fs-sm" data-i18n="profile.optional">opcional</span></div>
+                          <p class="fg-2 mb-0" data-i18n="profile.field.impact">Relaciona <code>documents</code> con <code>paths</code> cambiadas para recomendar su revisión. Requiere <code>--base-ref</code>.</p>
+                        </li>
+                        <li>
+                          <div class="d-flex align-items-center flex-wrap gap-2 mb-1"><code class="fg-accent">bm25</code><span class="badge badge-subtle fs-sm" data-i18n="profile.optional">opcional</span></div>
+                          <p class="fg-2 mb-0" data-i18n="profile.field.bm25">Avisos léxicos. Campos: <code>enabled</code>, <code>documents</code>, <code>capabilities</code> (<code>duplicates</code>, <code>coverage</code>, <code>impact</code>), <code>max_candidates</code>, <code>title_weight</code>, <code>body_weight</code>, <code>min_score</code> y <code>acknowledged</code>.</p>
+                        </li>
+                      </ul>
+                      <div class="code-block" data-code-block>
+                        <div class="code-block__header">
+                          <div class="d-flex align-items-center gap-3">
+                            <span class="code-block__dots" aria-hidden="true"><span class="code-block__dot"></span><span class="code-block__dot"></span><span class="code-block__dot"></span></span>
+                            <span class="code-block__label" data-i18n="profile.profileLabel">Ejemplo mínimo (init)</span>
+                          </div>
+                          <button type="button" class="code-block__copy focus-ring" data-copy-button data-i18n-aria-label="controls.copy"><span data-i18n="controls.copy">Copiar</span></button>
                         </div>
-                        <button type="button" class="code-block__copy" data-copy-button data-i18n-aria-label="controls.copy"><span data-i18n="controls.copy">Copiar</span></button>
+                        <pre><code class="language-json" data-i18n="profile.exampleMin">{
+  "version": 1,               // versión del contrato: siempre 1
+  "language": "en",           // idioma de la prosa: "en" o "es"
+  "strict_confirmation": true  // confirmar antes de cada commit (true por defecto)
+}</code></pre>
                       </div>
-                      <pre><code>{ "version": 1, "language": "en" }</code></pre>
-                    </div>
-                  </div>
-                  <div class="tab-pane fade" id="report-pane" role="tabpanel" tabindex="0">
-                    <p class="tab-pane__text" data-i18n="profile.reportText"><code>findings</code> y <code>summary</code> siempre están presentes; <code>facts</code>, <code>impact</code> y <code>bm25</code> son aditivos. El orden es contractual: por ruta, luego línea y luego código.</p>
-                    <div class="code-block" data-code-block>
-                      <div class="code-block__header">
-                        <div class="d-flex align-items-center gap-3">
-                          <span class="code-block__label" data-i18n="profile.reportLabel">Resumen</span>
+                      <div class="code-block mt-4" data-code-block>
+                        <div class="code-block__header">
+                          <div class="d-flex align-items-center gap-3">
+                            <span class="code-block__dots" aria-hidden="true"><span class="code-block__dot"></span><span class="code-block__dot"></span><span class="code-block__dot"></span></span>
+                            <span class="code-block__label" data-i18n="profile.fullLabel">Ejemplo completo (comentado)</span>
+                          </div>
+                          <button type="button" class="code-block__copy focus-ring" data-copy-button data-i18n-aria-label="controls.copy"><span data-i18n="controls.copy">Copiar</span></button>
                         </div>
-                        <button type="button" class="code-block__copy" data-copy-button data-i18n-aria-label="controls.copy"><span data-i18n="controls.copy">Copiar</span></button>
-                      </div>
-                      <pre><code>{
-  "findings": [],
-  "summary": {
-    "checked_files": 0,
-    "counts": { "info": 0, "warning": 0, "error": 0 }
+                        <pre><code class="language-json" data-i18n="profile.exampleFull">{
+  // Obligatorios.
+  "version": 1,
+  "language": "en",
+  // Confirmar antes de cada commit (true por defecto).
+  "strict_confirmation": true,
+
+  // Reglas por documento.
+  "documents": [
+    {
+      "globs": ["docs/**/*.md"],                // archivos que gobierna
+      "id_pattern": "^[A-Z][A-Z0-9]*-[0-9]+$",  // patrón del identificador
+      "required_headings": ["Overview"],         // encabezados obligatorios
+      "language": "en",
+      "severity": "error"                        // error | warning | info
+    }
+  ],
+
+  // Cada identificador del origen debe estar referenciado en el destino.
+  "coverage": [
+    { "sources": ["docs/specs/**/*.md"], "targets": ["docs/index.md"], "severity": "warning" }
+  ],
+
+  // Afirmaciones contrastadas contra fuentes declaradas.
+  "facts": [
+    {
+      "id": "catalog.count",
+      "sources": [
+        { "kind": "path_count", "glob": ["catalog/*.md"] },
+        { "kind": "json_count", "path": "data/manifest.json", "field": "entries" }
+      ],
+      "targets": [
+        { "paths": ["README.md"], "pattern": "Catalog count: (?P&lt;value&gt;[0-9]+)", "value_type": "integer" }
+      ]
+    }
+  ],
+
+  // Rutas fuera de toda comprobación; "reason" es obligatoria.
+  "exclusions": [
+    { "globs": ["vendor/**"], "reason": "documentación de terceros, fuera de este contrato" }
+  ],
+
+  // Relaciona cambios de código con documentos (requiere --base-ref).
+  "impact_relations": [
+    { "documents": ["docs/**/*.md"], "paths": ["internal/**", "cmd/**"], "reason": "el código puede invalidar lo documentado" }
+  ],
+
+  // Avisos léxicos advisory: nunca crean findings.
+  "bm25": {
+    "enabled": true,
+    "documents": ["docs/**/*.md"],
+    "capabilities": ["duplicates", "coverage", "impact"],
+    "max_candidates": 10,
+    "min_score": 50,
+    "acknowledged": [
+      { "relation": "possible_duplicate", "pair": ["docs/a.md", "docs/b.md"], "reason": "revisado y aceptado" }
+    ]
   }
 }</code></pre>
+                      </div>
+                    </div>
+                    <div class="tab-pane fade" id="report-pane" role="tabpanel" tabindex="0">
+                      <p class="fg-2" data-i18n="profile.reportText">El informe es lo que devuelve una auditoría. Estos son sus campos.</p>
+                      <ul class="d-flex flex-column gap-3 list-unstyled mb-4">
+                        <li>
+                          <div class="d-flex align-items-center flex-wrap gap-2 mb-1"><code class="fg-accent">findings</code><span class="badge badge-subtle theme-accent fs-sm" data-i18n="profile.always">siempre</span></div>
+                          <p class="fg-2 mb-0" data-i18n="profile.report.field.findings">Lista de resultados. Cada finding lleva <code>severity</code> (<code>error</code>, <code>warning</code> o <code>info</code>), <code>code</code>, <code>path</code>, <code>line</code> y <code>message</code>. Solo <code>error</code> cambia el código de salida.</p>
+                        </li>
+                        <li>
+                          <div class="d-flex align-items-center flex-wrap gap-2 mb-1"><code class="fg-accent">summary</code><span class="badge badge-subtle theme-accent fs-sm" data-i18n="profile.always">siempre</span></div>
+                          <p class="fg-2 mb-0" data-i18n="profile.report.field.summary">Recuentos: <code>checked_files</code> (documentos revisados) y <code>counts</code> por severidad (<code>info</code>, <code>warning</code>, <code>error</code>).</p>
+                        </li>
+                        <li>
+                          <div class="d-flex align-items-center flex-wrap gap-2 mb-1"><code class="fg-accent">facts</code> · <code class="fg-accent">impact</code> · <code class="fg-accent">bm25</code><span class="badge badge-subtle fs-sm" data-i18n="profile.additive">aditivo</span></div>
+                          <p class="fg-2 mb-0" data-i18n="profile.report.field.additive">Aparecen solo si su módulo está activo; nunca cambian <code>findings</code> ni <code>summary</code>.</p>
+                        </li>
+                      </ul>
+                      <div class="code-block" data-code-block>
+                        <div class="code-block__header">
+                          <div class="d-flex align-items-center gap-3">
+                            <span class="code-block__dots" aria-hidden="true"><span class="code-block__dot"></span><span class="code-block__dot"></span><span class="code-block__dot"></span></span>
+                            <span class="code-block__label" data-i18n="profile.reportLabel">Ejemplo de informe</span>
+                          </div>
+                          <button type="button" class="code-block__copy focus-ring" data-copy-button data-i18n-aria-label="controls.copy"><span data-i18n="controls.copy">Copiar</span></button>
+                        </div>
+                        <pre><code class="language-json" data-i18n="profile.exampleReport">{
+  // Cada comprobación fallida es un finding.
+  "findings": [
+    {
+      "severity": "error",   // error | warning | info (solo "error" cambia la salida)
+      "code": "ID_MISSING",  // código estable
+      "path": "docs/guide.md",
+      "line": 1,
+      "message": "governed heading has no document identifier"
+    }
+  ],
+  // Recuentos del resumen.
+  "summary": {
+    "checked_files": 1,
+    "counts": { "info": 0, "warning": 0, "error": 1 }
+  }
+}</code></pre>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -684,31 +828,59 @@
             <!-- ============================================== DIÁTAXIS -->
             <section class="section" id="diataxis" aria-labelledby="diataxis-title">
               <div class="section-head">
-                <span class="section-num" aria-hidden="true">9</span>
-                <p class="eyebrow mb-0" data-i18n="diataxis.eyebrow">Diátaxis</p>
+                <span class="badge badge-subtle theme-accent" aria-hidden="true">9</span>
               </div>
-              <h2 class="section-title mb-3" id="diataxis-title" data-i18n="diataxis.title">Cuatro rutas de documentación</h2>
-              <p class="section-lead measure" data-i18n="diataxis.lead">La documentación se organiza en cuatro categorías, cada una con un propósito distinto de lectura.</p>
-              <div class="diataxis-grid">
-                <div class="diataxis-card diataxis-card--tutorial">
-                  <span class="diataxis-card__tag mb-3" data-i18n="diataxis.tutorials.tag">Tutoriales</span>
-                  <h3 class="doc-card__title mb-2" data-i18n="diataxis.tutorials.title">Aprender haciendo</h3>
-                  <p class="doc-card__text mb-0" data-i18n="diataxis.tutorials.text">Primera auditoría local satisfactoria: compila docengine y ejecuta su auditoría sobre el repositorio.</p>
+              <h2 class="section-title mb-3" id="diataxis-title" data-i18n="diataxis.title">Diátaxis: cuatro rutas de documentación</h2>
+              <p class="section-lead measure fs-lg" data-i18n="diataxis.lead">Diátaxis es la técnica que clasifica la documentación por lo que necesita quien la consulta. La ordenan dos ejes —aprender o trabajar, hacer o comprender— y cada documento sirve a una sola.</p>
+              <p class="measure fg-2 mb-4" data-i18n="diataxis.why">Sin un criterio así, la documentación mezcla instrucciones, datos y explicaciones en un mismo texto y cuesta usarla. Diátaxis separa esas necesidades y obliga a que cada documento tenga un único propósito. El motor lo adopta por eso: un documento con un propósito claro y una carpeta asignada puede auditarse como el resto de contratos (cobertura, encabezados, idioma).</p>
+              <div class="row g-3 md:g-4">
+                <div class="md:col-6">
+                  <div class="card h-100">
+                    <div class="card-body">
+                      <div class="d-flex align-items-baseline justify-content-between gap-2 mb-2">
+                        <span class="badge badge-subtle theme-primary" data-i18n="diataxis.tutorials.tag">Tutoriales</span>
+                        <code class="fg-accent fs-sm">tutorials/</code>
+                      </div>
+                      <h3 class="h4" data-i18n="diataxis.tutorials.title">Aprender haciendo</h3>
+                      <p class="fg-2 mb-0" data-i18n="diataxis.tutorials.text">Primera auditoría local satisfactoria: compila docengine y ejecuta su auditoría sobre el repositorio.</p>
+                    </div>
+                  </div>
                 </div>
-                <div class="diataxis-card diataxis-card--howto">
-                  <span class="diataxis-card__tag mb-3" data-i18n="diataxis.howto.tag">Guías prácticas</span>
-                  <h3 class="doc-card__title mb-2" data-i18n="diataxis.howto.title">Lograr un objetivo</h3>
-                  <p class="doc-card__text mb-0" data-i18n="diataxis.howto.text">Configurar un perfil: selecciona las comprobaciones admitidas y verifica el alcance resultante.</p>
+                <div class="md:col-6">
+                  <div class="card h-100">
+                    <div class="card-body">
+                      <div class="d-flex align-items-baseline justify-content-between gap-2 mb-2">
+                        <span class="badge badge-subtle theme-success" data-i18n="diataxis.howto.tag">Guías prácticas</span>
+                        <code class="fg-accent fs-sm">how-to/</code>
+                      </div>
+                      <h3 class="h4" data-i18n="diataxis.howto.title">Lograr un objetivo</h3>
+                      <p class="fg-2 mb-0" data-i18n="diataxis.howto.text">Configurar un perfil: selecciona las comprobaciones admitidas y verifica el alcance resultante.</p>
+                    </div>
+                  </div>
                 </div>
-                <div class="diataxis-card diataxis-card--reference">
-                  <span class="diataxis-card__tag mb-3" data-i18n="diataxis.reference.tag">Referencia</span>
-                  <h3 class="doc-card__title mb-2" data-i18n="diataxis.reference.title">Consultar detalles</h3>
-                  <p class="doc-card__text mb-0" data-i18n="diataxis.reference.text">Referencia de la CLI, del perfil v1 y del informe: sintaxis, campos y códigos de salida.</p>
+                <div class="md:col-6">
+                  <div class="card h-100">
+                    <div class="card-body">
+                      <div class="d-flex align-items-baseline justify-content-between gap-2 mb-2">
+                        <span class="badge badge-subtle theme-accent" data-i18n="diataxis.reference.tag">Referencia</span>
+                        <code class="fg-accent fs-sm">reference/</code>
+                      </div>
+                      <h3 class="h4" data-i18n="diataxis.reference.title">Consultar detalles</h3>
+                      <p class="fg-2 mb-0" data-i18n="diataxis.reference.text">Referencia de la CLI, del perfil v1 y del informe: sintaxis, campos y códigos de salida.</p>
+                    </div>
+                  </div>
                 </div>
-                <div class="diataxis-card diataxis-card--explain">
-                  <span class="diataxis-card__tag mb-3" data-i18n="diataxis.explain.tag">Explicación</span>
-                  <h3 class="doc-card__title mb-2" data-i18n="diataxis.explain.title">Comprender el contexto</h3>
-                  <p class="doc-card__text mb-0" data-i18n="diataxis.explain.text">Arquitectura y límites de la evidencia: lo que una auditoría demuestra y lo que no.</p>
+                <div class="md:col-6">
+                  <div class="card h-100">
+                    <div class="card-body">
+                      <div class="d-flex align-items-baseline justify-content-between gap-2 mb-2">
+                        <span class="badge badge-subtle theme-info" data-i18n="diataxis.explain.tag">Explicación</span>
+                        <code class="fg-accent fs-sm">explanation/</code>
+                      </div>
+                      <h3 class="h4" data-i18n="diataxis.explain.title">Comprender el contexto</h3>
+                      <p class="fg-2 mb-0" data-i18n="diataxis.explain.text">Arquitectura y límites de la evidencia: lo que una auditoría demuestra y lo que no.</p>
+                    </div>
+                  </div>
                 </div>
               </div>
             </section>
@@ -716,39 +888,44 @@
             <!-- ============================================== EVIDENCE -->
             <section class="section" id="evidence" aria-labelledby="evidence-title">
               <div class="section-head">
-                <span class="section-num" aria-hidden="true">10</span>
-                <p class="eyebrow mb-0" data-i18n="evidence.eyebrow">Evidencia y límites</p>
+                <span class="badge badge-subtle theme-accent" aria-hidden="true">10</span>
               </div>
               <h2 class="section-title mb-3" id="evidence-title" data-i18n="evidence.title">Qué sostiene este sitio</h2>
-              <p class="section-lead measure" data-i18n="evidence.lead">El contenido de esta página se basa en la documentación comprobada del repositorio local de docengine. No se afirma aquí ninguna versión publicada.</p>
+              <p class="section-lead measure fs-lg" data-i18n="evidence.lead">El contenido de esta página describe la versión etiquetada v0.2.1 del repositorio de docengine, integrada en <code>main</code>.</p>
               <div class="row g-3 mb-4">
                 <div class="md:col-4">
-                  <div class="doc-card p-4">
-                    <h3 class="doc-card__title mb-2" data-i18n="evidence.point1.title">Fuente local</h3>
-                    <p class="doc-card__text mb-0" data-i18n="evidence.point1.text">Las afirmaciones provienen de <code>README.md</code>, <code>docs/</code>, <code>reference/cli.md</code>, <code>DESIGN.md</code> y las referencias de perfil e informe del repositorio hermano.</p>
+                  <div class="card h-100">
+                    <div class="card-body">
+                      <h3 class="h4" data-i18n="evidence.point1.title">Fuente local</h3>
+                      <p class="fg-2 mb-0" data-i18n="evidence.point1.text">Las afirmaciones provienen de <code>README.md</code>, <code>docs/</code>, <code>reference/cli.md</code>, <code>DESIGN.md</code> y las referencias de perfil e informe del repositorio hermano.</p>
+                    </div>
                   </div>
                 </div>
                 <div class="md:col-4">
-                  <div class="doc-card p-4">
-                    <h3 class="doc-card__title mb-2" data-i18n="evidence.point2.title">Sin publicación</h3>
-                    <p class="doc-card__text mb-0" data-i18n="evidence.point2.text">El uso local desde el código fuente está disponible; las descargas publicadas y <code>go install @latest</code> dependen de que exista una versión publicada, que este sitio no afirma.</p>
+                  <div class="card h-100">
+                    <div class="card-body">
+                      <h3 class="h4" data-i18n="evidence.point2.title">Versionado y acceso</h3>
+                      <p class="fg-2 mb-0" data-i18n="evidence.point2.text">docengine sigue SemVer: la versión v0.2.1 está integrada en <code>main</code>, etiquetada y con release en GitHub. La instalación publicada (<code>go install github.com/fred66sp/docengine/cmd/docengine@latest</code> o binarios de release) requiere acceso al módulo; la compilación desde el código fuente está disponible.</p>
+                    </div>
                   </div>
                 </div>
                 <div class="md:col-4">
-                  <div class="doc-card p-4">
-                    <h3 class="doc-card__title mb-2" data-i18n="evidence.point3.title">Historial de incubación</h3>
-                    <p class="doc-card__text mb-0" data-i18n="evidence.point3.text">El comparador Python y el corpus diferencial pertenecen al historial de incubación, no a este repositorio independiente.</p>
+                  <div class="card h-100">
+                    <div class="card-body">
+                      <h3 class="h4" data-i18n="evidence.point3.title">Historial de incubación</h3>
+                      <p class="fg-2 mb-0" data-i18n="evidence.point3.text">El comparador Python y el corpus diferencial pertenecen al historial de incubación, no a este repositorio independiente.</p>
+                    </div>
                   </div>
                 </div>
               </div>
-              <p class="measure fg-3 mb-0" data-i18n="evidence.sources">Fuentes locales comprobadas: <code>README.md</code> · <code>docs/README.md</code> · <code>docs/installation.md</code> · <code>reference/cli.md</code> · <code>DESIGN.md</code> · <code>skill/software-documentalist/references/profile.md</code> · <code>report.md</code></p>
+              <p class="measure fs-sm fg-3 mb-0" data-i18n="evidence.sources">Fuentes comprobadas: <code>README.md</code> · <code>docs/README.md</code> · <code>docs/installation.md</code> · <code>reference/cli.md</code> · <code>DESIGN.md</code> · <code>skill/software-documentalist/references/profile.md</code> · <code>report.md</code></p>
             </section>
           </main>
         </div>
       </div>
     </div>
 
-    <button type="button" class="back-to-top" id="back-to-top" data-i18n-aria-label="controls.backToTop"
+    <button type="button" class="back-to-top btn btn-primary" id="back-to-top" data-i18n-aria-label="controls.backToTop"
       aria-label="Volver arriba" hidden>
       <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
         <path fill-rule="evenodd" d="M8 12.5a.5.5 0 0 0 .5-.5V4.707l2.146 2.147a.5.5 0 0 0 .708-.708l-3-3a.5.5 0 0 0-.708 0l-3 3a.5.5 0 1 0 .708.708L7.5 4.707V12a.5.5 0 0 0 .5.5z"/>
@@ -757,13 +934,43 @@
     </button>
 
     <footer class="site-footer">
-      <div class="container py-5">
-        <div class="d-flex flex-column md:flex-row gap-3 justify-content-between md:align-items-center">
-          <div>
-            <p class="mb-1 fw-semibold fg-2">docengine</p>
-            <p class="mb-0" data-i18n="footer.note">Sitio de documentación construido con Bootstrap 6 Alpha 1 y Vite. Bilingüe ES/EN; modo claro y oscuro.</p>
+      <div class="site-footer__art" aria-hidden="true">
+        <svg class="site-footer__pixel" viewBox="0 0 16 16" focusable="false">
+          <g class="px-paper"><rect x="3" y="2" width="1" height="1"/><rect x="4" y="2" width="1" height="1"/><rect x="5" y="2" width="1" height="1"/><rect x="6" y="2" width="1" height="1"/><rect x="7" y="2" width="1" height="1"/><rect x="8" y="2" width="1" height="1"/><rect x="9" y="2" width="1" height="1"/><rect x="10" y="2" width="1" height="1"/><rect x="11" y="2" width="1" height="1"/><rect x="12" y="2" width="1" height="1"/><rect x="3" y="3" width="1" height="1"/><rect x="12" y="3" width="1" height="1"/><rect x="3" y="4" width="1" height="1"/><rect x="4" y="4" width="1" height="1"/><rect x="5" y="4" width="1" height="1"/><rect x="6" y="4" width="1" height="1"/><rect x="7" y="4" width="1" height="1"/><rect x="8" y="4" width="1" height="1"/><rect x="9" y="4" width="1" height="1"/><rect x="10" y="4" width="1" height="1"/><rect x="11" y="4" width="1" height="1"/><rect x="12" y="4" width="1" height="1"/><rect x="3" y="5" width="1" height="1"/><rect x="11" y="5" width="1" height="1"/><rect x="12" y="5" width="1" height="1"/><rect x="3" y="6" width="1" height="1"/><rect x="4" y="6" width="1" height="1"/><rect x="5" y="6" width="1" height="1"/><rect x="6" y="6" width="1" height="1"/><rect x="7" y="6" width="1" height="1"/><rect x="8" y="6" width="1" height="1"/><rect x="9" y="6" width="1" height="1"/><rect x="10" y="6" width="1" height="1"/><rect x="11" y="6" width="1" height="1"/><rect x="12" y="6" width="1" height="1"/><rect x="3" y="7" width="1" height="1"/><rect x="11" y="7" width="1" height="1"/><rect x="12" y="7" width="1" height="1"/><rect x="3" y="8" width="1" height="1"/><rect x="4" y="8" width="1" height="1"/><rect x="5" y="8" width="1" height="1"/><rect x="6" y="8" width="1" height="1"/><rect x="7" y="8" width="1" height="1"/><rect x="8" y="8" width="1" height="1"/><rect x="9" y="8" width="1" height="1"/><rect x="10" y="8" width="1" height="1"/><rect x="11" y="8" width="1" height="1"/><rect x="12" y="8" width="1" height="1"/><rect x="3" y="9" width="1" height="1"/><rect x="11" y="9" width="1" height="1"/><rect x="12" y="9" width="1" height="1"/><rect x="3" y="10" width="1" height="1"/><rect x="4" y="10" width="1" height="1"/><rect x="5" y="10" width="1" height="1"/><rect x="6" y="10" width="1" height="1"/><rect x="7" y="10" width="1" height="1"/><rect x="8" y="10" width="1" height="1"/><rect x="9" y="10" width="1" height="1"/><rect x="10" y="10" width="1" height="1"/><rect x="11" y="10" width="1" height="1"/><rect x="12" y="10" width="1" height="1"/><rect x="3" y="11" width="1" height="1"/><rect x="11" y="11" width="1" height="1"/><rect x="12" y="11" width="1" height="1"/><rect x="3" y="12" width="1" height="1"/><rect x="4" y="12" width="1" height="1"/><rect x="5" y="12" width="1" height="1"/><rect x="6" y="12" width="1" height="1"/><rect x="7" y="12" width="1" height="1"/><rect x="8" y="12" width="1" height="1"/><rect x="9" y="12" width="1" height="1"/><rect x="10" y="12" width="1" height="1"/><rect x="11" y="12" width="1" height="1"/><rect x="12" y="12" width="1" height="1"/></g>
+          <g class="px-accent"><rect x="4" y="3" width="1" height="1"/><rect x="5" y="3" width="1" height="1"/><rect x="6" y="3" width="1" height="1"/><rect x="7" y="3" width="1" height="1"/><rect x="8" y="3" width="1" height="1"/><rect x="9" y="3" width="1" height="1"/><rect x="10" y="3" width="1" height="1"/><rect x="11" y="3" width="1" height="1"/><rect x="4" y="5" width="1" height="1"/><rect x="5" y="5" width="1" height="1"/><rect x="6" y="5" width="1" height="1"/><rect x="7" y="5" width="1" height="1"/><rect x="8" y="5" width="1" height="1"/><rect x="9" y="5" width="1" height="1"/><rect x="10" y="5" width="1" height="1"/><rect x="4" y="7" width="1" height="1"/><rect x="5" y="7" width="1" height="1"/><rect x="6" y="7" width="1" height="1"/><rect x="7" y="7" width="1" height="1"/><rect x="8" y="7" width="1" height="1"/><rect x="9" y="7" width="1" height="1"/><rect x="10" y="7" width="1" height="1"/><rect x="4" y="9" width="1" height="1"/><rect x="5" y="9" width="1" height="1"/><rect x="6" y="9" width="1" height="1"/><rect x="7" y="9" width="1" height="1"/><rect x="8" y="9" width="1" height="1"/><rect x="9" y="9" width="1" height="1"/><rect x="10" y="9" width="1" height="1"/><rect x="4" y="11" width="1" height="1"/><rect x="5" y="11" width="1" height="1"/><rect x="6" y="11" width="1" height="1"/><rect x="7" y="11" width="1" height="1"/><rect x="8" y="11" width="1" height="1"/><rect x="9" y="11" width="1" height="1"/><rect x="10" y="11" width="1" height="1"/></g>
+          <g class="px-outline"><rect x="2" y="1" width="1" height="1"/><rect x="3" y="1" width="1" height="1"/><rect x="4" y="1" width="1" height="1"/><rect x="5" y="1" width="1" height="1"/><rect x="6" y="1" width="1" height="1"/><rect x="7" y="1" width="1" height="1"/><rect x="8" y="1" width="1" height="1"/><rect x="9" y="1" width="1" height="1"/><rect x="10" y="1" width="1" height="1"/><rect x="11" y="1" width="1" height="1"/><rect x="12" y="1" width="1" height="1"/><rect x="13" y="1" width="1" height="1"/><rect x="2" y="2" width="1" height="1"/><rect x="13" y="2" width="1" height="1"/><rect x="2" y="3" width="1" height="1"/><rect x="13" y="3" width="1" height="1"/><rect x="2" y="4" width="1" height="1"/><rect x="13" y="4" width="1" height="1"/><rect x="2" y="5" width="1" height="1"/><rect x="13" y="5" width="1" height="1"/><rect x="2" y="6" width="1" height="1"/><rect x="13" y="6" width="1" height="1"/><rect x="2" y="7" width="1" height="1"/><rect x="13" y="7" width="1" height="1"/><rect x="2" y="8" width="1" height="1"/><rect x="13" y="8" width="1" height="1"/><rect x="2" y="9" width="1" height="1"/><rect x="13" y="9" width="1" height="1"/><rect x="2" y="10" width="1" height="1"/><rect x="13" y="10" width="1" height="1"/><rect x="2" y="11" width="1" height="1"/><rect x="13" y="11" width="1" height="1"/><rect x="2" y="12" width="1" height="1"/><rect x="13" y="12" width="1" height="1"/><rect x="2" y="13" width="1" height="1"/><rect x="3" y="13" width="1" height="1"/><rect x="4" y="13" width="1" height="1"/><rect x="5" y="13" width="1" height="1"/><rect x="6" y="13" width="1" height="1"/><rect x="7" y="13" width="1" height="1"/><rect x="8" y="13" width="1" height="1"/><rect x="9" y="13" width="1" height="1"/><rect x="10" y="13" width="1" height="1"/><rect x="11" y="13" width="1" height="1"/><rect x="12" y="13" width="1" height="1"/><rect x="13" y="13" width="1" height="1"/></g>
+        </svg>
+      </div>
+      <div class="container site-footer__inner">
+        <div class="row g-4">
+          <div class="lg:col-6">
+            <a class="brand" href="#top" aria-label="docengine">
+              <span class="brand__mark" aria-hidden="true">d</span>
+              <span class="d-flex flex-column lh-sm">
+                <span>docengine</span>
+                <span class="brand__tag" data-i18n="brand.tag">documentación</span>
+              </span>
+            </a>
+            <p class="site-footer__lead" data-i18n="footer.lead">Documentación determinista para tu repositorio.</p>
           </div>
-          <p class="mb-0" data-i18n="footer.sources">Contenido basado en fuentes locales comprobadas, sin afirmaciones de publicación.</p>
+          <div class="lg:col-6">
+            <nav class="site-footer__nav" aria-label="Secciones" data-i18n-aria-label="footer.nav.label">
+              <a href="#overview" data-i18n="nav.overview">Qué es</a>
+              <a href="#workflow" data-i18n="nav.workflow">Flujo</a>
+              <a href="#quickstart" data-i18n="nav.quickstart">Inicio rápido</a>
+              <a href="#adoption" data-i18n="nav.adoption">Adopción</a>
+              <a href="#contracts" data-i18n="nav.contracts">Contratos</a>
+              <a href="#capabilities" data-i18n="nav.capabilities">Capacidades</a>
+              <a href="#exit-codes" data-i18n="nav.exitcodes">Salidas</a>
+              <a href="#profile-report" data-i18n="nav.profile">Perfil</a>
+              <a href="#diataxis" data-i18n="nav.diataxis">Diátaxis</a>
+              <a href="#evidence" data-i18n="nav.evidence">Evidencia</a>
+            </nav>
+          </div>
+        </div>
+        <div class="site-footer__base">
+          <p data-i18n="footer.note">Sitio de documentación construido con Bootstrap 6 Alpha 1 y Vite. Bilingüe ES/EN; modo claro y oscuro.</p>
+          <p data-i18n="footer.sources">Contenido basado en la versión etiquetada v0.2.1 del repositorio de docengine.</p>
         </div>
       </div>
     </footer>

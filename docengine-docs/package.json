@@ -10,7 +10,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "bootstrap": "6.0.0-alpha.1"
+    "bootstrap": "6.0.0-alpha.1",
+    "prismjs": "^1.30.0"
   },
   "devDependencies": {
     "sass": "^1.105.1",

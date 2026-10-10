@@ -5,6 +5,9 @@ import '../scss/styles.scss'
 import Tab from 'bootstrap/js/dist/tab.js'
 import Drawer from 'bootstrap/js/dist/drawer.js'
 import ScrollSpy from 'bootstrap/js/dist/scrollspy.js'
+import Prism from 'prismjs'
+import 'prismjs/components/prism-json'
+import 'prismjs/components/prism-bash'
 
 // Kept in scope so the plugins' data-attribute behavior stays registered even
 // though they are initialized declaratively in the markup.
@@ -37,10 +40,13 @@ const I18N = {
     'nav.menuTitle': 'Explorar la documentación',
     'controls.copy': 'Copiar',
     'controls.copied': 'Copiado',
-    'controls.language.toEn': 'Cambiar a inglés',
-    'controls.language.toEs': 'Cambiar a español',
-    'controls.theme.toDark': 'Cambiar a tema oscuro',
-    'controls.theme.toLight': 'Cambiar a tema claro',
+    'controls.group': 'Ajustes de la página',
+    'controls.language.label': 'Idioma',
+    'controls.language.es': 'Español',
+    'controls.language.en': 'English',
+    'controls.theme.label': 'Tema',
+    'controls.theme.light': 'Tema claro',
+    'controls.theme.dark': 'Tema oscuro',
     'controls.menuOpen': 'Abrir menú',
     'controls.menuClose': 'Cerrar menú',
     'controls.backToTop': 'Volver arriba',
@@ -52,9 +58,9 @@ const I18N = {
     'hero.lead': 'docengine evalúa y mantiene la documentación a partir de un perfil versionado: comprueba contratos, referencias y cobertura, contrasta hechos contra fuentes declaradas y, opcionalmente, analiza el impacto de cambios Git y la recuperación léxica BM25.',
     'hero.cta.primary': 'Inicio rápido',
     'hero.cta.secondary': 'Ver los contratos',
-    'hero.status.title': 'Fuentes locales comprobadas',
-    'hero.status.desc': 'El contenido de esta página se basa en la documentación comprobada del repositorio local de docengine. No se afirma aquí ninguna versión publicada.',
-    'hero.fact1': 'Sin red ni Python',
+    'hero.status.title': 'v0.2.1 etiquetada',
+    'hero.status.desc': 'docengine está en la versión v0.2.1: integrada en <code>main</code>, etiquetada y con release en GitHub. La instalación publicada (<code>go install @latest</code> o binarios de release) requiere acceso al módulo; compilar desde el código fuente está disponible.',
+    'hero.fact1': 'Sin red',
     'hero.fact2': 'Solo lectura',
     'hero.fact3': 'Go 1.27',
     'hero.fact4': 'Git y BM25 opt-in',
@@ -123,49 +129,57 @@ const I18N = {
     'adoption.hook.text': 'Opcional y solo tras autorización explícita (No por defecto). <code>init</code> no instala CI.',
     'contracts.eyebrow': 'Contratos',
     'contracts.title': 'Contratos deterministas',
-    'contracts.lead': 'El perfil es el contrato del proyecto: acepta la semántica v1 y todos sus campos se validan antes de leer el corpus.',
+    'contracts.lead': 'El perfil es el contrato del proyecto: un archivo JSON donde declaras qué documentos gobiernas y qué debe comprobar docengine. Sus campos se validan antes de leer el corpus.',
+    'contracts.howto': 'El perfil agrupa las comprobaciones en bloques. Cada bloque es opcional: si no aparece, esa comprobación no se ejecuta, así que puedes empezar con un perfil mínimo y añadir reglas.',
     'contracts.tabs.label': 'Campos del contrato',
-    'contracts.documents': 'Reglas sobre Markdown seleccionado por globs: <code>id_pattern</code>, <code>severity</code>, <code>required_headings</code>, <code>language</code> y <code>checks</code>.',
-    'contracts.coverage': 'Relaciones fuente→target; un identificador sin referencia produce <code>COVERAGE_MISSING</code>.',
-    'contracts.facts': 'Fuentes (<code>path_count</code>, <code>path_set</code>, <code>directory_set</code>, <code>frontmatter_set</code>, <code>text_value</code>, <code>json_count</code>) y targets (<code>value</code>, <code>set</code>, <code>contains_source_set</code>).',
-    'contracts.exclusions': 'Globs excluidos de toda comprobación, con una razón declarada.',
-    'contracts.impact': 'Relaciones de impacto Git; requieren <code>--base-ref</code> para ejecutarse.',
-    'contracts.bm25': 'Capacidades léxicas advisory y sus parámetros versionados.',
+    'contracts.block.documents': 'Documentos',
+    'contracts.documents': 'Reglas que cada documento gobernado debe cumplir: identificadores, referencias, encabezados e idioma.',
+    'contracts.block.coverage': 'Cobertura',
+    'contracts.coverage': 'Cada identificador definido en un documento origen debe estar referenciado por un documento destino.',
+    'contracts.block.facts': 'Hechos',
+    'contracts.facts': 'Afirmaciones del documento contrastadas contra valores leídos de fuentes declaradas.',
+    'contracts.block.exclusions': 'Exclusiones',
+    'contracts.exclusions': 'Rutas fuera de toda comprobación, cada una con un motivo declarado.',
+    'contracts.block.impact': 'Impacto Git',
+    'contracts.impact': 'Relaciona cambios de código con documentos para recomendar su revisión; requiere <code>--base-ref</code>.',
+    'contracts.block.bm25': 'BM25',
+    'contracts.bm25': 'Búsqueda léxica advisory que propone posibles duplicados o cobertura; nunca crea findings.',
+    'contracts.findings.intro': 'Cuando una comprobación no se cumple, docengine emite un finding: un aviso con un código estable, su ubicación y su mensaje.',
     'contracts.severity': 'La severidad es <code>error</code>, <code>warning</code> o <code>info</code>; solo los findings <code>error</code> cambian el código de salida.',
     'contracts.codesCaption': 'Códigos de finding deterministas',
     'contracts.codes.docs.title': 'Reglas de documento',
     'contracts.codes.docs.desc': 'Identificadores, referencias, encabezados e idioma sobre el Markdown gobernado.',
-    'contracts.codes.docs.ID_MISSING': 'Un encabezado gobernado no tiene token de identificador.',
-    'contracts.codes.docs.ID_MALFORMED': 'El token de identificador no coincide con el <code>id_pattern</code> de la regla.',
+    'contracts.codes.docs.ID_MISSING': 'Un encabezado gobernado no tiene su identificador.',
+    'contracts.codes.docs.ID_MALFORMED': 'El identificador no sigue el patrón (<code>id_pattern</code>) que exige la regla.',
     'contracts.codes.docs.ID_DUPLICATE': 'El mismo identificador está definido en más de un lugar.',
     'contracts.codes.docs.REFERENCE_MALFORMED': 'Un token <code>[[…]]</code> no es una referencia <code>[[ID]]</code> válida.',
-    'contracts.codes.docs.REFERENCE_TARGET_MISSING': 'Una referencia válida no tiene definición de identificador coincidente.',
+    'contracts.codes.docs.REFERENCE_TARGET_MISSING': 'Una referencia apunta a un identificador que no existe en ningún documento.',
     'contracts.codes.docs.SECTION_MISSING': 'Falta un encabezado requerido declarado por la regla.',
-    'contracts.codes.docs.LANGUAGE_MISMATCH': 'La prosa detectada difiere del <code>language</code> configurado.',
-    'contracts.codes.docs.LANGUAGE_UNDETERMINED': 'La prosa no tiene señal de idioma decisiva; el <code>language</code> no puede comprobarse.',
+    'contracts.codes.docs.LANGUAGE_MISMATCH': 'El idioma detectado no es el que declara el perfil (<code>language</code>).',
+    'contracts.codes.docs.LANGUAGE_UNDETERMINED': 'El idioma detectado no es concluyente, así que no puede comprobarse.',
     'contracts.codes.coverage.title': 'Cobertura',
     'contracts.codes.coverage.desc': 'Relaciones fuente→destino, independientes del contrato de documento.',
-    'contracts.codes.coverage.COVERAGE_MISSING': 'Un identificador de origen no es referenciado por ningún documento destino.',
+    'contracts.codes.coverage.COVERAGE_MISSING': 'Ningún documento destino menciona un identificador definido en el origen.',
     'contracts.codes.facts.title': 'Hechos',
     'contracts.codes.facts.desc': 'Hechos contrastados contra fuentes declaradas; los fallos de fuente son siempre <code>error</code>.',
     'contracts.codes.facts.FACT_SOURCE_MISSING': 'Una ruta o glob de fuente no coincidió con nada.',
     'contracts.codes.facts.FACT_SOURCE_INVALID': 'Una fuente no pudo leerse ni analizarse.',
     'contracts.codes.facts.FACT_SOURCE_MISMATCH': 'Las fuentes produjeron valores en desacuerdo.',
-    'contracts.codes.facts.FACT_CLAIM_MISSING': 'Un target de hecho no tiene afirmación coincidente.',
+    'contracts.codes.facts.FACT_CLAIM_MISSING': 'El documento no contiene la afirmación esperada para el hecho.',
     'contracts.codes.facts.FACT_CLAIM_AMBIGUOUS': 'Un target contiene afirmaciones distintas repetidas para un hecho.',
-    'contracts.codes.facts.FACT_VALUE_MISMATCH': 'Una afirmación escalar difiere del valor de la fuente.',
-    'contracts.codes.facts.FACT_SET_MISMATCH': 'Una afirmación de conjunto difiere del conjunto de la fuente.',
+    'contracts.codes.facts.FACT_VALUE_MISMATCH': 'El valor afirmado no coincide con el de la fuente.',
+    'contracts.codes.facts.FACT_SET_MISMATCH': 'La lista afirmada no coincide con la de la fuente.',
     'capabilities.eyebrow': 'Capacidades',
-    'capabilities.title': 'Opt-in: Git impact y BM25',
-    'capabilities.lead': 'Un módulo opcional no se ejecuta si no está habilitado; si está habilitado pero no puede ejecutarse, devuelve un error operativo, nunca se omite silenciosamente.',
+    'capabilities.title': 'Capacidades opcionales',
+    'capabilities.lead': 'Estas dos comprobaciones están desactivadas por defecto: solo se ejecutan si las habilitas en el perfil. Si las habilitas pero no pueden ejecutarse, docengine devuelve un error operativo; nunca las omite en silencio.',
     'capabilities.git.title': 'Impacto Git',
-    'capabilities.git.text': 'Con <code>--base-ref</code>, marca los documentos relacionados con rutas cambiadas con un aviso <code>GIT_IMPACT</code> (severidad <code>warning</code>). Es una recomendación de revisión: nunca cambia el código de salida.',
-    'capabilities.bm25.title': 'BM25',
-    'capabilities.bm25.text': 'Recuperación léxica advisory: relaciones <code>possible_duplicate</code>, <code>potential_coverage</code> y <code>potential_impact</code>, todas con estado <code>needs_review</code>. Nunca crea findings ni cambia el código de salida.',
+    'capabilities.git.text': 'Recomienda revisar los documentos que tocan las rutas cambiadas. Requiere <code>--base-ref</code> y nunca cambia el código de salida: es una recomendación, no un error. En el informe el código es <code>GIT_IMPACT</code> (severidad <code>warning</code>) y en terminal se imprime con el prefijo <code>ADVISORY Git impact</code>.',
+    'capabilities.bm25.title': 'Búsqueda léxica (BM25)',
+    'capabilities.bm25.text': 'Propone documentos candidatos a revisar por parecido léxico: posibles duplicados (<code>possible_duplicate</code>), cobertura (<code>potential_coverage</code>) o impacto (<code>potential_impact</code>). Cada candidato llega con estado <code>needs_review</code> y en terminal se imprime con el prefijo <code>ADVISORY BM25</code>. El perfil puede filtrarlos con <code>min_score</code> y <code>acknowledged</code>. Nunca crea findings ni cambia el código de salida.',
     'capabilities.note': '<code>exit 0</code> no equivale a ausencia de findings: revisa el informe completo y conserva visibles todos los findings con su severidad, ubicación, código y mensaje.',
     'exitcodes.eyebrow': 'Códigos de salida',
     'exitcodes.title': 'Códigos de salida estables',
-    'exitcodes.lead': 'La CLI devuelve un código derivado del resultado, nunca una mera ausencia de error malinterpretada.',
+    'exitcodes.lead': 'Cada ejecución termina con un código que resume el resultado: los scripts y los hooks deciden con él si continuar o detenerse.',
     'exitcodes.0': 'Sin findings deterministas de severidad <code>error</code>; puede incluir <code>warning</code>. No significa ausencia de findings.',
     'exitcodes.1': 'Existe al menos un finding determinista de severidad <code>error</code>.',
     'exitcodes.2': 'Uso o configuración inválidos: flags, JSON, rutas, versión de perfil o colisión no autorizada de <code>init</code>.',
@@ -176,18 +190,117 @@ const I18N = {
     'exitcodes.3.title': 'Fallo operativo',
     'exitcodes.note': 'Un fallo nunca devuelve <code>0</code>. Los códigos <code>2</code> y <code>3</code> no se mezclan con findings del repositorio.',
     'profile.eyebrow': 'Perfil e informe',
-    'profile.title': 'Dos contratos JSON',
-    'profile.lead': 'El perfil define qué se comprueba; el informe declara qué se encontró. Ambos son contratos estables y versionados.',
+    'profile.title': 'El perfil y el informe',
+    'profile.lead': 'El perfil declara qué se comprueba; el informe declara qué se encontró. Son los dos JSON estables con los que trabajas.',
     'profile.tabs.label': 'Perfil e informe',
     'profile.profileTitle': 'Perfil (v1)',
-    'profile.profileText': 'Campos de nivel superior: <code>version</code> (obligatorio, <code>1</code>), <code>language</code> (obligatorio, <code>en</code> o <code>es</code>), <code>strict_confirmation</code> (opcional), más <code>documents</code>, <code>coverage</code>, <code>facts</code>, <code>exclusions</code>, <code>impact_relations</code> y <code>bm25</code>.',
-    'profile.profileLabel': 'Perfil mínimo',
+    'profile.profileText': 'El perfil es el contrato que viste en Contratos. Estos son todos sus campos.',
+    'profile.required': 'obligatorio',
+    'profile.optional': 'opcional',
+    'profile.always': 'siempre',
+    'profile.additive': 'aditivo',
+    'profile.field.version': 'Siempre <code>1</code>; identifica la versión del contrato.',
+    'profile.field.language': 'Idioma de la prosa gobernada: <code>en</code> o <code>es</code>. Las reglas sin <code>language</code> propio lo heredan.',
+    'profile.field.strict': 'Si es <code>true</code> (valor por defecto), la skill pide confirmar antes de cada commit.',
+    'profile.field.documents': 'Reglas por documento. Cada regla lleva <code>globs</code> (qué archivos), <code>id_pattern</code> (patrón del identificador), <code>severity</code> (<code>error</code> por defecto), <code>required_headings</code>, <code>language</code> y <code>checks</code> (<code>ids</code>, <code>references</code>, <code>headings</code>, <code>language</code>).',
+    'profile.field.coverage': 'Relaciones <code>sources</code> → <code>targets</code> con <code>severity</code>: cada identificador del origen debe estar referenciado en el destino, o el motor emite <code>COVERAGE_MISSING</code>.',
+    'profile.field.facts': 'Hechos a contrastar. Cada hecho lleva <code>id</code>, <code>sources</code> (tipos <code>path_count</code>, <code>path_set</code>, <code>directory_set</code>, <code>frontmatter_set</code>, <code>text_value</code>, <code>json_count</code>) y <code>targets</code> (<code>value</code>, <code>set</code>, <code>contains_source_set</code>).',
+    'profile.field.exclusions': 'Globs excluidos de toda comprobación. La <code>reason</code> es obligatoria.',
+    'profile.field.impact': 'Relaciona <code>documents</code> con <code>paths</code> cambiadas para recomendar su revisión. Requiere <code>--base-ref</code>.',
+    'profile.field.bm25': 'Avisos léxicos. Campos: <code>enabled</code>, <code>documents</code>, <code>capabilities</code> (<code>duplicates</code>, <code>coverage</code>, <code>impact</code>), <code>max_candidates</code>, <code>title_weight</code>, <code>body_weight</code>, <code>min_score</code> y <code>acknowledged</code>.',
+    'profile.report.field.findings': 'Lista de resultados. Cada finding lleva <code>severity</code> (<code>error</code>, <code>warning</code> o <code>info</code>), <code>code</code>, <code>path</code>, <code>line</code> y <code>message</code>. Solo <code>error</code> cambia el código de salida.',
+    'profile.report.field.summary': 'Recuentos: <code>checked_files</code> (documentos revisados) y <code>counts</code> por severidad (<code>info</code>, <code>warning</code>, <code>error</code>).',
+    'profile.report.field.additive': 'Aparecen solo si su módulo está activo; nunca cambian <code>findings</code> ni <code>summary</code>.',
+    'profile.profileLabel': 'Ejemplo mínimo (init)',
     'profile.reportTitle': 'Informe',
-    'profile.reportText': '<code>findings</code> y <code>summary</code> siempre están presentes; <code>facts</code>, <code>impact</code> y <code>bm25</code> son aditivos. El orden es contractual: por ruta, luego línea y luego código.',
-    'profile.reportLabel': 'Resumen',
+    'profile.reportText': 'El informe es lo que devuelve una auditoría. Estos son sus campos.',
+    'profile.reportLabel': 'Ejemplo de informe',
+    'profile.fullLabel': 'Ejemplo completo (comentado)',
+    'profile.exampleMin': `{
+  "version": 1,               // versión del contrato: siempre 1
+  "language": "en",           // idioma de la prosa: "en" o "es"
+  "strict_confirmation": true  // confirmar antes de cada commit (true por defecto)
+}`,
+    'profile.exampleFull': `{
+  // Obligatorios.
+  "version": 1,
+  "language": "en",
+  // Confirmar antes de cada commit (true por defecto).
+  "strict_confirmation": true,
+
+  // Reglas por documento.
+  "documents": [
+    {
+      "globs": ["docs/**/*.md"],                // archivos que gobierna
+      "id_pattern": "^[A-Z][A-Z0-9]*-[0-9]+$",  // patrón del identificador
+      "required_headings": ["Overview"],         // encabezados obligatorios
+      "language": "en",
+      "severity": "error"                        // error | warning | info
+    }
+  ],
+
+  // Cada identificador del origen debe estar referenciado en el destino.
+  "coverage": [
+    { "sources": ["docs/specs/**/*.md"], "targets": ["docs/index.md"], "severity": "warning" }
+  ],
+
+  // Afirmaciones contrastadas contra fuentes declaradas.
+  "facts": [
+    {
+      "id": "catalog.count",
+      "sources": [
+        { "kind": "path_count", "glob": ["catalog/*.md"] },
+        { "kind": "json_count", "path": "data/manifest.json", "field": "entries" }
+      ],
+      "targets": [
+        { "paths": ["README.md"], "pattern": "Catalog count: (?P&lt;value&gt;[0-9]+)", "value_type": "integer" }
+      ]
+    }
+  ],
+
+  // Rutas fuera de toda comprobación; "reason" es obligatoria.
+  "exclusions": [
+    { "globs": ["vendor/**"], "reason": "documentación de terceros, fuera de este contrato" }
+  ],
+
+  // Relaciona cambios de código con documentos (requiere --base-ref).
+  "impact_relations": [
+    { "documents": ["docs/**/*.md"], "paths": ["internal/**", "cmd/**"], "reason": "el código puede invalidar lo documentado" }
+  ],
+
+  // Avisos léxicos advisory: nunca crean findings.
+  "bm25": {
+    "enabled": true,
+    "documents": ["docs/**/*.md"],
+    "capabilities": ["duplicates", "coverage", "impact"],
+    "max_candidates": 10,
+    "min_score": 50,
+    "acknowledged": [
+      { "relation": "possible_duplicate", "pair": ["docs/a.md", "docs/b.md"], "reason": "revisado y aceptado" }
+    ]
+  }
+}`,
+    'profile.exampleReport': `{
+  // Cada comprobación fallida es un finding.
+  "findings": [
+    {
+      "severity": "error",   // error | warning | info (solo "error" cambia la salida)
+      "code": "ID_MISSING",  // código estable
+      "path": "docs/guide.md",
+      "line": 1,
+      "message": "governed heading has no document identifier"
+    }
+  ],
+  // Recuentos del resumen.
+  "summary": {
+    "checked_files": 1,
+    "counts": { "info": 0, "warning": 0, "error": 1 }
+  }
+}`,
     'diataxis.eyebrow': 'Diátaxis',
-    'diataxis.title': 'Cuatro rutas de documentación',
-    'diataxis.lead': 'La documentación se organiza en cuatro categorías, cada una con un propósito distinto de lectura.',
+    'diataxis.title': 'Diátaxis: cuatro rutas de documentación',
+    'diataxis.lead': 'Diátaxis es la técnica que clasifica la documentación por lo que necesita quien la consulta. La ordenan dos ejes —aprender o trabajar, hacer o comprender— y cada documento sirve a una sola.',
+    'diataxis.why': 'Sin un criterio así, la documentación mezcla instrucciones, datos y explicaciones en un mismo texto y cuesta usarla. Diátaxis separa esas necesidades y obliga a que cada documento tenga un único propósito. El motor lo adopta por eso: un documento con un propósito claro y una carpeta asignada puede auditarse como el resto de contratos (cobertura, encabezados, idioma).',
     'diataxis.tutorials.tag': 'Tutoriales',
     'diataxis.tutorials.title': 'Aprender haciendo',
     'diataxis.tutorials.text': 'Primera auditoría local satisfactoria: compila docengine y ejecuta su auditoría sobre el repositorio.',
@@ -202,16 +315,18 @@ const I18N = {
     'diataxis.explain.text': 'Arquitectura y límites de la evidencia: lo que una auditoría demuestra y lo que no.',
     'evidence.eyebrow': 'Evidencia y límites',
     'evidence.title': 'Qué sostiene este sitio',
-    'evidence.lead': 'El contenido de esta página se basa en la documentación comprobada del repositorio local de docengine. No se afirma aquí ninguna versión publicada.',
+    'evidence.lead': 'El contenido de esta página describe la versión etiquetada v0.2.1 del repositorio de docengine, integrada en <code>main</code>.',
     'evidence.point1.title': 'Fuente local',
     'evidence.point1.text': 'Las afirmaciones provienen de <code>README.md</code>, <code>docs/</code>, <code>reference/cli.md</code>, <code>DESIGN.md</code> y las referencias de perfil e informe del repositorio hermano.',
-    'evidence.point2.title': 'Sin publicación',
-    'evidence.point2.text': 'El uso local desde el código fuente está disponible; las descargas publicadas y <code>go install @latest</code> dependen de que exista una versión publicada, que este sitio no afirma.',
+    'evidence.point2.title': 'Versionado y acceso',
+    'evidence.point2.text': 'docengine sigue SemVer: la versión v0.2.1 está integrada en <code>main</code>, etiquetada y con release en GitHub. La instalación publicada (<code>go install github.com/fred66sp/docengine/cmd/docengine@latest</code> o binarios de release) requiere acceso al módulo; la compilación desde el código fuente está disponible.',
     'evidence.point3.title': 'Historial de incubación',
     'evidence.point3.text': 'El comparador Python y el corpus diferencial pertenecen al historial de incubación, no a este repositorio independiente.',
-    'evidence.sources': 'Fuentes locales comprobadas: <code>README.md</code> · <code>docs/README.md</code> · <code>docs/installation.md</code> · <code>reference/cli.md</code> · <code>DESIGN.md</code> · <code>skill/software-documentalist/references/profile.md</code> · <code>report.md</code>',
+    'evidence.sources': 'Fuentes comprobadas: <code>README.md</code> · <code>docs/README.md</code> · <code>docs/installation.md</code> · <code>reference/cli.md</code> · <code>DESIGN.md</code> · <code>skill/software-documentalist/references/profile.md</code> · <code>report.md</code>',
+    'footer.lead': 'Documentación determinista para tu repositorio.',
+    'footer.nav.label': 'Secciones',
     'footer.note': 'Sitio de documentación construido con Bootstrap 6 Alpha 1 y Vite. Bilingüe ES/EN; modo claro y oscuro.',
-    'footer.sources': 'Contenido basado en fuentes locales comprobadas, sin afirmaciones de publicación.'
+    'footer.sources': 'Contenido basado en la versión etiquetada v0.2.1 del repositorio de docengine.'
   },
 
   en: {
@@ -232,10 +347,13 @@ const I18N = {
     'nav.menuTitle': 'Explore the documentation',
     'controls.copy': 'Copy',
     'controls.copied': 'Copied',
-    'controls.language.toEn': 'Switch to English',
-    'controls.language.toEs': 'Switch to Spanish',
-    'controls.theme.toDark': 'Switch to dark theme',
-    'controls.theme.toLight': 'Switch to light theme',
+    'controls.group': 'Page settings',
+    'controls.language.label': 'Language',
+    'controls.language.es': 'Spanish',
+    'controls.language.en': 'English',
+    'controls.theme.label': 'Theme',
+    'controls.theme.light': 'Light theme',
+    'controls.theme.dark': 'Dark theme',
     'controls.menuOpen': 'Open menu',
     'controls.menuClose': 'Close menu',
     'controls.backToTop': 'Back to top',
@@ -247,9 +365,9 @@ const I18N = {
     'hero.lead': 'docengine evaluates and maintains documentation from a versioned profile: it checks contracts, references and coverage, compares facts against declared sources and, optionally, analyses Git change impact and BM25 lexical retrieval.',
     'hero.cta.primary': 'Quick start',
     'hero.cta.secondary': 'Read the contracts',
-    'hero.status.title': 'Verified local sources',
-    'hero.status.desc': 'The content of this page is based on the verified documentation in the local docengine repository. No published version is claimed here.',
-    'hero.fact1': 'Offline, no Python',
+    'hero.status.title': 'v0.2.1 tagged',
+    'hero.status.desc': 'docengine is at v0.2.1: merged into <code>main</code>, tagged and released on GitHub. Published installation (<code>go install @latest</code> or release binaries) requires module access; building from source is available.',
+    'hero.fact1': 'Offline',
     'hero.fact2': 'Read-only',
     'hero.fact3': 'Go 1.27',
     'hero.fact4': 'Git & BM25 opt-in',
@@ -318,49 +436,57 @@ const I18N = {
     'adoption.hook.text': 'Optional and only after explicit authorisation (No by default). <code>init</code> does not install CI.',
     'contracts.eyebrow': 'Contracts',
     'contracts.title': 'Deterministic contracts',
-    'contracts.lead': 'The profile is the project\'s contract: it accepts v1 semantics and every field is validated before the corpus is read.',
+    'contracts.lead': 'The profile is the project\'s contract: a JSON file where you declare which documents you govern and what docengine must check. Its fields are validated before the corpus is read.',
+    'contracts.howto': 'The profile groups the checks into blocks. Every block is optional: if it is absent, that check does not run, so you can start minimal and add rules.',
     'contracts.tabs.label': 'Contract fields',
-    'contracts.documents': 'Rules over glob-selected Markdown: <code>id_pattern</code>, <code>severity</code>, <code>required_headings</code>, <code>language</code> and <code>checks</code>.',
-    'contracts.coverage': 'Source-to-target relations; an identifier with no reference produces <code>COVERAGE_MISSING</code>.',
-    'contracts.facts': 'Sources (<code>path_count</code>, <code>path_set</code>, <code>directory_set</code>, <code>frontmatter_set</code>, <code>text_value</code>, <code>json_count</code>) and targets (<code>value</code>, <code>set</code>, <code>contains_source_set</code>).',
-    'contracts.exclusions': 'Globs excluded from every check, with a declared reason.',
-    'contracts.impact': 'Git impact relations; require <code>--base-ref</code> to run.',
-    'contracts.bm25': 'Advisory lexical capabilities and their versioned parameters.',
+    'contracts.block.documents': 'Documents',
+    'contracts.documents': 'Rules every governed document must meet: identifiers, references, headings and language.',
+    'contracts.block.coverage': 'Coverage',
+    'contracts.coverage': 'Every identifier defined in a source document must be referenced by a target document.',
+    'contracts.block.facts': 'Facts',
+    'contracts.facts': 'Claims in the document checked against values read from declared sources.',
+    'contracts.block.exclusions': 'Exclusions',
+    'contracts.exclusions': 'Paths kept out of every check, each with a declared reason.',
+    'contracts.block.impact': 'Git impact',
+    'contracts.impact': 'Relates code changes to documents to recommend their review; requires <code>--base-ref</code>.',
+    'contracts.block.bm25': 'BM25',
+    'contracts.bm25': 'Advisory lexical search that proposes possible duplicates or coverage; it never creates findings.',
+    'contracts.findings.intro': 'When a check fails, docengine emits a finding: an alert with a stable code, its location and its message.',
     'contracts.severity': 'Severity is <code>error</code>, <code>warning</code> or <code>info</code>; only <code>error</code> findings change the exit code.',
     'contracts.codesCaption': 'Deterministic finding codes',
     'contracts.codes.docs.title': 'Document rules',
     'contracts.codes.docs.desc': 'Identifiers, references, headings and language over the governed Markdown.',
-    'contracts.codes.docs.ID_MISSING': 'A governed heading has no identifier token.',
-    'contracts.codes.docs.ID_MALFORMED': 'The identifier token does not match the rule\'s <code>id_pattern</code>.',
+    'contracts.codes.docs.ID_MISSING': 'A governed heading has no identifier.',
+    'contracts.codes.docs.ID_MALFORMED': 'The identifier does not follow the pattern (<code>id_pattern</code>) the rule requires.',
     'contracts.codes.docs.ID_DUPLICATE': 'The same identifier is defined in more than one place.',
     'contracts.codes.docs.REFERENCE_MALFORMED': 'A <code>[[…]]</code> token is not a valid <code>[[ID]]</code> reference.',
-    'contracts.codes.docs.REFERENCE_TARGET_MISSING': 'A valid reference has no matching identifier definition.',
+    'contracts.codes.docs.REFERENCE_TARGET_MISSING': 'A reference points to an identifier that exists in no document.',
     'contracts.codes.docs.SECTION_MISSING': 'A required heading declared by the rule is absent.',
-    'contracts.codes.docs.LANGUAGE_MISMATCH': 'Detected prose differs from the configured <code>language</code>.',
-    'contracts.codes.docs.LANGUAGE_UNDETERMINED': 'Prose has no decisive language signal, so the configured <code>language</code> cannot be checked.',
+    'contracts.codes.docs.LANGUAGE_MISMATCH': 'The detected language is not the one the profile declares (<code>language</code>).',
+    'contracts.codes.docs.LANGUAGE_UNDETERMINED': 'The detected language is not conclusive, so it cannot be checked.',
     'contracts.codes.coverage.title': 'Coverage',
     'contracts.codes.coverage.desc': 'Source-to-target relations, independent of the document contract.',
-    'contracts.codes.coverage.COVERAGE_MISSING': 'A source identifier is not referenced by any target document.',
+    'contracts.codes.coverage.COVERAGE_MISSING': 'No target document mentions an identifier defined in the source.',
     'contracts.codes.facts.title': 'Facts',
     'contracts.codes.facts.desc': 'Facts checked against declared sources; source failures are always <code>error</code>.',
     'contracts.codes.facts.FACT_SOURCE_MISSING': 'A fact source path or glob matched nothing.',
     'contracts.codes.facts.FACT_SOURCE_INVALID': 'A fact source could not be read or parsed.',
     'contracts.codes.facts.FACT_SOURCE_MISMATCH': 'The fact sources produced disagreeing values.',
-    'contracts.codes.facts.FACT_CLAIM_MISSING': 'A fact target has no matching claim.',
+    'contracts.codes.facts.FACT_CLAIM_MISSING': 'The document does not contain the claim expected for the fact.',
     'contracts.codes.facts.FACT_CLAIM_AMBIGUOUS': 'A target contains repeated different claims for one fact.',
-    'contracts.codes.facts.FACT_VALUE_MISMATCH': 'A scalar claim differs from the source value.',
-    'contracts.codes.facts.FACT_SET_MISMATCH': 'A set claim differs from the source set.',
+    'contracts.codes.facts.FACT_VALUE_MISMATCH': 'The claimed value does not match the source value.',
+    'contracts.codes.facts.FACT_SET_MISMATCH': 'The claimed list does not match the source list.',
     'capabilities.eyebrow': 'Capabilities',
-    'capabilities.title': 'Opt-in: Git impact and BM25',
-    'capabilities.lead': 'An optional module does not run unless enabled; if enabled but unable to run, it returns an operational error, never silently skipped.',
+    'capabilities.title': 'Optional capabilities',
+    'capabilities.lead': 'Both checks are off by default: they run only when you enable them in the profile. If you enable them but they cannot run, docengine returns an operational error; it never skips them silently.',
     'capabilities.git.title': 'Git impact',
-    'capabilities.git.text': 'With <code>--base-ref</code>, it marks documents related to changed paths with a <code>GIT_IMPACT</code> warning. It is a review recommendation: it never changes the exit code.',
-    'capabilities.bm25.title': 'BM25',
-    'capabilities.bm25.text': 'Advisory lexical retrieval: <code>possible_duplicate</code>, <code>potential_coverage</code> and <code>potential_impact</code> relations, all with <code>needs_review</code> status. It never creates findings or changes the exit code.',
+    'capabilities.git.text': 'Recommends reviewing the documents that touch the changed paths. It requires <code>--base-ref</code> and never changes the exit code: it is a recommendation, not an error. In the report the code is <code>GIT_IMPACT</code> (severity <code>warning</code>) and in the terminal it prints with the <code>ADVISORY Git impact</code> prefix.',
+    'capabilities.bm25.title': 'Lexical search (BM25)',
+    'capabilities.bm25.text': 'Proposes candidate documents to review by lexical similarity: possible duplicates (<code>possible_duplicate</code>), coverage (<code>potential_coverage</code>) or impact (<code>potential_impact</code>). Each candidate arrives with <code>needs_review</code> status and in the terminal prints with the <code>ADVISORY BM25</code> prefix. The profile can filter them with <code>min_score</code> and <code>acknowledged</code>. It never creates findings or changes the exit code.',
     'capabilities.note': '<code>exit 0</code> does not mean there are no findings: review the full report and keep every finding visible with its severity, location, code and message.',
     'exitcodes.eyebrow': 'Exit codes',
     'exitcodes.title': 'Stable exit codes',
-    'exitcodes.lead': 'The CLI returns a code derived from the result, never a misread mere absence of errors.',
+    'exitcodes.lead': 'Every run ends with a code that summarises the result: scripts and hooks use it to decide whether to continue or stop.',
     'exitcodes.0': 'No deterministic <code>error</code> findings; may include <code>warning</code>. Does not mean there are no findings.',
     'exitcodes.1': 'At least one deterministic <code>error</code> finding exists.',
     'exitcodes.2': 'Invalid usage or configuration: flags, JSON, paths, profile version or an unauthorised <code>init</code> collision.',
@@ -371,18 +497,117 @@ const I18N = {
     'exitcodes.3.title': 'Operational failure',
     'exitcodes.note': 'A failure never returns <code>0</code>. Codes <code>2</code> and <code>3</code> never mix with repository findings.',
     'profile.eyebrow': 'Profile & report',
-    'profile.title': 'Two JSON contracts',
-    'profile.lead': 'The profile defines what is checked; the report declares what was found. Both are stable, versioned contracts.',
+    'profile.title': 'The profile and the report',
+    'profile.lead': 'The profile declares what is checked; the report declares what was found. These are the two stable JSON files you work with.',
     'profile.tabs.label': 'Profile and report',
     'profile.profileTitle': 'Profile (v1)',
-    'profile.profileText': 'Top-level fields: <code>version</code> (required, <code>1</code>), <code>language</code> (required, <code>en</code> or <code>es</code>), <code>strict_confirmation</code> (optional), plus <code>documents</code>, <code>coverage</code>, <code>facts</code>, <code>exclusions</code>, <code>impact_relations</code> and <code>bm25</code>.',
-    'profile.profileLabel': 'Minimal profile',
+    'profile.profileText': 'The profile is the contract you saw under Contracts. These are all its fields.',
+    'profile.required': 'required',
+    'profile.optional': 'optional',
+    'profile.always': 'always',
+    'profile.additive': 'additive',
+    'profile.field.version': 'Always <code>1</code>; identifies the contract version.',
+    'profile.field.language': 'Prose language of the governed documents: <code>en</code> or <code>es</code>. Rules without their own <code>language</code> inherit it.',
+    'profile.field.strict': 'When <code>true</code> (the default), the skill asks for confirmation before each commit.',
+    'profile.field.documents': 'Per-document rules. Each rule carries <code>globs</code> (which files), <code>id_pattern</code> (identifier pattern), <code>severity</code> (<code>error</code> by default), <code>required_headings</code>, <code>language</code> and <code>checks</code> (<code>ids</code>, <code>references</code>, <code>headings</code>, <code>language</code>).',
+    'profile.field.coverage': '<code>sources</code> → <code>targets</code> relations with <code>severity</code>: every identifier in the source must be referenced in the target, or the engine emits <code>COVERAGE_MISSING</code>.',
+    'profile.field.facts': 'Facts to check. Each fact carries <code>id</code>, <code>sources</code> (kinds <code>path_count</code>, <code>path_set</code>, <code>directory_set</code>, <code>frontmatter_set</code>, <code>text_value</code>, <code>json_count</code>) and <code>targets</code> (<code>value</code>, <code>set</code>, <code>contains_source_set</code>).',
+    'profile.field.exclusions': 'Globs excluded from every check. The <code>reason</code> is required.',
+    'profile.field.impact': 'Relates <code>documents</code> to changed <code>paths</code> to recommend their review. Requires <code>--base-ref</code>.',
+    'profile.field.bm25': 'Lexical advisories. Fields: <code>enabled</code>, <code>documents</code>, <code>capabilities</code> (<code>duplicates</code>, <code>coverage</code>, <code>impact</code>), <code>max_candidates</code>, <code>title_weight</code>, <code>body_weight</code>, <code>min_score</code> and <code>acknowledged</code>.',
+    'profile.report.field.findings': 'List of results. Each finding carries <code>severity</code> (<code>error</code>, <code>warning</code> or <code>info</code>), <code>code</code>, <code>path</code>, <code>line</code> and <code>message</code>. Only <code>error</code> changes the exit code.',
+    'profile.report.field.summary': 'Counts: <code>checked_files</code> (documents checked) and <code>counts</code> per severity (<code>info</code>, <code>warning</code>, <code>error</code>).',
+    'profile.report.field.additive': 'They appear only when their module is enabled; they never change <code>findings</code> or <code>summary</code>.',
+    'profile.profileLabel': 'Minimal example (init)',
     'profile.reportTitle': 'Report',
-    'profile.reportText': '<code>findings</code> and <code>summary</code> are always present; <code>facts</code>, <code>impact</code> and <code>bm25</code> are additive. The order is contractual: by path, then line, then code.',
-    'profile.reportLabel': 'Summary',
+    'profile.reportText': 'The report is what an audit returns. These are its fields.',
+    'profile.reportLabel': 'Example report',
+    'profile.fullLabel': 'Full example (commented)',
+    'profile.exampleMin': `{
+  "version": 1,               // contract version: always 1
+  "language": "en",           // prose language: "en" or "es"
+  "strict_confirmation": true  // confirm before each commit (default true)
+}`,
+    'profile.exampleFull': `{
+  // Required.
+  "version": 1,
+  "language": "en",
+  // Ask for confirmation before each commit (defaults to true).
+  "strict_confirmation": true,
+
+  // Per-document rules.
+  "documents": [
+    {
+      "globs": ["docs/**/*.md"],                // files it governs
+      "id_pattern": "^[A-Z][A-Z0-9]*-[0-9]+$",  // identifier pattern
+      "required_headings": ["Overview"],         // required headings
+      "language": "en",
+      "severity": "error"                        // error | warning | info
+    }
+  ],
+
+  // Every identifier in the source must be referenced in the target.
+  "coverage": [
+    { "sources": ["docs/specs/**/*.md"], "targets": ["docs/index.md"], "severity": "warning" }
+  ],
+
+  // Claims checked against declared sources.
+  "facts": [
+    {
+      "id": "catalog.count",
+      "sources": [
+        { "kind": "path_count", "glob": ["catalog/*.md"] },
+        { "kind": "json_count", "path": "data/manifest.json", "field": "entries" }
+      ],
+      "targets": [
+        { "paths": ["README.md"], "pattern": "Catalog count: (?P&lt;value&gt;[0-9]+)", "value_type": "integer" }
+      ]
+    }
+  ],
+
+  // Paths kept out of every check; "reason" is required.
+  "exclusions": [
+    { "globs": ["vendor/**"], "reason": "third-party docs, outside this contract" }
+  ],
+
+  // Relates code changes to documents (requires --base-ref).
+  "impact_relations": [
+    { "documents": ["docs/**/*.md"], "paths": ["internal/**", "cmd/**"], "reason": "code changes can invalidate docs" }
+  ],
+
+  // Advisory lexical warnings: they never create findings.
+  "bm25": {
+    "enabled": true,
+    "documents": ["docs/**/*.md"],
+    "capabilities": ["duplicates", "coverage", "impact"],
+    "max_candidates": 10,
+    "min_score": 50,
+    "acknowledged": [
+      { "relation": "possible_duplicate", "pair": ["docs/a.md", "docs/b.md"], "reason": "reviewed and accepted" }
+    ]
+  }
+}`,
+    'profile.exampleReport': `{
+  // Each failed check is a finding.
+  "findings": [
+    {
+      "severity": "error",   // error | warning | info (only "error" changes the exit code)
+      "code": "ID_MISSING",  // stable code
+      "path": "docs/guide.md",
+      "line": 1,
+      "message": "governed heading has no document identifier"
+    }
+  ],
+  // Summary counts.
+  "summary": {
+    "checked_files": 1,
+    "counts": { "info": 0, "warning": 0, "error": 1 }
+  }
+}`,
     'diataxis.eyebrow': 'Diátaxis',
-    'diataxis.title': 'Four documentation routes',
-    'diataxis.lead': 'Documentation is organised into four categories, each with a distinct reading purpose.',
+    'diataxis.title': 'Diátaxis: four documentation routes',
+    'diataxis.lead': 'Diátaxis is the technique that classifies documentation by what the reader needs. Two axes order it —learning or working, doing or understanding— and each document serves a single one.',
+    'diataxis.why': 'Without such a criterion, documentation mixes instructions, facts and explanations in the same text and becomes hard to use. Diátaxis separates those needs and forces every document to have a single purpose. The engine adopts it for that reason: a document with a clear purpose and an assigned folder can be audited like any other contract (coverage, headings, language).',
     'diataxis.tutorials.tag': 'Tutorials',
     'diataxis.tutorials.title': 'Learn by doing',
     'diataxis.tutorials.text': 'A successful first local audit: build docengine and run its audit over the repository.',
@@ -397,16 +622,18 @@ const I18N = {
     'diataxis.explain.text': 'Architecture and evidence limits: what an audit proves and what it does not.',
     'evidence.eyebrow': 'Evidence & limits',
     'evidence.title': 'What grounds this site',
-    'evidence.lead': 'The content of this page is based on the verified documentation in the local docengine repository. No published version is claimed here.',
+    'evidence.lead': 'The content of this page describes the tagged version v0.2.1 of the docengine repository, merged into <code>main</code>.',
     'evidence.point1.title': 'Local source',
     'evidence.point1.text': 'Claims come from <code>README.md</code>, <code>docs/</code>, <code>reference/cli.md</code>, <code>DESIGN.md</code> and the profile and report references in the sibling repository.',
-    'evidence.point2.title': 'No publication',
-    'evidence.point2.text': 'Local use from source is available; published downloads and <code>go install @latest</code> depend on a released version, which this site does not claim exists.',
+    'evidence.point2.title': 'Versioning and access',
+    'evidence.point2.text': 'docengine follows SemVer: v0.2.1 is merged into <code>main</code>, tagged and released on GitHub. Published installation (<code>go install github.com/fred66sp/docengine/cmd/docengine@latest</code> or release binaries) requires module access; building from source is available.',
     'evidence.point3.title': 'Incubation history',
     'evidence.point3.text': 'The Python comparator and the differential corpus belong to the incubation history, not to this standalone repository.',
-    'evidence.sources': 'Verified local sources: <code>README.md</code> · <code>docs/README.md</code> · <code>docs/installation.md</code> · <code>reference/cli.md</code> · <code>DESIGN.md</code> · <code>skill/software-documentalist/references/profile.md</code> · <code>report.md</code>',
+    'evidence.sources': 'Verified sources: <code>README.md</code> · <code>docs/README.md</code> · <code>docs/installation.md</code> · <code>reference/cli.md</code> · <code>DESIGN.md</code> · <code>skill/software-documentalist/references/profile.md</code> · <code>report.md</code>',
+    'footer.lead': 'Deterministic documentation for your repository.',
+    'footer.nav.label': 'Sections',
     'footer.note': 'Documentation site built with Bootstrap 6 Alpha 1 and Vite. Bilingual ES/EN; light and dark mode.',
-    'footer.sources': 'Content based on verified local sources, with no publication claims.'
+    'footer.sources': 'Content based on the tagged version v0.2.1 of the docengine repository.'
   }
 }
 
@@ -470,15 +697,36 @@ function applyLanguage (lang) {
 
   document.title = strings['meta.title']
 
-  // Language toggle shows the target language and announces the action.
-  const label = document.querySelector('[data-language-label]')
-  if (label) label.textContent = lang === 'es' ? 'EN' : 'ES'
-  const toggle = document.querySelector('[data-language-toggle]')
-  if (toggle) toggle.setAttribute('aria-label', lang === 'es' ? strings['controls.language.toEn'] : strings['controls.language.toEs'])
+  // Reflect the active language in the segmented control.
+  updateLanguageUI()
 
   // Theme + menu labels are language-sensitive; refresh them.
   updateThemeUI()
   updateMenuLabel()
+
+  // The code blocks are i18n-driven, so their text was just reset; re-highlight.
+  highlightCode()
+}
+
+// ---------------------------------------------------------------------------
+// Language control
+// ---------------------------------------------------------------------------
+function updateLanguageUI () {
+  const lang = currentLang()
+  document.querySelectorAll('[data-language-option]').forEach((option) => {
+    const on = option.getAttribute('data-language-option') === lang
+    option.classList.toggle('is-active', on)
+    option.setAttribute('aria-pressed', String(on))
+  })
+}
+
+// ---------------------------------------------------------------------------
+// Syntax highlighting (Prism)
+// ---------------------------------------------------------------------------
+function highlightCode () {
+  document.querySelectorAll('.code-block code').forEach((block) => {
+    if (block.textContent.trim()) Prism.highlightElement(block)
+  })
 }
 
 // ---------------------------------------------------------------------------
@@ -492,13 +740,11 @@ function setTheme (theme) {
 
 function updateThemeUI () {
   const current = effectiveTheme()
-  document.querySelectorAll('[data-theme-icon]').forEach((icon) => {
-    icon.hidden = icon.getAttribute('data-theme-icon') === current
+  document.querySelectorAll('[data-theme-option]').forEach((option) => {
+    const on = option.getAttribute('data-theme-option') === current
+    option.classList.toggle('is-active', on)
+    option.setAttribute('aria-pressed', String(on))
   })
-  const toggle = document.querySelector('[data-theme-toggle]')
-  if (toggle) {
-    toggle.setAttribute('aria-label', current === 'light' ? t('controls.theme.toDark') : t('controls.theme.toLight'))
-  }
 }
 
 // ---------------------------------------------------------------------------
@@ -566,12 +812,12 @@ function init () {
   updateThemeUI()
   updateBackToTop()
 
-  document.querySelector('[data-theme-toggle]')?.addEventListener('click', () => {
-    setTheme(effectiveTheme() === 'dark' ? 'light' : 'dark')
+  document.querySelectorAll('[data-theme-option]').forEach((option) => {
+    option.addEventListener('click', () => setTheme(option.getAttribute('data-theme-option')))
   })
 
-  document.querySelector('[data-language-toggle]')?.addEventListener('click', () => {
-    applyLanguage(currentLang() === 'es' ? 'en' : 'es')
+  document.querySelectorAll('[data-language-option]').forEach((option) => {
+    option.addEventListener('click', () => applyLanguage(option.getAttribute('data-language-option')))
   })
 
   document.getElementById('back-to-top')?.addEventListener('click', () => {
