@@ -322,11 +322,6 @@ func (a *application) index(w http.ResponseWriter, r *http.Request) {
 	_, _ = w.Write(output.Bytes())
 }
 
-func (a *application) renderGrid(lang language) (string, error) {
-	output, err := a.render("partials/server-grid.jet", pageView{Language: lang, Messages: messageTable[lang], Services: serviceViews(a.store.snapshot(), true, lang)})
-	return output.String(), err
-}
-
 func (a *application) renderFragment(viewPath string, view serviceView) (string, error) {
 	output, err := a.render(viewPath, view)
 	return output.String(), err

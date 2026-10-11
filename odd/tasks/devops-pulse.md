@@ -589,8 +589,15 @@ afectar a la salida. En Jet, no: `fragments/` y `partials/` tienen que cerrar si
   aplicación nombrando la vista, mientras que un `include` ausente falla al
   **renderizar** y el handler responde 500 con el cuerpo exacto
   `template rendering failed\n`, sin HTML parcial.
-- [ ] JET-25 — Eliminar la ruta muerta `renderGrid` / `service-oob` con su
-  justificación.
+- [x] JET-25 — Eliminar la ruta muerta `renderGrid` / `service-oob` con su
+  justificación. **Cerrada.** Se borraron `renderGrid` (sin ninguna llamada),
+  la rama `OutOfBand` de `partials/server-grid.jet` y
+  `fragments/service-oob.jet`; la rejilla queda como
+  `{{ range .Services }}{{ include "/partials/server-card.jet" . }}{{ end }}`.
+  `serviceView.OutOfBand` se mantiene, porque los tres fragmentos que sí envía el
+  canal SSE lo usan. Byte-identidad de los seis golden conservada y suite
+  completa en verde tras el cambio. Se hace en un commit aparte para que sea
+  trivial revertirlo si se quiere recuperar aquella vía.
 - [ ] JET-24 — Verificar: `go test`, `go vet`, `go build`, `-race`, benchmark,
   bytes por tick antes y después, `curl` sobre las rutas reales y comprobación
   en navegador.
