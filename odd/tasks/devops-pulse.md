@@ -173,7 +173,7 @@ explicación.
 - [x] DP-16 — Corregir la separación de las tarjetas separando columna y tarjeta, y ajustar la canaleta a la escala de v6. Medición posterior: hueco horizontal 23–24 px y vertical 24 px (antes -1/0 y 12), ancho de tarjeta estable en 376 px, `nestedColumns: 0` y `columnsWithCardClass: 0` antes, después de un toggle y después de un tick SSE. La tarjeta se partió en `card-surface` (sólo la superficie, respuesta del toggle) y `server-card` (columna + superficie, rejilla inicial), porque la respuesta del toggle habría anidado una columna dentro de otra y reducido la tarjeta a un noveno.
 - [x] DP-17 — Icono de ayuda por tarjeta con diálogo explicativo bilingüe servido por el servidor y clonado sin petición. Verificado en Chromium en las cuatro combinaciones idioma × tema: el disparador lleva nombre accesible localizado («Ayuda sobre API Gateway» / «Help for API Gateway»), el diálogo abre como modal real con el título «API Gateway · Ayuda» / «API Gateway · Help», tres elementos de lista, el texto dice que las métricas son simuladas y el descargo «no consulta ningún sistema real» / «does not query any real system», y cierra con `data-bs-dismiss`. Hay cuatro contenedores de ayuda en la página y **cero** en el payload SSE.
 - [ ] DP-18 — Verificación de la iteración 2: `go test`, `go vet`, `go build`, `curl` (idioma, OOB) y navegador (tema, idioma, separación medida, ayuda).
-- [ ] DP-19 — Confirmar los commits de la iteración 2 (pendiente de autorización).
+- [x] DP-19 — Confirmar los commits de la iteración 2: `c3a7cbb`, `7c6a08a`, `f9147f4`, `2d9e0fe` y `62f4d53`.
 
 ## Defectos corregidos (ayuda y acentos del aviso)
 
@@ -335,3 +335,25 @@ sirvan a cualquier aplicación del workspace: diez diferencias de Bootstrap 6
 Alpha 1 con su comprobación reproducible, el marcado verificado de diálogo,
 aviso, progreso, botones y control segmentado, la tabla de coste del tick SSE y
 una sección explícita de límites y comprobaciones pendientes.
+
+## Cierre
+
+- **Integración:** `main` avanzó por avance rápido desde `a472d52` hasta
+  `f5a6455`, con los 16 commits de la rama. `main` y `feature/devops-pulse`
+  quedaron idénticos, y la rama se conserva para revisión o para retomar el POC.
+- **Comprobación previa:** árbol limpio, `main` ancestro de la rama, ninguna ruta
+  generada en el diff, y `go test ./...`, `go vet ./...` y `go build` correctos.
+  Tras integrar se repitió `go test -count=1 ./...` sobre `main`, sin caché, con
+  resultado correcto.
+- **Producto duradero:** `docs/HALLAZGOS_BOOTSTRAP_6_ALPHA.md` con los hallazgos
+  verificados, y las skills del proyecto versionadas con su procedencia descrita
+  en `.agents/skills/README.md`.
+- **Alcance:** no hubo operaciones remotas. El repositorio no tiene remoto
+  configurado y no se hizo `push`, etiqueta ni publicación.
+- **Criterio de coste aplicado:** en la última unidad el presupuesto se declaró
+  antes de implementar (~322 B por tick con gzip) y se cerró midiendo 276 B.
+- **Pendiente menor, sin causa atribuida:** quedaron tres sockets TCP en estado
+  establecido cuyo extremo cliente no muestra proceso dueño. Se comprobó que un
+  cliente muerto de golpe se libera en 4 s y que, con el testigo global, esas
+  conexiones ya no alteran el ritmo de los datos. Desaparecen al reiniciar el
+  servidor.
