@@ -109,7 +109,7 @@ en `odd/tasks/devops-pulse.md`.
 
 - Paquete instalado: `docengine-docs/node_modules/bootstrap/` (`dist/css`, `dist/js`, `scss/`, `js/src/`).
 - Copia servida: `devops-pulse/web/static/vendor/bootstrap.min.css` y `bootstrap.bundle.min.js`.
-- Skills oficiales: `.agents/skills/bootstrap-v6-install/SKILL.md`, `bootstrap-component/SKILL.md`, `bootstrap-component-js/SKILL.md`, `bootstrap-color-system/SKILL.md`.
+- Skills oficiales: `.agents/skills/bootstrap-v6-install/SKILL.md`, `bootstrap-component/SKILL.md`, `bootstrap-component-js/SKILL.md`, `bootstrap-color-system/SKILL.md`. Esas copias locales no se versionan: se restauran desde `skills-lock.json`, que fija su origen y su hash.
 - Documentación oficial: <https://getbootstrap.com/docs/6.0/components/dialog/>, <https://getbootstrap.com/docs/6.0/components/progress/>, <https://getbootstrap.com/docs/6.0/components/toast/>, <https://getbootstrap.com/docs/6.0/getting-started/javascript/>.
 - Integración previa del workspace: `docs/INTEGRACION_BOOTSTRAP_6_ALPHA.md`.
 - Aplicación donde se observaron: `devops-pulse/`, con su registro en `odd/tasks/devops-pulse.md`.
