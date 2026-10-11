@@ -174,3 +174,28 @@ explicación.
 - [ ] DP-17 — Icono de ayuda por tarjeta con diálogo explicativo bilingüe servido por el servidor y clonado sin petición.
 - [ ] DP-18 — Verificación de la iteración 2: `go test`, `go vet`, `go build`, `curl` (idioma, OOB) y navegador (tema, idioma, separación medida, ayuda).
 - [ ] DP-19 — Confirmar los commits de la iteración 2 (pendiente de autorización).
+
+## Defecto corregido (tipografía)
+
+Síntoma reportado por el usuario: toda la interfaz se veía en serif. Causa: en
+`app.css` las pilas de fuentes estaban entrecomilladas englobando la lista
+completa (`--bs-body-font-family: "Roboto, system-ui, sans-serif"`), lo que en
+una propiedad personalizada define **una sola familia** llamada
+`Roboto, system-ui, sans-serif` con comas dentro del nombre. No resuelve, así que
+el navegador usa su fuente por defecto, que es serif.
+
+Prueba de la corrección, medida con métricas de canvas resueltas por elemento y
+comparadas contra el serif:
+
+| Elemento | Familia declarada | Resuelve a | ¿Cae al serif? |
+| --- | --- | --- | --- |
+| Subtítulo | `Roboto, system-ui, sans-serif` | Roboto | No |
+| Encabezado principal | `"Roboto Condensed", …` | Roboto Condensed | No |
+| Título de tarjeta | `"Roboto Condensed", …` | Roboto Condensed | No |
+| Línea de registro | `"JetBrains Mono", …` | JetBrains Mono | No |
+| Campo de búsqueda | `Roboto, system-ui, sans-serif` | Roboto | No |
+
+Lección: el valor declarado y el valor resuelto se ven igual en el código; hay
+que medir el resuelto. Una comprobación previa mía (`document.fonts.check`) dio un
+falso negativo y otra midió la caja del bloque en lugar del texto, así que la
+conclusión válida es la de la tabla.

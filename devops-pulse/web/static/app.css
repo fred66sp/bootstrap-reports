@@ -1,7 +1,10 @@
 :root {
-  --bs-body-font-family: "Roboto, system-ui, sans-serif";
-  --bs-heading-font-family: "Roboto Condensed, Arial Narrow, sans-serif";
-  --bs-font-mono: "JetBrains Mono, ui-monospace, monospace";
+  /* Family lists must stay unquoted as a whole: quoting the list turns it into
+     a single family name containing commas, which never resolves and makes the
+     browser fall back to serif. Quote only multi-word family names. */
+  --bs-body-font-family: Roboto, system-ui, sans-serif;
+  --bs-heading-font-family: "Roboto Condensed", Arial Narrow, sans-serif;
+  --bs-font-mono: "JetBrains Mono", ui-monospace, monospace;
 }
 
 body {

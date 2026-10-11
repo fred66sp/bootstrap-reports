@@ -74,6 +74,25 @@ test -z "$missing"
 The command exits non-zero if any `--bs-*` token used by the page is absent from
 vendored Bootstrap CSS.
 
+## Font stacks
+
+Quote only the family names that need it, never the whole list. In a custom
+property, `"Roboto, system-ui, sans-serif"` is a single family name containing
+commas: it never resolves, and the browser falls back to its default font, which
+is serif. Write the list unquoted and quote only multi-word names:
+
+```css
+--bs-body-font-family: Roboto, system-ui, sans-serif;
+--bs-heading-font-family: "Roboto Condensed", Arial Narrow, sans-serif;
+--bs-font-mono: "JetBrains Mono", ui-monospace, monospace;
+```
+
+Check the resolved family, not only the declared value, because both look right
+in the source. In the browser console, compare the width a canvas reports for the
+element's computed `font-family` against the widths of the real family and of
+`serif`; equal widths for the family and a different width for `serif` prove the
+text is not falling back.
+
 ## Verification status
 
 Observed locally:
