@@ -29,6 +29,45 @@ const (
 	statusOffline serviceStatus = "Offline"
 )
 
+type language string
+
+const (
+	languageSpanish language = "es"
+	languageEnglish language = "en"
+)
+
+type messages map[string]string
+
+var messageTable = map[language]messages{
+	languageSpanish: {
+		"title": "DevOps Pulse · Panel de servicios", "tagline": "operaciones / telemetría en vivo", "theme group label": "Tema de color", "theme light": "Claro", "theme light label": "Usar tema claro", "theme dark": "Oscuro", "theme dark label": "Usar tema oscuro", "language group label": "Idioma", "eyebrow": "Sala de control", "heading": "Salud de los servicios, sin ruido.", "subtitle": "Una vista en vivo de los sistemas que sostienen tu entrega.", "search label": "Filtrar servicios", "updates": "Se actualiza cada 2 segundos", "live": "En vivo", "reconnecting": "Reconectando", "cpu": "CPU", "ram": "Memoria", "view logs": "Ver registros", "toggle": "Cambiar estado", "logs fallback title": "Registros del servicio", "logs title": "%s · Registros", "close": "Cerrar", "toast header": "Actualización del servicio", "status online": "En línea", "status offline": "Desconectado", "toast message": "%s ahora está %s.",
+	},
+	languageEnglish: {
+		"title": "DevOps Pulse · Service dashboard", "tagline": "operations / live telemetry", "theme group label": "Color theme", "theme light": "Light", "theme light label": "Use light theme", "theme dark": "Dark", "theme dark label": "Use dark theme", "language group label": "Language", "eyebrow": "Control room", "heading": "Service health, without the noise.", "subtitle": "A live view of the systems keeping your delivery moving.", "search label": "Filter services", "updates": "Updates every 2 seconds", "live": "Live", "reconnecting": "Reconnecting", "cpu": "CPU", "ram": "Memory", "view logs": "View logs", "toggle": "Toggle", "logs fallback title": "Service logs", "logs title": "%s · Logs", "close": "Close", "toast header": "Service update", "status online": "Online", "status offline": "Offline", "toast message": "%s is now %s.",
+	},
+}
+
+func resolveLanguage(r *http.Request) (language, bool) {
+	if value := r.URL.Query().Get("lang"); value == string(languageSpanish) || value == string(languageEnglish) {
+		return language(value), true
+	}
+	if cookie, err := r.Cookie("devops-pulse-lang"); err == nil && (cookie.Value == string(languageSpanish) || cookie.Value == string(languageEnglish)) {
+		return language(cookie.Value), false
+	}
+	return languageSpanish, false
+}
+
+func persistLanguageCookie(w http.ResponseWriter, lang language) {
+	http.SetCookie(w, &http.Cookie{Name: "devops-pulse-lang", Value: string(lang), Path: "/", MaxAge: 365 * 24 * 60 * 60, SameSite: http.SameSiteLaxMode})
+}
+
+func localizedStatus(status serviceStatus, lang language) string {
+	if status == statusOnline {
+		return messageTable[lang]["status online"]
+	}
+	return messageTable[lang]["status offline"]
+}
+
 type service struct {
 	ID      string
 	Name    string
@@ -113,8 +152,18 @@ func jitter(span int) int {
 }
 
 type serviceView struct {
-	Service   service
-	OutOfBand bool
+	Service     service
+	OutOfBand   bool
+	Messages    messages
+	Language    language
+	StatusLabel string
+	LogsTitle   string
+}
+
+type pageView struct {
+	Language language
+	Messages messages
+	Services []serviceView
 }
 
 type application struct {
@@ -143,16 +192,22 @@ func (a *application) handler() http.Handler {
 	return mux
 }
 
-func serviceViews(services []service, outOfBand bool) []serviceView {
+func serviceViews(services []service, outOfBand bool, lang language) []serviceView {
+	localized := messageTable[lang]
 	views := make([]serviceView, len(services))
 	for i, current := range services {
-		views[i] = serviceView{Service: current, OutOfBand: outOfBand}
+		views[i] = serviceView{Service: current, OutOfBand: outOfBand, Messages: localized, Language: lang, StatusLabel: localizedStatus(current.Status, lang), LogsTitle: fmt.Sprintf(localized["logs title"], current.Name)}
 	}
 	return views
 }
 
-func (a *application) index(w http.ResponseWriter, _ *http.Request) {
-	output, err := a.render("index.html", serviceViews(a.store.snapshot(), false))
+func (a *application) index(w http.ResponseWriter, r *http.Request) {
+	lang, fromQuery := resolveLanguage(r)
+	if fromQuery {
+		persistLanguageCookie(w, lang)
+	}
+	localized := messageTable[lang]
+	output, err := a.render("index.html", pageView{Language: lang, Messages: localized, Services: serviceViews(a.store.snapshot(), false, lang)})
 	if err != nil {
 		http.Error(w, "template rendering failed", http.StatusInternalServerError)
 		return
@@ -161,8 +216,8 @@ func (a *application) index(w http.ResponseWriter, _ *http.Request) {
 	_, _ = w.Write(output.Bytes())
 }
 
-func (a *application) renderGrid() (string, error) {
-	output, err := a.render("server-grid", serviceViews(a.store.snapshot(), true))
+func (a *application) renderGrid(lang language) (string, error) {
+	output, err := a.render("server-grid", pageView{Language: lang, Messages: messageTable[lang], Services: serviceViews(a.store.snapshot(), true, lang)})
 	return output.String(), err
 }
 
@@ -180,6 +235,10 @@ func writeSSEFrame(w http.ResponseWriter, html string) error {
 }
 
 func (a *application) metrics(w http.ResponseWriter, r *http.Request) {
+	lang, fromQuery := resolveLanguage(r)
+	if fromQuery {
+		persistLanguageCookie(w, lang)
+	}
 	w.Header().Set("Content-Type", "text/event-stream")
 	w.Header().Set("Cache-Control", "no-cache")
 	w.Header().Set("Connection", "keep-alive")
@@ -190,7 +249,7 @@ func (a *application) metrics(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	writeFrame := func() bool {
-		html, err := a.renderGrid()
+		html, err := a.renderGrid(lang)
 		if err != nil || writeSSEFrame(w, html) != nil {
 			return false
 		}
@@ -223,17 +282,32 @@ func (a *application) metrics(w http.ResponseWriter, r *http.Request) {
 }
 
 func (a *application) toggleService(w http.ResponseWriter, r *http.Request) {
+	lang, fromQuery := resolveLanguage(r)
+	if fromQuery {
+		persistLanguageCookie(w, lang)
+	}
+	if value := r.FormValue("lang"); value == string(languageSpanish) || value == string(languageEnglish) {
+		if r.URL.Query().Get("lang") == "" {
+			lang = language(value)
+		}
+	}
+	localized := messageTable[lang]
 	current, ok := a.store.toggle(r.FormValue("id"))
 	if !ok {
 		http.Error(w, "unknown service", http.StatusNotFound)
 		return
 	}
+	statusLabel := localizedStatus(current.Status, lang)
+	adverbialStatus := map[serviceStatus]string{statusOnline: "online", statusOffline: "offline"}[current.Status]
+	if lang == languageSpanish {
+		adverbialStatus = map[serviceStatus]string{statusOnline: "en línea", statusOffline: "desconectado"}[current.Status]
+	}
 	trigger, _ := json.Marshal(map[string]map[string]string{"pulse-toggled": {
-		"id": current.ID, "name": current.Name, "status": string(current.Status),
+		"id": current.ID, "name": current.Name, "status": string(current.Status), "message": fmt.Sprintf(localized["toast message"], current.Name, adverbialStatus), "statusLabel": statusLabel,
 	}})
 	w.Header().Set("HX-Trigger", string(trigger))
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	output, err := a.render("card-surface", serviceView{Service: current})
+	output, err := a.render("card-surface", serviceViews([]service{current}, false, lang)[0])
 	if err != nil {
 		http.Error(w, "template rendering failed", http.StatusInternalServerError)
 		return

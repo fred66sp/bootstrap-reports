@@ -27,7 +27,9 @@ npm install && npm run sync:assets
 - `GET /metrics` sends server-rendered `server-grid` HTML over SSE. The grid
   uses `hx-swap="none"`, so HTMX applies only the three per-service OOB
   fragments (status, metrics, and logs); no browser JSON parsing is used and
-  card roots and footer forms survive every tick.
+  card roots and footer forms survive every tick. Spanish is the default
+  server-resolved language; valid `lang` query values persist in a cookie and
+  the same language is carried by the SSE stream and toggle form.
 - One `serviceView` model and shared fragment templates render the initial card,
   SSE OOB elements, and toggle response. The view's `OutOfBand` flag adds
   `hx-swap-oob="true"` only to SSE output. Metrics use bounded random walks and

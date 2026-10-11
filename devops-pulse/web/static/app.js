@@ -22,23 +22,24 @@ Alpine.data('pulseDashboard', () => ({
     document.documentElement.setAttribute('data-bs-theme', theme)
     try { localStorage.setItem('devops-pulse-theme', theme) } catch (e) { /* ignore */ }
   },
-  openLogs(id, name) {
+  openLogs(id) {
     const holder = document.getElementById(`logs-${id}`)
     const body = document.getElementById('logs-body')
     const dialog = document.getElementById('logs-dialog')
     if (!holder || !body || !dialog) return
-    document.getElementById('logs-title').textContent = `${name} logs`
+    const trigger = document.querySelector(`[data-dialog-title][data-service-id="${CSS.escape(id)}"]`)
+    document.getElementById('logs-title').textContent = trigger?.dataset.dialogTitle || document.getElementById('logs-title').textContent
     body.replaceChildren(...[...holder.children].map(node => node.cloneNode(true)))
     Dialog.getOrCreateInstance(dialog).show()
   },
   notify(detail) {
-    const status = detail?.status || 'Unknown'
+    const status = detail?.status || 'Offline'
     const toast = document.getElementById('pulse-toast')
     const body = document.getElementById('pulse-toast-body')
     if (!toast || !body) return
     toast.classList.toggle('theme-success', status === 'Online')
     toast.classList.toggle('theme-danger', status !== 'Online')
-    body.textContent = `${detail.name} is now ${status}.`
+    body.textContent = detail?.message || ''
     Toast.getOrCreateInstance(toast, { delay: 4000 }).show()
   }
 }))
