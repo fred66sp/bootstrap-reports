@@ -43,7 +43,7 @@ La referencia inicial del trabajo es el anuncio oficial:
 | `docengine-docs/` | Aplicación web de documentación de docengine, autocontenida (Vite + Bootstrap). |
 | `odd/tasks/` | Tareas de trabajo recuperables del flujo ODD. |
 | `skills-lock.json` | Selección y hashes de las skills oficiales instaladas para el proyecto. |
-| `.agents/skills/` | Copias locales de las skills del agente; no se versionan. |
+| `.agents/skills/` | Skills del agente para este proyecto, versionadas; las de origen remoto se fijan en `skills-lock.json`. |
 | `.gitattributes` | Normalización de finales de línea y ficheros binarios concretos. |
 | `.gitignore` | Exclusiones de secretos, estado local y artefactos generados. |
 
@@ -61,8 +61,10 @@ workspace son documentación y tareas compartidas.
   `main` sin autorización explícita.
 - No se versionan secretos, dependencias instaladas, cachés ni salidas
   generadas.
-- Las skills del agente se recuperan desde `skills-lock.json`; no se editan a
-  mano dentro de `.agents/skills/`.
+- Las skills de origen remoto se recuperan desde `skills-lock.json`; no se
+  editan a mano dentro de `.agents/skills/`. Las skills locales del proyecto sí
+  se versionan aquí y se editan en su sitio; la procedencia de cada una está en
+  `.agents/skills/README.md`.
 
 ## Estado
 

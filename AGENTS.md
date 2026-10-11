@@ -38,8 +38,8 @@ npx skills list --agent opencode
 
 ## Skills del agente
 
-- Las skills oficiales seleccionadas están en `.agents/skills/` y su selección/hash está en `skills-lock.json`.
-- `.agents/` está ignorado; no editar sus copias manualmente. Restaurar desde el lockfile con `npx skills experimental_install`.
+- Las skills del proyecto están en `.agents/skills/` y se versionan con el repositorio; las de origen remoto se fijan además en `skills-lock.json` con su origen y su hash. La procedencia de cada una está en `.agents/skills/README.md`.
+- No editar a mano las copias de origen remoto (`bootstrap-*`): se restauran desde el lockfile con `npx skills experimental_install`. Las skills locales del proyecto sí se editan en su sitio.
 - Antes de cambiar integración, componentes, JavaScript, color o utilities, leer la `SKILL.md` oficial aplicable y la documentación enlazada desde `docs/INTEGRACION_BOOTSTRAP_6_ALPHA.md`.
 
 ## Flujo del repositorio

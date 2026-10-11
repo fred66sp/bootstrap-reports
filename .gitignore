@@ -1,11 +1,14 @@
 # Local tool and runtime state
 .atl/
-.agents/
 .pi/
 .codegraph/
 .engram/
 .strm/*
 !.strm/skills-manifest.json
+
+# .agents/ se versiona a propósito: las skills del proyecto viven en
+# .agents/skills/ y tienen que sobrevivir a un clon. Su procedencia se describe
+# en .agents/skills/README.md.
 
 # Secrets and local configuration
 .env
