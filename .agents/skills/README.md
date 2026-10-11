@@ -19,7 +19,7 @@ material del proyecto y tienen que sobrevivir a un clon.
 | `bootstrap-utility-api` | `twbs/bootstrap`, MIT | Se restaura desde `skills-lock.json` |
 | `bootstrap-v6-install` | `twbs/bootstrap`, MIT | Se restaura desde `skills-lock.json` |
 | `bootstrap-vite` | `twbs/bootstrap`, MIT | Se restaura desde `skills-lock.json` |
-| `frontend-design` | Copia de terceros, procedencia no documentada en el repositorio | Pendiente de aclarar su licencia |
+| `frontend-design` | Local | Se edita en su sitio; no declara licencia |
 
 ## Reglas
 
@@ -38,6 +38,5 @@ material del proyecto y tienen que sobrevivir a un clon.
   licencia MIT, pero los `SKILL.md` copiados **no incluyen el texto de la
   licencia**. Si el repositorio se publica, conviene añadirlo o enlazar el
   original.
-- `frontend-design` declara en su frontmatter `license: Complete terms in
-  LICENSE.txt`, y ese archivo **no está** en la carpeta: solo se copió
-  `SKILL.md`. Antes de reutilizarla o publicarla hay que recuperar su licencia.
+- `frontend-design` no declara licencia. Su frontmatter citaba un
+  `LICENSE.txt` que nunca existió en esta carpeta: era un error y se retiró.
