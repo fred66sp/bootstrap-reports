@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Roboto+Condensed:wght@500;600;700&family=Roboto:wght@400;500;600;700&display=swap">
+  <script>
+    (function () {
+      var stored = null
+      try { stored = localStorage.getItem('devops-pulse-theme') } catch (e) {   }
+      var theme = stored === 'light' || stored === 'dark' ? stored : null
+      if (!theme) {
+        try { theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light' } catch (e) { theme = 'light' }
+      }
+      document.documentElement.setAttribute('data-bs-theme', theme)
+    })()
+  </script>
+  <title>DevOps Pulse · Panel de servicios</title>
+  <link rel="stylesheet" href="/static/vendor/bootstrap.min.css">
+  <link rel="stylesheet" href="/static/app.css">
+</head>
+<body class="bg-2" x-data="pulseDashboard">
+  <header class="site-header">
+    <div class="container">
+      <div class="site-header__bar d-flex align-items-center justify-content-between py-2">
+        <a class="brand" href="/">
+          <span class="brand__mark" aria-hidden="true">DP</span>
+          <span class="d-flex flex-column lh-sm">
+            <span>DevOps Pulse</span>
+            <span class="brand__tag">operaciones / telemetría en vivo</span>
+          </span>
+        </a>
+
+        <div class="site-controls">
+          <div class="segmented" role="group" aria-label="Idioma">
+            <a class="segmented__option is-active" href="?lang=es" hreflang="es" aria-current="true">ES</a>
+            <a class="segmented__option" href="?lang=en" hreflang="en">EN</a>
+          </div>
+          <div class="segmented" role="group" aria-label="Tema de color">
+            <button type="button" class="segmented__option" data-theme-option="light" aria-label="Usar tema claro" aria-pressed="false" x-on:click="setTheme('light')" x-bind:aria-pressed="theme === 'light'" x-bind:class="{ 'is-active': theme === 'light' }">
+              <svg class="segmented__icon" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6zm0 1a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM8 0a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 0zm0 13a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 13zM16 8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2A.5.5 0 0 1 16 8zM3 8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2A.5.5 0 0 1 3 8z"/></svg>
+            </button>
+            <button type="button" class="segmented__option" data-theme-option="dark" aria-label="Usar tema oscuro" aria-pressed="false" x-on:click="setTheme('dark')" x-bind:aria-pressed="theme === 'dark'" x-bind:class="{ 'is-active': theme === 'dark' }">
+              <svg class="segmented__icon" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M6 .278a.768.768 0 0 1 .08.858 7.208 7.208 0 0 0-.878 3.46c0 4.021 3.278 7.277 7.318 7.277.527 0 1.04-.055 1.533-.16a.787.787 0 0 1 .81.316.733.733 0 0 1-.031.893A8.349 8.349 0 0 1 8.344 16C3.734 16 0 12.286 0 7.71 0 4.266 2.114 1.312 5.124.06A.752.752 0 0 1 6 .278z"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+  <main class="container py-5" hx-ext="sse" sse-connect="/metrics?lang=es" @pulse-toggled.document="notify($event.detail)">
+    <section class="pulse-heading mb-4">
+      <div>
+        <p class="eyebrow fg-3 mb-2">Sala de control</p>
+        <h1 class="fs-4xl mb-2">Salud de los servicios, sin ruido.</h1>
+        <p class="fg-3 mb-0">Una vista en vivo de los sistemas que sostienen tu entrega.</p>
+      </div>
+      <span class="badge rounded-pill" :class="connected ? 'theme-success' : 'theme-warning'" x-text="connected ? 'En vivo' : 'Reconectando'">Reconectando</span>
+    </section>
+    <section class="toolbar card border-subtle mb-4">
+      <div class="card-body d-flex flex-wrap gap-3 align-items-center">
+        <label class="visually-hidden" for="service-search">Filtrar servicios</label>
+        <div class="input-group search-box">
+          <span class="input-group-text" aria-hidden="true"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.064.078.102.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.119-.099zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/></svg></span>
+          <input id="service-search" class="form-control" type="search" placeholder="Filtrar servicios" aria-label="Filtrar servicios" x-model="query">
+        </div>
+        <span class="fg-3 small">Se actualiza cada 2 segundos</span>
+      </div>
+    </section>
+    <div id="metrics-grid" class="row g-7" sse-swap="metrics" hx-swap="none">
+      <div class="col-12 md:col-6 xl:col-4" x-show="match('API Gateway')"><article class="card service-card h-100 border-subtle">
+    <div class="card-header d-flex flex-row justify-content-between align-items-center">
+      <div class="d-flex flex-row align-items-center gap-2">
+        <h2 class="h5 mb-0">API Gateway</h2>
+        <span id="status-api-gateway" class="badge rounded-pill theme-success">En línea</span>
+      </div>
+      <button type="button" class="btn-icon theme-secondary" data-dialog-title="API Gateway · Ayuda" data-service-id="api-gateway" aria-label="Ayuda sobre API Gateway" @click="openHelp($el, 'api-gateway')"><svg class="pulse-icon" width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1zm0 13A6 6 0 1 1 8 2a6 6 0 0 1 0 12zM7.25 5.25a.75.75 0 1 1 1.5 0 .75.75 0 0 1-1.5 0zM7 7h2v5H7V7z"/></svg></button>
+    </div>
+    <div class="card-body">
+      <div id="metrics-api-gateway"><div class="metric-row"><div class="d-flex justify-content-between small mb-2"><span>CPU</span><span>34%</span></div><div class="progress" role="progressbar" aria-label="CPU" aria-valuenow="34" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar theme-primary" style="width: 34%">34%</div></div></div><div class="metric-row"><div class="d-flex justify-content-between small mb-2"><span>Memoria</span><span>48%</span></div><div class="progress" role="progressbar" aria-label="Memoria" aria-valuenow="48" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar theme-info" style="width: 48%">48%</div></div></div></div>
+    </div>
+    <div class="card-footer d-flex justify-content-between align-items-center">
+      <button class="btn-text theme-primary p-0" type="button" data-dialog-title="API Gateway · Registros" data-service-id="api-gateway" aria-label="Ver registros: API Gateway" @click="openLogs($el, 'api-gateway')">Ver registros</button>
+      <form hx-post="/toggle-service" hx-vals='{"id":"api-gateway","lang":"es"}' hx-target="closest .card" hx-swap="outerHTML" hx-indicator="#toggle-spinner-api-gateway">
+        <button class="btn-outline theme-secondary btn-sm" type="submit"><span class="spinner-border spinner-sm htmx-indicator" id="toggle-spinner-api-gateway" aria-hidden="true"></span><span>Cambiar estado</span></button>
+      </form>
+    </div>
+    <div id="logs-api-gateway" hidden><ul class="list-group list-group-flush"><li class="list-group-item bg-transparent px-0">09:41:02 request router ready</li></ul></div>
+    <div id="help-api-gateway" hidden>
+      <p>Este servicio se monitoriza con métricas simuladas; el servidor envía un frame de Server-Sent Events cada dos segundos y la página intercambia los fragmentos afectados sin recargarse.</p>
+      <ul>
+        <li>CPU: porcentaje de uso simulado, con un paseo aleatorio acotado entre 2 y 98.</li>
+        <li>Memoria: porcentaje de uso simulado, con el mismo comportamiento.</li>
+        <li>Estado: en línea o desconectado; el botón de cambio lo alterna en el servidor y devuelve la tarjeta actualizada.</li>
+      </ul>
+      <p>Las líneas de registro las genera el servidor y se envían dentro de la tarjeta; el diálogo de registros detallados solo las clona, por eso se abre al instante.</p>
+      <p>Este ejemplo no consulta ningún sistema real.</p>
+    </div>
+  </article></div><div class="col-12 md:col-6 xl:col-4" x-show="match('Checkout API')"><article class="card service-card h-100 border-subtle">
+    <div class="card-header d-flex flex-row justify-content-between align-items-center">
+      <div class="d-flex flex-row align-items-center gap-2">
+        <h2 class="h5 mb-0">Checkout API</h2>
+        <span id="status-checkout" class="badge rounded-pill theme-success">En línea</span>
+      </div>
+      <button type="button" class="btn-icon theme-secondary" data-dialog-title="Checkout API · Ayuda" data-service-id="checkout" aria-label="Ayuda sobre Checkout API" @click="openHelp($el, 'checkout')"><svg class="pulse-icon" width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1zm0 13A6 6 0 1 1 8 2a6 6 0 0 1 0 12zM7.25 5.25a.75.75 0 1 1 1.5 0 .75.75 0 0 1-1.5 0zM7 7h2v5H7V7z"/></svg></button>
+    </div>
+    <div class="card-body">
+      <div id="metrics-checkout"><div class="metric-row"><div class="d-flex justify-content-between small mb-2"><span>CPU</span><span>62%</span></div><div class="progress" role="progressbar" aria-label="CPU" aria-valuenow="62" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar theme-primary" style="width: 62%">62%</div></div></div><div class="metric-row"><div class="d-flex justify-content-between small mb-2"><span>Memoria</span><span>57%</span></div><div class="progress" role="progressbar" aria-label="Memoria" aria-valuenow="57" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar theme-info" style="width: 57%">57%</div></div></div></div>
+    </div>
+    <div class="card-footer d-flex justify-content-between align-items-center">
+      <button class="btn-text theme-primary p-0" type="button" data-dialog-title="Checkout API · Registros" data-service-id="checkout" aria-label="Ver registros: Checkout API" @click="openLogs($el, 'checkout')">Ver registros</button>
+      <form hx-post="/toggle-service" hx-vals='{"id":"checkout","lang":"es"}' hx-target="closest .card" hx-swap="outerHTML" hx-indicator="#toggle-spinner-checkout">
+        <button class="btn-outline theme-secondary btn-sm" type="submit"><span class="spinner-border spinner-sm htmx-indicator" id="toggle-spinner-checkout" aria-hidden="true"></span><span>Cambiar estado</span></button>
+      </form>
+    </div>
+    <div id="logs-checkout" hidden><ul class="list-group list-group-flush"><li class="list-group-item bg-transparent px-0">09:41:02 payment queue healthy</li></ul></div>
+    <div id="help-checkout" hidden>
+      <p>Este servicio se monitoriza con métricas simuladas; el servidor envía un frame de Server-Sent Events cada dos segundos y la página intercambia los fragmentos afectados sin recargarse.</p>
+      <ul>
+        <li>CPU: porcentaje de uso simulado, con un paseo aleatorio acotado entre 2 y 98.</li>
+        <li>Memoria: porcentaje de uso simulado, con el mismo comportamiento.</li>
+        <li>Estado: en línea o desconectado; el botón de cambio lo alterna en el servidor y devuelve la tarjeta actualizada.</li>
+      </ul>
+      <p>Las líneas de registro las genera el servidor y se envían dentro de la tarjeta; el diálogo de registros detallados solo las clona, por eso se abre al instante.</p>
+      <p>Este ejemplo no consulta ningún sistema real.</p>
+    </div>
+  </article></div><div class="col-12 md:col-6 xl:col-4" x-show="match('Worker East')"><article class="card service-card h-100 border-subtle">
+    <div class="card-header d-flex flex-row justify-content-between align-items-center">
+      <div class="d-flex flex-row align-items-center gap-2">
+        <h2 class="h5 mb-0">Worker East</h2>
+        <span id="status-worker-east" class="badge rounded-pill theme-success">En línea</span>
+      </div>
+      <button type="button" class="btn-icon theme-secondary" data-dialog-title="Worker East · Ayuda" data-service-id="worker-east" aria-label="Ayuda sobre Worker East" @click="openHelp($el, 'worker-east')"><svg class="pulse-icon" width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1zm0 13A6 6 0 1 1 8 2a6 6 0 0 1 0 12zM7.25 5.25a.75.75 0 1 1 1.5 0 .75.75 0 0 1-1.5 0zM7 7h2v5H7V7z"/></svg></button>
+    </div>
+    <div class="card-body">
+      <div id="metrics-worker-east"><div class="metric-row"><div class="d-flex justify-content-between small mb-2"><span>CPU</span><span>27%</span></div><div class="progress" role="progressbar" aria-label="CPU" aria-valuenow="27" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar theme-primary" style="width: 27%">27%</div></div></div><div class="metric-row"><div class="d-flex justify-content-between small mb-2"><span>Memoria</span><span>39%</span></div><div class="progress" role="progressbar" aria-label="Memoria" aria-valuenow="39" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar theme-info" style="width: 39%">39%</div></div></div></div>
+    </div>
+    <div class="card-footer d-flex justify-content-between align-items-center">
+      <button class="btn-text theme-primary p-0" type="button" data-dialog-title="Worker East · Registros" data-service-id="worker-east" aria-label="Ver registros: Worker East" @click="openLogs($el, 'worker-east')">Ver registros</button>
+      <form hx-post="/toggle-service" hx-vals='{"id":"worker-east","lang":"es"}' hx-target="closest .card" hx-swap="outerHTML" hx-indicator="#toggle-spinner-worker-east">
+        <button class="btn-outline theme-secondary btn-sm" type="submit"><span class="spinner-border spinner-sm htmx-indicator" id="toggle-spinner-worker-east" aria-hidden="true"></span><span>Cambiar estado</span></button>
+      </form>
+    </div>
+    <div id="logs-worker-east" hidden><ul class="list-group list-group-flush"><li class="list-group-item bg-transparent px-0">09:41:02 job runner waiting</li></ul></div>
+    <div id="help-worker-east" hidden>
+      <p>Este servicio se monitoriza con métricas simuladas; el servidor envía un frame de Server-Sent Events cada dos segundos y la página intercambia los fragmentos afectados sin recargarse.</p>
+      <ul>
+        <li>CPU: porcentaje de uso simulado, con un paseo aleatorio acotado entre 2 y 98.</li>
+        <li>Memoria: porcentaje de uso simulado, con el mismo comportamiento.</li>
+        <li>Estado: en línea o desconectado; el botón de cambio lo alterna en el servidor y devuelve la tarjeta actualizada.</li>
+      </ul>
+      <p>Las líneas de registro las genera el servidor y se envían dentro de la tarjeta; el diálogo de registros detallados solo las clona, por eso se abre al instante.</p>
+      <p>Este ejemplo no consulta ningún sistema real.</p>
+    </div>
+  </article></div><div class="col-12 md:col-6 xl:col-4" x-show="match('Worker West')"><article class="card service-card h-100 border-subtle">
+    <div class="card-header d-flex flex-row justify-content-between align-items-center">
+      <div class="d-flex flex-row align-items-center gap-2">
+        <h2 class="h5 mb-0">Worker West</h2>
+        <span id="status-worker-west" class="badge rounded-pill theme-danger">Desconectado</span>
+      </div>
+      <button type="button" class="btn-icon theme-secondary" data-dialog-title="Worker West · Ayuda" data-service-id="worker-west" aria-label="Ayuda sobre Worker West" @click="openHelp($el, 'worker-west')"><svg class="pulse-icon" width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1zm0 13A6 6 0 1 1 8 2a6 6 0 0 1 0 12zM7.25 5.25a.75.75 0 1 1 1.5 0 .75.75 0 0 1-1.5 0zM7 7h2v5H7V7z"/></svg></button>
+    </div>
+    <div class="card-body">
+      <div id="metrics-worker-west"><div class="metric-row"><div class="d-flex justify-content-between small mb-2"><span>CPU</span><span>8%</span></div><div class="progress" role="progressbar" aria-label="CPU" aria-valuenow="8" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar theme-primary" style="width: 8%">8%</div></div></div><div class="metric-row"><div class="d-flex justify-content-between small mb-2"><span>Memoria</span><span>31%</span></div><div class="progress" role="progressbar" aria-label="Memoria" aria-valuenow="31" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar theme-info" style="width: 31%">31%</div></div></div></div>
+    </div>
+    <div class="card-footer d-flex justify-content-between align-items-center">
+      <button class="btn-text theme-primary p-0" type="button" data-dialog-title="Worker West · Registros" data-service-id="worker-west" aria-label="Ver registros: Worker West" @click="openLogs($el, 'worker-west')">Ver registros</button>
+      <form hx-post="/toggle-service" hx-vals='{"id":"worker-west","lang":"es"}' hx-target="closest .card" hx-swap="outerHTML" hx-indicator="#toggle-spinner-worker-west">
+        <button class="btn-outline theme-secondary btn-sm" type="submit"><span class="spinner-border spinner-sm htmx-indicator" id="toggle-spinner-worker-west" aria-hidden="true"></span><span>Cambiar estado</span></button>
+      </form>
+    </div>
+    <div id="logs-worker-west" hidden><ul class="list-group list-group-flush"><li class="list-group-item bg-transparent px-0">09:41:02 deployment paused</li></ul></div>
+    <div id="help-worker-west" hidden>
+      <p>Este servicio se monitoriza con métricas simuladas; el servidor envía un frame de Server-Sent Events cada dos segundos y la página intercambia los fragmentos afectados sin recargarse.</p>
+      <ul>
+        <li>CPU: porcentaje de uso simulado, con un paseo aleatorio acotado entre 2 y 98.</li>
+        <li>Memoria: porcentaje de uso simulado, con el mismo comportamiento.</li>
+        <li>Estado: en línea o desconectado; el botón de cambio lo alterna en el servidor y devuelve la tarjeta actualizada.</li>
+      </ul>
+      <p>Las líneas de registro las genera el servidor y se envían dentro de la tarjeta; el diálogo de registros detallados solo las clona, por eso se abre al instante.</p>
+      <p>Este ejemplo no consulta ningún sistema real.</p>
+    </div>
+  </article></div>
+    </div>
+  </main>
+  <dialog id="logs-dialog" class="dialog dialog-lg dialog-slide-up">
+  <div class="dialog-header"><h2 class="dialog-title" id="logs-title">Registros del servicio</h2><button type="button" class="btn-close" data-bs-dismiss="dialog" aria-label="Cerrar"></button></div>
+  <div class="dialog-body" id="logs-body"></div>
+  <div class="dialog-footer"><button type="button" class="btn-solid theme-secondary" data-bs-dismiss="dialog">Cerrar</button></div>
+</dialog>
+<dialog id="service-help-dialog" class="dialog dialog-lg dialog-slide-up" aria-labelledby="service-help-title">
+  <div class="dialog-header"><h2 class="dialog-title" id="service-help-title">Ayuda del servicio</h2><button type="button" class="btn-close" data-bs-dismiss="dialog" aria-label="Cerrar"></button></div>
+  <div class="dialog-body" id="service-help-body"></div>
+  <div class="dialog-footer"><button type="button" class="btn-solid theme-secondary" data-bs-dismiss="dialog">Cerrar</button></div>
+</dialog>
+<div class="toast-container position-fixed bottom-0 end-0 p-3"><div id="pulse-toast" class="toast" role="status" aria-live="polite"><div class="toast-header"><strong class="me-auto">Actualización del servicio</strong><button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Cerrar"></button></div><div class="toast-body" id="pulse-toast-body"></div></div></div>
+  <script defer src="/static/vendor/htmx.min.js"></script>
+  <script defer src="/static/vendor/htmx-ext-sse.min.js"></script>
+  <script type="module" src="/static/app.js"></script>
+</body>
+</html>

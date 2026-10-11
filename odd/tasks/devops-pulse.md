@@ -357,3 +357,138 @@ una sección explícita de límites y comprobaciones pendientes.
   cliente muerto de golpe se libera en 4 s y que, con el testigo global, esas
   conexiones ya no alteran el ritmo de los datos. Desaparecen al reiniciar el
   servidor.
+
+## Iteración 5 — Integración del motor de plantillas Jet 6
+
+Petición del usuario: integrar en `devops-pulse` el motor de plantillas Jet 6,
+sobre la actualización de skills que ya declara Jet como motor predeterminado
+del stack Go + HTMX del proyecto.
+
+### Decisiones del usuario
+
+- **Forma de la migración: idiomática completa.** `web/views/` con layout de
+documento (`extends`/`block`/`yield`), páginas y fragmentos HTMX autónomos; un
+solo archivo por fragmento, reutilizado desde la página, la respuesta del
+toggle y el frame SSE. Se descarta el porte mecánico 1:1.
+- **Cierre de Git:** rama de tarea `feature/jet6-devops-pulse` con un commit por
+unidad de trabajo. Sin `push`, sin `merge`, sin etiquetas.
+
+### Evidencia de fuentes comprobada antes de escribir código
+
+| Hecho | Fuente |
+| --- | --- |
+| API v6: `NewSet(loader, opts...)`, `NewOSFileSystemLoader`, `NewInMemLoader`, `GetTemplate`, `Template.Execute(w, VarMap, data)` | pkg.go.dev `github.com/CloudyKit/jet/v6` |
+| `Loader` = `Exists(string) bool` + `Open(string) (io.ReadCloser, error)`; las rutas se resuelven a rutas absolutas con `/` y relativas al archivo que contiene `extends`/`include`/`import` | `loader.go` del repositorio oficial |
+| El escaping está activado por defecto (`escapee: template.HTMLEscape`) y es escape HTML **genérico**, no contextual como `html/template` | `set.go` del repositorio oficial |
+| `Template.Execute` es seguro en concurrencia: cada ejecución toma un `*Runtime` de un `sync.Pool` | `eval.go` del repositorio oficial |
+| Sintaxis: `extends` al inicio, `block`/`yield`/`content`, `import`, `include` con contexto como último argumento, `{{ try }}`, ternario, *pipelines*, comentarios `{* *}` | `docs/syntax.md` oficial |
+| Versión a fijar: `v6.3.3`, la última de la línea v6 | `go list -m -versions github.com/CloudyKit/jet/v6` |
+| El escape de `text/template.HTMLEscape` cubre NUL, `"`, `'`, `&`, `<`, `>`; el de `html/template` cubre además `+` | `$GOROOT/src/text/template/funcs.go:600-621` y `$GOROOT/src/html/template/html.go` |
+| `html/template` solo se usa en `devops-pulse/main.go`; `docengine-docs/` es Vite/JS | búsqueda en el árbol |
+| RDD está apagado (`global: off`), así que no hay ciclo de revisión nativa para este candidato | `gentle-ai review mode status` |
+
+### Defectos detectados en la exploración (no corregidos aún)
+
+1. **Referencia rota en la skill actualizada.** `web-stack-architecture/SKILL.md`
+   quedó con `https://pkg.go.dev/Jet 6`, que no es una URL válida; las otras
+   skills apuntan a `https://pkg.go.dev/github.com/CloudyKit/jet/v6`.
+2. **La skill nueva no está registrada.** `.agents/skills/README.md` no lista
+   `jet-template-engine` en su tabla de procedencia, y el archivo es la única
+   fuente de procedencia que el propio README declara obligatoria.
+3. **Código muerto.** `renderGrid` no se llama desde ningún punto de `main.go`
+   ni de `main_test.go` (solo su definición, `main.go:254`). Con ella quedan sin
+   ejercitar el `{{define "service-oob"}}` y la rama `OutOfBand` de
+   `server-grid`: portarlos a Jet sería mantener vistas que ninguna prueba
+   cubre.
+
+### Criterio de coste — presupuesto declarado antes de implementar
+
+- **Presupuesto:** salida byte a byte idéntica a la baseline congelada (diff de
+  0 líneas) en la página ES/EN, la tarjeta del toggle y los tres frames SSE
+  deterministas; ≤ 5.215 B por tick estacionario sin comprimir y ≤ 276 B por
+  tick en el cable con gzip; coste de render por tick no peor que la baseline medida
+  (`go test -bench`, ns/op y B/op); sin goroutines nuevas ni estado por conexión.
+- **Alternativa más barata que cumple el requisito y por qué se descarta:**
+  conservar `html/template` (cero dependencias nuevas, cero riesgo). Se
+  descarta porque la skill del proyecto ya declara Jet 6 como motor
+  predeterminado del stack y el propósito del POC es validar esa integración.
+- **Medición que demostrará el cumplimiento:** diff byte a byte contra los
+  golden files congelados antes de migrar, comparación de los números de
+  `-bench` registrados antes y después, y contador de bytes sobre una conexión
+  SSE real con y sin gzip.
+
+### Baseline congelada y medida antes de migrar (JET-21)
+
+Golden files deterministas en `devops-pulse/testdata/`, generados con
+`go test -run TestRenderedOutputMatchesFrozenBaseline -update` contra el motor
+`html/template` todavía en uso:
+
+| Caso | Bytes | Qué cubre |
+| --- | --- | --- |
+| `page-es` | 19.931 | documento completo en español |
+| `page-en` | 19.534 | documento completo en inglés |
+| `toggle-es` | 3.297 | `card-surface` devuelta por `POST /toggle-service` |
+| `tick-first-es` | 5.601 | primer frame SSE: métricas, logs y los cuatro estados |
+| `tick-steady-es` | 5.178 | frame SSE estacionario: métricas y logs, sin estados |
+| `tick-status-change-es` | 5.283 | frame SSE con el estado de `checkout` cambiado |
+
+Los casos SSE usan un anillo de logs determinista de seis líneas por servicio
+(`fillLogRing`), porque `advanceMetrics` marca las líneas con reloj de pared y el
+anillo sembrado tiene una sola línea: sin ese fixture el baseline describiría un
+frame irreal.
+
+Coste medido con `html/template`, `go test -run XXX -bench . -benchmem -count=5`:
+
+| Escenario | ns/op | B/op | allocs/op |
+| --- | --- | --- | --- |
+| `BenchmarkPageRender` (documento `/`) | ~271.500 | 140.990 | 2.167 |
+| `BenchmarkTickFrameRender` (frame de 5.178 B) | ~105.800 | 58.892 | 801 |
+
+Coste medido en el cable, servidor real tras 12 s de calentamiento (anillo
+completo, 24 elementos `<li>` por frame) con `curl -sN`:
+
+| Métrica | Valor |
+| --- | --- |
+| Frame estacionario sin comprimir | 5.211–5.231 B en el cable (HTML 5.190–5.210 B) |
+| Primer frame de una conexión nueva | 5.634 B (incluye los cuatro fragmentos de estado) |
+| Frame estacionario con gzip | 271,0 B de media por frame |
+
+**Discrepancia detectada y conservada.** La tabla de la iteración 4 registra
+4.259 B por tick sin comprimir y esa cifra no se reproduce. La medición se hizo
+entonces sobre una conexión recién abierta, con el anillo de logs a media carga
+(12 elementos `<li>` por frame en lugar de 24), así que subestimaba el estado
+estacionario en unos 900 B. La cifra de gzip de la iteración 4 (276 B) sí se
+reproduce (271 B). No se reescribe la tabla histórica: se conserva y se corrige
+el presupuesto de esta iteración con la medición nueva.
+
+### Tareas de la iteración 5
+
+- [x] JET-20 — Registrar la actualización de skills: alta de `jet-template-engine`
+  en `.agents/skills/README.md`, corrección de la referencia rota en
+  `web-stack-architecture/SKILL.md` y regeneración del índice no versionado.
+  **Cerrada** en `48c64e5`. El índice `.atl/skill-registry.md` ya listaba la
+  skill nueva (lo genera la extensión) y no se versiona.
+- [x] JET-21 — Crear `feature/jet6-devops-pulse` y congelar la baseline de
+  render de `html/template` como golden files deterministas, con la medición
+  previa de coste por tick. **Cerrada.** RED observado con los golden ausentes,
+  GREEN tras `-update`, `gofmt` y `go vet` limpios, seis cifras de coste
+  registradas y una discrepancia encontrada en la tabla histórica.
+- [ ] JET-22 — Migrar `devops-pulse` a Jet 6 `v6.3.3`: dependencia, loader sobre
+  `embed.FS`, `Set` con compilación de todas las vistas al arrancar, vistas en
+  `web/views/` y `main.go` enlazado, con los golden files byte-idénticos.
+- [ ] JET-23 — Añadir guardas: escaping de metacaracteres HTML, invariante de
+  los literales JS de Alpine, paridad de claves ES/EN, ruta de fallo de render
+  sin escritura parcial y ejecución concurrente bajo `-race`.
+- [ ] JET-25 — Eliminar la ruta muerta `renderGrid` / `service-oob` con su
+  justificación.
+- [ ] JET-24 — Verificar: `go test`, `go vet`, `go build`, `-race`, benchmark,
+  bytes por tick antes y después, `curl` sobre las rutas reales y comprobación
+  en navegador.
+- [ ] JET-26 — Documentar los hallazgos de Jet en `devops-pulse/README.md` y
+  cerrar la tarea.
+
+### Progreso de la iteración 5
+
+- Exploración completada sin haber modificado ningún archivo del proyecto.
+  Los cambios previos sin confirmar del usuario (cuatro `SKILL.md` y la skill
+  nueva) se conservan intactos.
