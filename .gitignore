@@ -1,6 +1,7 @@
 # Local tool and runtime state
 .atl/
 .agents/
+.pi/
 .codegraph/
 .engram/
 .strm/*
