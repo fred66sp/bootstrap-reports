@@ -544,6 +544,17 @@ afectar a la salida. En Jet, no: `fragments/` y `partials/` tienen que cerrar si
    fallo de arranque con la ruta de la vista.
 4. **La indirección por nombre desaparece**: `extends`/`block`/`yield` para el
    documento, `include` con contexto explícito para los componentes.
+5. **Dentro de un literal JavaScript de Alpine, el escaping HTML de Jet no es una
+   garantía de JavaScript.** El escapador convierte `'` en `&#39;`, pero el
+   analizador HTML lo decodifica de nuevo a `'` antes de que Alpine evalúe la
+   expresión: el atributo HTML no se rompe, el literal sí. Con `html/template`
+   esa posición estaba protegida por el escapado contextual de JavaScript; con
+   Jet la garantía desaparece, así que la posición se compensa con dos guardas en
+   `views_test.go`: un detector de deriva sobre el conjunto exacto de
+   interpolaciones entre comillas simples y una guarda sobre los valores que
+   llegan a esos huecos (identificadores y nombres de servicio de la semilla, y
+   los mensajes `live` y `reconnecting`). Queda además una prueba de
+   caracterización que fija la limitación observada.
 
 ### Tareas de la iteración 5
 
@@ -565,9 +576,19 @@ afectar a la salida. En Jet, no: `fragments/` y `partials/` tienen que cerrar si
   forzado, todos correctos. El writer no podía borrar `web/templates/`, así que
   el borrado y la eliminación de la indirección por nombre en `renderFragment`
   los hizo el orquestador, con la identidad byte a byte re-verificada después.
-- [ ] JET-23 — Añadir guardas: escaping de metacaracteres HTML, invariante de
+- [x] JET-23 — Añadir guardas: escaping de metacaracteres HTML, invariante de
   los literales JS de Alpine, paridad de claves ES/EN, ruta de fallo de render
-  sin escritura parcial y ejecución concurrente bajo `-race`.
+  sin escritura parcial y ejecución concurrente bajo `-race`. **Cerrada.** Seis
+  pruebas nuevas en `devops-pulse/views_test.go` y comprobadas por mutación, no
+  por inspección: apagar el escaping (`jet.WithSafeWriter(nil)`) hace fallar la
+  guarda de escaping; añadir una interpolación nueva entre comillas simples hace
+  fallar el detector de deriva; una comilla simple en un valor protegido y una
+  clave presente solo en la tabla española hacen fallar sus guardas. Las cuatro
+  mutaciones se revirtieron y el árbol quedó limpio. También quedó verificado el
+  momento de cada fallo: un error de sintaxis falla al **construir** la
+  aplicación nombrando la vista, mientras que un `include` ausente falla al
+  **renderizar** y el handler responde 500 con el cuerpo exacto
+  `template rendering failed\n`, sin HTML parcial.
 - [ ] JET-25 — Eliminar la ruta muerta `renderGrid` / `service-oob` con su
   justificación.
 - [ ] JET-24 — Verificar: `go test`, `go vet`, `go build`, `-race`, benchmark,
