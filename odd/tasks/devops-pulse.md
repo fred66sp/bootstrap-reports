@@ -556,6 +556,48 @@ afectar a la salida. En Jet, no: `fragments/` y `partials/` tienen que cerrar si
    los mensajes `live` y `reconnecting`). Queda además una prueba de
    caracterización que fija la limitación observada.
 
+### Verificación de cierre medida (JET-24)
+
+| Comprobación | Resultado |
+| --- | --- |
+| `go build ./...`, `go vet ./...`, `gofmt -l .` | sin salida |
+| `go test -count=1 ./...` | correcto: seis golden y guardas incluidos |
+| `go test -race -count=1 ./...` | correcto |
+| Rutas del servidor real | `/`, `/?lang=en`, `/healthz`, los seis recursos estáticos y `POST /toggle-service` con 200; id inexistente 404 |
+| Identidad byte a byte del servidor real | `curl` de `/`, `/?lang=en` y la respuesta del toggle, comparados con `cmp` contra los golden: **idénticos** |
+| Coste por tick antes/después | 5.222,6 B → 5.221,7 B sin comprimir; 263,6 B → 265,3 B con gzip |
+| Navegador (Chromium del caché de Playwright, 1440×900) | **42 de 42 comprobaciones correctas** |
+
+Detalle de la comprobación en navegador, con captura en `/tmp/pulse-jet.png`:
+insignia `En vivo` tras conectar el stream; 4 tarjetas y 4 columnas; cero
+identificadores duplicados; métricas distintas entre ticks; filtro Alpine con 2
+tarjetas visibles para «worker»; diálogo de ayuda y diálogo de registros abiertos
+como `:modal` con títulos localizados, 3 elementos de lista y líneas clonadas;
+cierre por Escape y por el botón de descarte; alternancia de estado con aviso
+localizado «API Gateway ahora está desconectado.» y `theme-danger`; la tarjeta
+raíz **y su formulario** siguen adjuntos después de un tick SSE completo
+(regresión DP-09); tema oscuro persistido tras recargar; navegación a inglés con
+`lang`, marcador y cabecera del aviso traducidos y con cookie; **cero** errores de
+consola y de página; **cero** `htmx:oobErrorNoTarget`; **cero** `htmx:sseError`
+durante la fase estable.
+
+Dos artefactos del guion de prueba, no del producto, que se declaran en lugar de
+ocultarse:
+
+1. El contador acumulado de `htmx:sseError` cierra en 2 porque cada una de las dos
+   navegaciones del guion (la recarga del tema y el cambio de idioma) descarga la
+   página y aborta su `EventSource`; la fase estable marca 0. En la misma línea, la
+   sonda de diálogos se ejecutó además contra el binario anterior
+   (`html/template`) y el cierre con Escape se comporta igual en ambos motores, así
+   que no es una diferencia introducida por Jet.
+2. Una ejecución intermedia del guion reportó la transición de estado invertida
+   porque el servidor ya había sido alternado por la ejecución anterior del mismo
+   guion; contra un servidor fresco la transición medida es la esperada.
+
+La verificación se declara sobre `feature/jet6-devops-pulse`; no hubo `push`,
+`merge`, etiqueta ni operación remota. RDD está apagado en este clon, así que este
+candidato no tiene ciclo de revisión nativa.
+
 ### Tareas de la iteración 5
 
 - [x] JET-20 — Registrar la actualización de skills: alta de `jet-template-engine`
@@ -598,9 +640,10 @@ afectar a la salida. En Jet, no: `fragments/` y `partials/` tienen que cerrar si
   canal SSE lo usan. Byte-identidad de los seis golden conservada y suite
   completa en verde tras el cambio. Se hace en un commit aparte para que sea
   trivial revertirlo si se quiere recuperar aquella vía.
-- [ ] JET-24 — Verificar: `go test`, `go vet`, `go build`, `-race`, benchmark,
+- [x] JET-24 — Verificar: `go test`, `go vet`, `go build`, `-race`, benchmark,
   bytes por tick antes y después, `curl` sobre las rutas reales y comprobación
-  en navegador.
+  en navegador. **Cerrada**, con el detalle en «Verificación de cierre medida
+  (JET-24)».
 - [ ] JET-26 — Documentar los hallazgos de Jet en `devops-pulse/README.md` y
   cerrar la tarea.
 
