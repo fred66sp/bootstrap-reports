@@ -35,7 +35,7 @@ func TestIndexRendersDashboard(t *testing.T) {
 	response := httptest.NewRecorder()
 	newApplication().handler().ServeHTTP(response, httptest.NewRequest(http.MethodGet, "/", nil))
 	body := response.Body.String()
-	for _, want := range []string{"data-bs-theme=\"dark\"", "API Gateway", "sse-connect=\"/metrics\"", "role=\"progressbar\""} {
+	for _, want := range []string{"API Gateway", "sse-connect=\"/metrics\"", "role=\"progressbar\""} {
 		if !strings.Contains(body, want) {
 			t.Errorf("index missing %q", want)
 		}
@@ -49,6 +49,20 @@ func TestIndexRendersDashboard(t *testing.T) {
 				t.Errorf("index missing target %q", id)
 			}
 		}
+	}
+}
+
+func TestIndexThemeBootstrapIsThemeNeutral(t *testing.T) {
+	response := httptest.NewRecorder()
+	newApplication().handler().ServeHTTP(response, httptest.NewRequest(http.MethodGet, "/", nil))
+	body := response.Body.String()
+	for _, want := range []string{"data-theme-option=\"light\"", "data-theme-option=\"dark\"", "localStorage.getItem('devops-pulse-theme')"} {
+		if !strings.Contains(body, want) {
+			t.Errorf("index missing theme marker %q", want)
+		}
+	}
+	if strings.Contains(body, `data-bs-theme="dark"`) {
+		t.Fatal("server-rendered index must not bake in dark theme")
 	}
 }
 

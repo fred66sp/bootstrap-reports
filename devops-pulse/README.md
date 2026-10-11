@@ -36,7 +36,8 @@ npm install && npm run sync:assets
   card's hidden `<div>` holder into the shared dialog without `x-html` or
   server-data `innerHTML`.
 - Bootstrap 6's ESM `Dialog` and `Toast` APIs handle the dialog and toggle
-  notification. The page uses native dark mode with `data-bs-theme="dark"`.
+  notification. The page uses `data-bs-theme` for light and dark modes; the
+  choice is applied before paint and persisted in local storage.
 
 ## Bootstrap 6 differences
 
@@ -57,6 +58,19 @@ returned no matches.
 The SSE extension directory contains `sse.esm.js`, `sse.js`, `sse.min.js`, and
 `sse.min.js.gz` (`ls -l node_modules/htmx-ext-sse/dist`). The sync script detects
 and copies the minified `sse.min.js` as `htmx-ext-sse.min.js`.
+
+## Token verification
+
+Keep the Bootstrap token contract explicit when changing `web/static/app.css`:
+
+```sh
+missing=$(for token in $(grep -oE -- '--bs-[a-z0-9-]+' web/static/app.css | sort -u); do grep -qF -- "$token" web/static/vendor/bootstrap.min.css || printf '%s\n' "$token"; done)
+printf 'missing Bootstrap tokens:\n%s' "$missing"
+test -z "$missing"
+```
+
+The command exits non-zero if any `--bs-*` token used by the page is absent from
+vendored Bootstrap CSS.
 
 ## Verification status
 

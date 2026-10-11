@@ -1,33 +1,92 @@
 :root {
-  --pulse-ink: #d9e3ee;
-  --pulse-muted: #8494a7;
-  --pulse-line: rgba(148, 163, 184, .18);
-  --pulse-accent: #69e3c4;
+  --bs-body-font-family: "Roboto, system-ui, sans-serif";
+  --bs-heading-font-family: "Roboto Condensed, Arial Narrow, sans-serif";
+  --bs-font-mono: "JetBrains Mono, ui-monospace, monospace";
 }
 
-body { color: var(--pulse-ink); min-height: 100vh; }
-.navbar { background: #101923; }
-.navbar-brand { color: var(--pulse-accent); letter-spacing: -.03em; }
+body {
+  color: var(--bs-fg-body);
+  min-height: 100vh;
+}
+
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 1020;
+  background-color: color-mix(in oklch, var(--bs-bg-body) 82%, transparent);
+  backdrop-filter: blur(14px) saturate(1.4);
+  -webkit-backdrop-filter: blur(14px) saturate(1.4);
+}
+
+.navbar-brand {
+  color: var(--bs-accent-bg);
+  letter-spacing: -.03em;
+}
+
+.navbar-brand:hover { color: var(--bs-accent-bg); }
+
+.theme-switcher .btn {
+  display: inline-flex;
+  align-items: center;
+  gap: .35rem;
+  color: var(--bs-fg-3);
+  border-color: var(--bs-border-subtle);
+}
+
+.theme-switcher .btn[aria-pressed="true"] {
+  color: var(--bs-fg-body);
+  background-color: var(--bs-bg-1);
+}
+
+.theme-switcher svg,
+.input-group-text svg { width: 1rem; height: 1rem; }
+
 .pulse-heading { display: flex; justify-content: space-between; gap: 2rem; align-items: end; }
 .pulse-heading h1 { max-width: 14ch; letter-spacing: -.045em; }
 .eyebrow { font-size: .75rem; letter-spacing: .12em; text-transform: uppercase; }
-.toolbar, .service-card { background: rgba(22, 34, 47, .82); box-shadow: 0 1.25rem 3rem rgba(0, 0, 0, .16); }
-.border-subtle { border-color: var(--pulse-line) !important; }
+
+.toolbar,
+.service-card {
+  background-color: var(--bs-bg-1);
+  box-shadow: var(--bs-box-shadow-sm);
+  border-radius: var(--bs-radius-7);
+}
+
+.border-subtle { border-color: var(--bs-border-subtle) !important; }
 .service-card { transition: border-color .2s ease, transform .2s ease; }
-.service-card:hover { border-color: rgba(105, 227, 196, .5) !important; transform: translateY(-2px); }
-.card-header, .card-footer { background: transparent; border-color: var(--pulse-line); }
+.service-card:hover {
+  border-color: color-mix(in oklch, var(--bs-accent-bg) 50%, transparent) !important;
+  transform: translateY(-2px);
+}
+.card-header, .card-footer { background: transparent; border-color: var(--bs-border-subtle); }
 .metric-row + .metric-row { margin-top: 1.5rem; }
-.progress { background: rgba(148, 163, 184, .14); height: .55rem; }
+.progress { background: var(--bs-progress-bg); height: .55rem; }
 .progress-bar { font-size: 0; }
 .search-box { max-width: 24rem; }
-.input-group-text { color: var(--pulse-muted); background: transparent; border-color: var(--pulse-line); }
-.form-control { background: rgba(8, 15, 23, .4); border-color: var(--pulse-line); }
-.dialog { background: #152331; color: var(--pulse-ink); border: 1px solid var(--pulse-line); border-radius: .75rem; }
-.dialog::backdrop { background: rgba(3, 8, 14, .72); }
-.dialog-header, .dialog-footer { border-color: var(--pulse-line); }
-.list-group-item { color: var(--pulse-muted); border-color: var(--pulse-line); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .82rem; }
+.input-group-text { color: var(--bs-fg-3); background: transparent; border-color: var(--bs-border-subtle); }
+.form-control { background: var(--bs-control-bg); border-color: var(--bs-border-subtle); }
+.dialog {
+  background: var(--bs-dialog-bg);
+  color: var(--bs-fg-body);
+  border: 1px solid var(--bs-border-subtle);
+  border-radius: var(--bs-radius-7);
+}
+.dialog::backdrop { background: color-mix(in oklch, var(--bs-bg-black) 72%, transparent); }
+.dialog-header, .dialog-footer { border-color: var(--bs-border-subtle); }
+.list-group-item {
+  color: var(--bs-fg-3);
+  border-color: var(--bs-border-subtle);
+  font-family: var(--bs-font-mono);
+  font-size: .82rem;
+}
 .htmx-indicator { display: none; }
 .htmx-request .htmx-indicator { display: inline-block; }
 .htmx-indicator.htmx-request { display: inline-block; }
-@media (max-width: 575.98px) { .pulse-heading { align-items: start; flex-direction: column; gap: 1rem; } }
-@media (prefers-reduced-motion: reduce) { .service-card { transition: none; } }
+
+@media (max-width: 575.98px) {
+  .pulse-heading { align-items: start; flex-direction: column; gap: 1rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .service-card { transition: none; }
+}
