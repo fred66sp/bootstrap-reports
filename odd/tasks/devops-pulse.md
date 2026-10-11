@@ -293,3 +293,36 @@ lo sabía. Esa medición tardía es la causa de las tres vueltas siguientes
 **Verificación que vale para protocolos DOM:** `curl` no verifica un cambio de
 `hx-swap-oob`, ids o swaps; hay que abrir el navegador y contar nodos, además de
 contar eventos `htmx:oobErrorNoTarget`, que htmx no escribe en consola.
+
+## Iteración 4 — coste del tick SSE (medido antes y después)
+
+Presupuesto declarado antes de implementar: ~322 B por tick con gzip, sin estado
+por conexión para los logs y con un único testigo global. Cumplido y mejorado.
+
+| Estado | Bytes por tick sin comprimir | Bytes por tick en el cable | Por hora y pestaña |
+| --- | --- | --- | --- |
+| Primera versión | 5.625 | — | 9,65 MiB |
+| OOB por tarjeta con deltas por línea | 4.450 | — | ~7,6 MiB |
+| **OOB por tarjeta con gzip, sin deltas** | **4.259** | **276** | **0,47 MiB** |
+
+Ahorro en el cable: 93,5 % (unas 20 veces). Medido con `curl -sN` y
+`curl -sN -H 'Accept-Encoding: gzip'` sobre la misma ventana de tiempo.
+
+Decisiones y defectos de esta iteración:
+
+- **Los deltas por línea se revierten.** Medidos, ahorraban 14 % sin comprimir y
+  solo 11 % después de comprimir, porque el markup repetido es justo lo que gzip
+  elimina. En el navegador produjeron tres defectos: el latido corrompía el gzip
+  (`ERR_CONTENT_DECODING_FAILED`), 36 eventos `htmx:oobErrorNoTarget` por borrados
+  de líneas inexistentes y el vaciado de la lista de logs a cero líneas.
+- **Latido corregido:** el comentario `: keep-alive` debe escribirse por el mismo
+  escritor que los frames, no en el `ResponseWriter` crudo.
+- **Un único testigo global:** antes avanzaba el ticker de cada conexión, así que
+  dos pestañas duplicaban el avance y una conexión muerta sin cerrar lo seguía
+  acelerando. Ahora los tests son deterministas y el ritmo no depende de cuántos
+  miren.
+
+Verificación de cierre en Chromium, cruzando el latido de los 15 s: cero errores
+de consola, cero `htmx:oobErrorNoTarget`, seis líneas de log por servicio en los
+tres muestreos, sin identificadores duplicados, barras actualizándose, diálogo de
+registros con seis líneas y aviso tras el cambio de estado. Commit `5d84882`.
