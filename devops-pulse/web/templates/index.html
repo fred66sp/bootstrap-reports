@@ -22,24 +22,30 @@
   <link rel="stylesheet" href="/static/app.css">
 </head>
 <body class="bg-2" x-data="pulseDashboard">
-  <header class="navbar border-bottom border-subtle py-3">
-    <div class="container d-flex justify-content-between align-items-center gap-3">
-      <a class="navbar-brand fw-semibold" href="/">DevOps Pulse</a>
-      <div class="d-flex align-items-center gap-3">
-        <span class="fg-3 small d-none md:d-inline">{{index .Messages "tagline"}}</span>
-        <div class="btn-group theme-switcher" role="group" aria-label="{{index .Messages "theme group label"}}">
-          <button type="button" class="btn btn-sm" data-theme-option="light" aria-label="{{index .Messages "theme light label"}}" aria-pressed="false" x-on:click="setTheme('light')" x-bind:aria-pressed="theme === 'light'">
-            <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6zm0 1a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM8 0a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 0zm0 13a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 13zM16 8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2A.5.5 0 0 1 16 8zM3 8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2A.5.5 0 0 1 3 8z"/></svg>
-            {{index .Messages "theme light"}}
-          </button>
-          <button type="button" class="btn btn-sm" data-theme-option="dark" aria-label="{{index .Messages "theme dark label"}}" aria-pressed="false" x-on:click="setTheme('dark')" x-bind:aria-pressed="theme === 'dark'">
-            <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M6 .278a.768.768 0 0 1 .08.858 7.208 7.208 0 0 0-.878 3.46c0 4.021 3.278 7.277 7.318 7.277.527 0 1.04-.055 1.533-.16a.787.787 0 0 1 .81.316.733.733 0 0 1-.031.893A8.349 8.349 0 0 1 8.344 16C3.734 16 0 12.286 0 7.71 0 4.266 2.114 1.312 5.124.06A.752.752 0 0 1 6 .278z"/></svg>
-            {{index .Messages "theme dark"}}
-          </button>
-        </div>
-        <div class="btn-group" role="group" aria-label="{{index .Messages "language group label"}}">
-          <a class="btn btn-sm" href="?lang=es" hreflang="es"{{if eq .Language "es"}} aria-current="true"{{end}}>ES</a>
-          <a class="btn btn-sm" href="?lang=en" hreflang="en"{{if eq .Language "en"}} aria-current="true"{{end}}>EN</a>
+  <header class="site-header">
+    <div class="container">
+      <div class="site-header__bar d-flex align-items-center justify-content-between py-2">
+        <a class="brand" href="/">
+          <span class="brand__mark" aria-hidden="true">DP</span>
+          <span class="d-flex flex-column lh-sm">
+            <span>DevOps Pulse</span>
+            <span class="brand__tag">{{index .Messages "tagline"}}</span>
+          </span>
+        </a>
+
+        <div class="site-controls">
+          <div class="segmented" role="group" aria-label="{{index .Messages "language group label"}}">
+            <a class="segmented__option{{if eq .Language "es"}} is-active{{end}}" href="?lang=es" hreflang="es"{{if eq .Language "es"}} aria-current="true"{{end}}>ES</a>
+            <a class="segmented__option{{if eq .Language "en"}} is-active{{end}}" href="?lang=en" hreflang="en"{{if eq .Language "en"}} aria-current="true"{{end}}>EN</a>
+          </div>
+          <div class="segmented" role="group" aria-label="{{index .Messages "theme group label"}}">
+            <button type="button" class="segmented__option" data-theme-option="light" aria-label="{{index .Messages "theme light label"}}" aria-pressed="false" x-on:click="setTheme('light')" x-bind:aria-pressed="theme === 'light'" x-bind:class="{ 'is-active': theme === 'light' }">
+              <svg class="segmented__icon" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6zm0 1a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM8 0a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 0zm0 13a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 13zM16 8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2A.5.5 0 0 1 16 8zM3 8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2A.5.5 0 0 1 3 8z"/></svg>
+            </button>
+            <button type="button" class="segmented__option" data-theme-option="dark" aria-label="{{index .Messages "theme dark label"}}" aria-pressed="false" x-on:click="setTheme('dark')" x-bind:aria-pressed="theme === 'dark'" x-bind:class="{ 'is-active': theme === 'dark' }">
+              <svg class="segmented__icon" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M6 .278a.768.768 0 0 1 .08.858 7.208 7.208 0 0 0-.878 3.46c0 4.021 3.278 7.277 7.318 7.277.527 0 1.04-.055 1.533-.16a.787.787 0 0 1 .81.316.733.733 0 0 1-.031.893A8.349 8.349 0 0 1 8.344 16C3.734 16 0 12.286 0 7.71 0 4.266 2.114 1.312 5.124.06A.752.752 0 0 1 6 .278z"/></svg>
+            </button>
+          </div>
         </div>
       </div>
     </div>

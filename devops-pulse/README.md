@@ -117,7 +117,7 @@ Observed locally:
   import re
   from pathlib import Path
   css = Path('web/static/vendor/bootstrap.min.css').read_text()
-  custom = {'pulse-heading', 'service-card', 'toolbar', 'metric-row', 'search-box', 'eyebrow', 'htmx-indicator'}
+  custom = {'brand', 'brand__mark', 'brand__tag', 'is-active', 'pulse-heading', 'pulse-icon', 'segmented', 'segmented__icon', 'segmented__option', 'service-card', 'site-controls', 'site-header', 'site-header__bar', 'toolbar', 'metric-row', 'search-box', 'eyebrow', 'htmx-indicator'}
   classes = set()
   for path in Path('web/templates').rglob('*.html'):
       text = path.read_text()
@@ -149,3 +149,32 @@ There is no database, authentication, persistence, third-party Go module,
 frontend bundler, Sass customization, or production deployment configuration.
 Generated `node_modules/`, vendored frontend assets, and `bin/` output are
 ignored.
+
+## Bootstrap 6 traps found while building this app
+
+Each one was observed here, not assumed. They are listed because every one of
+them fails silently, in a way that looks like a CSS mistake rather than a
+framework difference.
+
+- `.card-header` is a **column** flex container in v6. `d-flex` plus
+  `justify-content-between` does not revert it, so the header needs an explicit
+  `flex-row` or its children stack and centre.
+- An inline SVG with only a `viewBox` and no width or height collapses to
+  `0x0` and disappears. Give it explicit attributes or a sizing rule.
+- The spacing scale is denser than v5: `g-4` is `.75rem`, and the v5 `g-4`
+  equivalent is `g-7` at `1.5rem`.
+- A font stack must not be quoted as a whole: `"Roboto, system-ui"` becomes a
+  single family name containing commas and never resolves, so the browser falls
+  back to serif.
+- There is no `.btn-primary` and no `Modal`. Variants are `.btn-solid`,
+  `.btn-outline`, `.btn-subtle`, `.btn-text` and `.btn-icon`, coloured by a
+  separate `.theme-*` class, and the modal window is `<dialog class="dialog">`
+  driven by the `Dialog` plugin.
+- The JavaScript is ESM-only and never sets `window.bootstrap`; import the
+  plugins from the vendored bundle instead.
+- `hx-swap="none"` still applies the out-of-band swaps of the response: the
+  out-of-band pass runs before the main swap and the `none` branch only skips
+  that main swap.
+- Header values must stay ASCII. Browsers expose response headers as Latin-1,
+  so raw UTF-8 in a header (an accented toast message, for instance) reaches
+  JavaScript as mojibake; escape it as `\uXXXX` instead.

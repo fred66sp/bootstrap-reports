@@ -204,3 +204,52 @@ Lección: el valor declarado y el valor resuelto se ven igual en el código; hay
 que medir el resuelto. Una comprobación previa mía (`document.fonts.check`) dio un
 falso negativo y otra midió la caja del bloque en lugar del texto, así que la
 conclusión válida es la de la tabla.
+
+## Iteración 3 — cabecera de la referencia, iconos y robustez de v6
+
+Peticiones del usuario: el rediseño debía parecerse a la cabecera y a los selectores
+de `docengine-docs`, los iconos de ayuda no se veían y debían quedar en la esquina
+superior derecha.
+
+### Defectos corregidos
+
+1. **Icono de ayuda de 0 × 0 px.** El SVG solo tenía `viewBox` y las únicas reglas
+   de tamaño cubrían `.input-group-text svg` y `.theme-switcher svg`. Medido: 0 × 0.
+   Corregido con `.btn-icon` de v6 (control cuadrado, `aspect-ratio: 1`) más
+   atributos `width`/`height` explícitos: botón de 38 × 38 con icono de 16 × 16.
+   Commit `da9b090`.
+2. **`.card-header` es columna en Bootstrap 6.** `flex-direction: column` está en el
+   propio componente y `d-flex justify-content-between` no lo revierte, así que
+   título, insignia e icono se apilaban y centraban en una cabecera de 74 px.
+   Corregido con `flex-row` explícito y la insignia junto al título: cabecera de
+   55 px, título en el borde izquierdo del contenido y el icono a 17 px del borde
+   derecho y 9 px del superior. Commit `9bde9ef`.
+3. **Cabecera y selectores genéricos.** Se sustituyó el `.btn-group` por el patrón
+   real de la referencia: `site-header` fijo con `blur(14px) saturate(1.6)` y fondo
+   al 82 %, marca de 34 × 34 px con degradado y radio de 10 px, y control
+   segmentado con opciones de 28 px, radio de 8 px, `padding: 2px` y `gap: 2px`.
+   El idioma son anclas con `aria-current` y el tema son botones de icono con
+   `aria-pressed` y `is-active`.
+
+### Medición de la iteración 3 en Chromium
+
+| Comprobación | Resultado |
+| --- | --- |
+| Barra fija al hacer scroll | `position: sticky`, `top` 0 tras desplazar 500 px |
+| Transparencia y desenfoque | `blur(14px) saturate(1.6)`, fondo `oklch(… / 0.82)` en oscuro y claro |
+| Marca | «DP» de 34 × 34 px, radio 10 px, degradado de acento a info |
+| Selectores | 2 grupos, 4 opciones de 28 px, activa con `accent-fg` sobre `accent-bg-subtle` |
+| Cambio de tema | `dark` → `light`, `is-active` y `aria-pressed` coherentes, persistido |
+| Foco por teclado | contorno de 3 px en cada parada de tabulación |
+| Cambio de idioma | `<html lang="en">`, etiqueta de marca traducida, EN activo |
+| Iconos | ayuda, tema y buscador a 16 × 16 px |
+| Regresiones | diálogos, aviso, filtro, SSE y huecos 23–24 px intactos; sin errores de consola |
+
+### Guardas añadidas
+
+- `main_test.go`: la cabecera de tarjeta debe llevar `flex-row`, porque v6 la
+  convierte en columna y el fallo es silencioso.
+- `README.md`: sección «Bootstrap 6 traps found while building this app» con las
+  ocho diferencias verificadas en este proyecto (columna en `.card-header`, SVG sin
+  tamaño, escala de espaciado, listas de fuentes, botones y `Dialog`, ESM sin
+  `window.bootstrap`, `hx-swap="none"` con OOB y cabeceras ASCII).

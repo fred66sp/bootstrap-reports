@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
+	"regexp"
 	"strings"
 	"testing"
 	"time"
@@ -35,10 +36,22 @@ func TestIndexRendersDashboard(t *testing.T) {
 	response := httptest.NewRecorder()
 	newApplication().handler().ServeHTTP(response, httptest.NewRequest(http.MethodGet, "/", nil))
 	body := response.Body.String()
-	for _, want := range []string{"API Gateway", "<html lang=\"es\">", "sse-connect=\"/metrics?lang=es\"", "role=\"progressbar\""} {
+	for _, want := range []string{"API Gateway", "<html lang=\"es\">", "sse-connect=\"/metrics?lang=es\"", "role=\"progressbar\"", "class=\"site-header\"", "class=\"brand__mark\"", "data-theme-option=\"light\"", "data-theme-option=\"dark\""} {
 		if !strings.Contains(body, want) {
 			t.Errorf("index missing %q", want)
 		}
+	}
+	if got := strings.Count(body, `class="segmented__option`); got != 4 {
+		t.Fatalf("expected four segmented options, got %d", got)
+	}
+	if got := regexp.MustCompile(`<a class="segmented__option[^\"]*"`).FindAllString(body, -1); len(got) != 2 {
+		t.Fatalf("expected two language segmented anchors, got %d", len(got))
+	}
+	if got := regexp.MustCompile(`<button type="button" class="segmented__option[^\"]*"`).FindAllString(body, -1); len(got) != 2 {
+		t.Fatalf("expected two theme segmented buttons, got %d", len(got))
+	}
+	if got := regexp.MustCompile(`<a class="segmented__option[^\"]*is-active[^\"]*"[^>]*aria-current="true"`).FindAllString(body, -1); len(got) != 1 {
+		t.Fatalf("expected one active language with aria-current, got %d", len(got))
 	}
 	if strings.Contains(body, `hx-swap-oob="true"`) {
 		t.Fatal("initial page must not contain hx-swap-oob")
@@ -55,6 +68,18 @@ func TestIndexRendersDashboard(t *testing.T) {
 		if !strings.Contains(body, `aria-label="Ayuda sobre `+service.Name+`"`) {
 			t.Errorf("index missing Spanish help label for %q", service.ID)
 		}
+	}
+}
+
+func TestActiveLanguageFollowsQuery(t *testing.T) {
+	response := httptest.NewRecorder()
+	newApplication().handler().ServeHTTP(response, httptest.NewRequest(http.MethodGet, "/?lang=en", nil))
+	body := response.Body.String()
+	if !strings.Contains(body, `<a class="segmented__option is-active" href="?lang=en" hreflang="en" aria-current="true">EN</a>`) {
+		t.Fatal("English language option should be active for ?lang=en")
+	}
+	if strings.Contains(body, `<a class="segmented__option is-active" href="?lang=es"`) {
+		t.Fatal("Spanish language option should not be active for ?lang=en")
 	}
 }
 
@@ -111,6 +136,15 @@ func TestIndexThemeBootstrapIsThemeNeutral(t *testing.T) {
 	}
 	if strings.Contains(body, `data-bs-theme="dark"`) {
 		t.Fatal("server-rendered index must not bake in dark theme")
+	}
+}
+
+func TestCardHeaderStaysARow(t *testing.T) {
+	response := httptest.NewRecorder()
+	newApplication().handler().ServeHTTP(response, httptest.NewRequest(http.MethodGet, "/", nil))
+	body := response.Body.String()
+	if !strings.Contains(body, `class="card-header d-flex flex-row`) {
+		t.Fatal("Bootstrap 6 makes .card-header a column flex container, so the header needs flex-row explicitly; without it the title, badge and help trigger stack and centre")
 	}
 }
 
