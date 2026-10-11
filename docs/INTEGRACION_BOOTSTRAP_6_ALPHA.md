@@ -131,7 +131,17 @@ Esta integración se basa en la alpha publicada y en sus fuentes oficiales:
 - [Bootstrap con npm](https://getbootstrap.com/docs/6.0/guides/npm/)
 - [Bootstrap con Vite](https://getbootstrap.com/docs/6.0/guides/vite/)
 - [Migración a v6](https://getbootstrap.com/docs/6.0/guides/migration/)
+- [Hallazgos verificados de Bootstrap 6 Alpha 1](HALLAZGOS_BOOTSTRAP_6_ALPHA.md), con la comprobación reproducible de cada diferencia encontrada al construir las aplicaciones de este workspace.
 
-Esta fase no demuestra todavía una página renderizada ni una compilación Sass:
-no existe aún una aplicación de ejemplo. La siguiente tarea deberá elegir el
-primer formato de ejemplo y ejecutar su verificación funcional.
+El workspace ya cuenta con aplicaciones sobre esta alpha:
+
+- `docengine-docs/`: sitio de documentación con Vite que compila el Sass de
+  Bootstrap desde el código fuente.
+- `devops-pulse/`: panel en tiempo real que sirve el CSS y el bundle publicados
+  sin paso de compilación, con sincronización reproducible de los artefactos y
+  verificación en Go, HTTP y navegador.
+
+Lo que sigue sin estar demostrado, y conviene no dar por hecho: el comportamiento
+en Firefox y WebKit, los paquetes opcionales (`@floating-ui/dom`,
+`vanilla-calendar-pro`) y la sobrescritura de tokens por Sass dentro de
+`devops-pulse`, que al servir el `dist` sobrescribe tokens desde CSS propio.

@@ -39,6 +39,7 @@ La referencia inicial del trabajo es el anuncio oficial:
 | `docs/` | Contratos, documentación e informes del proyecto. |
 | `docs/CONTRATO_FLUJO_GIT_VERSIONADO.md` | Referencia operativa para Git, commits, versionado e integración. |
 | `docs/INTEGRACION_BOOTSTRAP_6_ALPHA.md` | Instalación, decisiones y fuentes para Bootstrap 6 Alpha. |
+| `docs/HALLAZGOS_BOOTSTRAP_6_ALPHA.md` | Diferencias verificadas de Bootstrap 6 Alpha 1 que fallan en silencio, con la comprobación reproducible de cada una. |
 | `docengine-docs/` | Aplicación web de documentación de docengine, autocontenida (Vite + Bootstrap). |
 | `odd/tasks/` | Tareas de trabajo recuperables del flujo ODD. |
 | `skills-lock.json` | Selección y hashes de las skills oficiales instaladas para el proyecto. |

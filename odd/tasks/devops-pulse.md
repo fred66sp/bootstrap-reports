@@ -326,3 +326,12 @@ Verificación de cierre en Chromium, cruzando el latido de los 15 s: cero errore
 de consola, cero `htmx:oobErrorNoTarget`, seis líneas de log por servicio en los
 tres muestreos, sin identificadores duplicados, barras actualizándose, diálogo de
 registros con seis líneas y aviso tras el cambio de estado. Commit `5d84882`.
+
+## Producto duradero del POC
+
+Los hallazgos transversales de esta aplicación se elevaron a
+`docs/HALLAZGOS_BOOTSTRAP_6_ALPHA.md`, para que sobrevivan a `devops-pulse` y
+sirvan a cualquier aplicación del workspace: diez diferencias de Bootstrap 6
+Alpha 1 con su comprobación reproducible, el marcado verificado de diálogo,
+aviso, progreso, botones y control segmentado, la tabla de coste del tick SSE y
+una sección explícita de límites y comprobaciones pendientes.
