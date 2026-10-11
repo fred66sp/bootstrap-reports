@@ -667,7 +667,8 @@ candidato no tiene ciclo de revisión nativa.
   JET-26 cerradas en seis commits: `48c64e5` (skills), `faada9d` (baseline
   congelada), `ff18e9b` (migración), `b6c8fa9` (guardas), `b335e4d` (ruta muerta)
   y `0f1b3d8` (evidencia de verificación), más el commit de cierre documental.
-  `main` sigue en `b8cf3ad`: la rama **no** se integró.
+  `main` avanzó por avance rápido desde `b8cf3ad` hasta `e78bbe2` con los siete
+  commits de la rama, autorizado por el usuario, y quedó idéntico a ella.
 - **Producto duradero:** `docs/HALLAZGOS_JET_6.md` con los hallazgos verificados
   —API y contrato de carga, diferencia de escapado, comentarios JavaScript,
   salto de línea de los archivos incluidos, parseo e inclusión, concurrencia—,
@@ -678,26 +679,42 @@ candidato no tiene ciclo de revisión nativa.
   migración (seis golden byte a byte, cinco frames SSE idénticos en el cable y
   tres rutas del servidor real comparadas con `cmp`) y renderiza de 2,7 a 3,3
   veces más rápido con entre 4,8 y 8,5 veces menos asignaciones.
-- **Carga de revisión:** la rama completa frente a `main` son 31 archivos y 1.500
-  inserciones, pero se revisa por unidad. La mayor unidad de código (`ff18e9b`)
-  suma 328 inserciones y 147 borrados, casi todos el marcado movido de
-  `web/templates/` a `web/views/`; el resto del volumen son este documento, los
-  golden congelados y las pruebas. Ninguna unidad supera por sí sola lo que una
-  revisión enfocada puede cubrir.
+- **Carga de revisión:** la rama completa frente a `main` son 33 archivos, 1.740
+  inserciones y 163 borrados, pero se revisa por unidad. La mayor unidad de
+  código (`ff18e9b`) suma 328 inserciones y 147 borrados, casi todos el marcado
+  movido de `web/templates/` a `web/views/`; el resto del volumen son este
+  documento, los golden congelados y las pruebas. Ninguna unidad supera por sí
+  sola lo que una revisión enfocada puede cubrir.
 - **Método:** la migración se delegó a un writer acotado y el orquestador verificó
   después cada afirmación: repetición de la suite, `-race`, comparación byte a
   byte, mutación de las guardas nuevas, medición en el cable y comprobación
   funcional en Chromium. Dos afirmaciones del writer que parecían contradictorias
   resultaron ciertas y se convirtieron en hallazgos documentados.
-- **Sin operaciones remotas:** no hubo `push`, `fetch` para integrar, `merge`,
-  etiqueta ni publicación. El repositorio no tiene remoto configurado.
-- **RDD:** apagado en este clon (`gentle-ai review mode status` → `global: off`),
-  así que este candidato no tiene ciclo de revisión nativa. El candidato
-  revisable es el commit de trabajo de la migración (`ff18e9b`) o la rebanada
-  completa de la rama, a decisión del usuario.
+- **Sin operaciones remotas:** no hubo `push`, `fetch` para integrar, etiqueta ni
+  publicación. Corrección de un dato anterior de este mismo documento: el
+  repositorio **sí** tiene remoto (`origin` →
+  `https://github.com/fred66sp/bootstrap-reports.git`); `main` local quedó siete
+  commits por delante de `origin/main`.
+- **Revisión nativa (RDD):** el interruptor estaba apagado por configuración
+  global y el clon no puede activarlo («any off wins: a repository may disable it
+  for this clone but can never require it»), así que el usuario lo activó con
+  `gentle-ai review mode enable --scope global`. El ciclo se ejecutó sobre la
+  rebanada completa: linaje `review-82cba99f88af8efd`, tier `medium`, una lente
+  (`review-reliability`), 33 archivos y 1.903 líneas, presupuesto de corrección
+  200. Veredicto nativo **`approved`**; el reconocimiento exacto quemó la
+  autoridad (`burn_evidence: gentle-ai.review-acknowledged/v1`) y la entrega
+  volvió a política ordinaria. La lectura independiente `assess` confirma el
+  cierre: `candidate.consumed: true`, `reviewDue: false`,
+  `reviewDueReason: already_reviewed`, `nativeReviewOutcome: closed`.
+  **Límite declarado:** este build (`gentle-ai v4.0.0`, contrato v1, protocolo
+  1.5) expone solo `capabilities`, `repair`, `start`, `status` y `validate`, sin
+  operación de lectura del informe, así que el proveedor dio veredicto pero no el
+  texto de los hallazgos; no se inventó ninguno.
 - **Corrección de consistencia aplicada:** las skills `htmx-interactions` y
   `alpinejs-interactivity` conservaban `pkg.go.dev/html/template` en su lista de
   referencias mientras su propio cuerpo ya declaraba Jet 6 como motor del stack;
   se sustituyó por la referencia a Jet v6, con el mismo patrón que el usuario
   aplicó en `go-htmx-server`.
-- **Pendiente, no bloqueante:** la integración en `main` es decisión del usuario.
+- **Pendiente, no bloqueante:** publicar en `origin` (`push`) no se hizo y
+  requiere autorización explícita. La rama `feature/jet6-devops-pulse` se
+  conserva en `e78bbe2`, idéntica a `main`.
