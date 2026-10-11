@@ -52,6 +52,21 @@ func TestIndexRendersDashboard(t *testing.T) {
 	}
 }
 
+func TestCardSurfaceIsNotTheGridColumn(t *testing.T) {
+	response := httptest.NewRecorder()
+	newApplication().handler().ServeHTTP(response, httptest.NewRequest(http.MethodGet, "/", nil))
+	body := response.Body.String()
+	if strings.Contains(body, `class="card service-card col-`) {
+		t.Fatal("the card surface must not carry grid column classes: the column gutter would be painted inside the card and adjacent cards would touch")
+	}
+	if !strings.Contains(body, `<div class="col-12 md:col-6 xl:col-4" x-show=`) {
+		t.Fatal("missing the column wrapper that owns the gutter")
+	}
+	if !strings.Contains(body, `class="row g-7"`) {
+		t.Fatal("the grid must use the 1.5rem gutter of the v6 spacing scale (g-7)")
+	}
+}
+
 func TestMetricsSSECanBeCancelledAfterInitialFrame(t *testing.T) {
 	application := newApplication()
 	server := httptest.NewServer(application.handler())
@@ -119,6 +134,12 @@ func TestToggleReturnsCardAndTrigger(t *testing.T) {
 	body := response.Body.String()
 	if response.Code != http.StatusOK || !strings.Contains(body, "API Gateway") {
 		t.Fatalf("unexpected toggle response: %d %s", response.Code, body)
+	}
+	if !strings.Contains(body, `class="card service-card`) {
+		t.Fatal("toggle response must carry the card surface")
+	}
+	if strings.Contains(body, `class="col-12`) {
+		t.Fatal("toggle response must not carry grid columns: the swap target is the card surface inside the existing column")
 	}
 	if strings.Contains(body, "hx-swap-oob") {
 		t.Fatal("toggle response must not contain hx-swap-oob")

@@ -233,7 +233,7 @@ func (a *application) toggleService(w http.ResponseWriter, r *http.Request) {
 	}})
 	w.Header().Set("HX-Trigger", string(trigger))
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	output, err := a.render("server-card", serviceView{Service: current})
+	output, err := a.render("card-surface", serviceView{Service: current})
 	if err != nil {
 		http.Error(w, "template rendering failed", http.StatusInternalServerError)
 		return

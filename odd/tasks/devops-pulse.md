@@ -145,3 +145,32 @@ Sin errores de consola ni de página en ninguna de las dos ejecuciones.
 - Gotcha: el canal `chrome` del servidor MCP de Playwright no está instalado en
   esta máquina; la verificación se ejecutó con el Chromium del cache de
   Playwright mediante un script propio fuera del repositorio.
+
+## Iteración 2 — bilingüe, temas, diseño de referencia y ayuda por tarjeta
+
+Petición del usuario: interfaz bilingüe ES/EN con español por defecto, tema
+oscuro y claro, diseño alineado con `docengine-docs`, corregir la separación de
+las tarjetas y añadir un icono de ayuda por tarjeta que abra un diálogo con la
+explicación.
+
+### Evidencia medida de la iteración 2
+
+- Separación horizontal entre tarjetas en el navegador: **-1 px y 0 px**;
+  vertical 12 px; `--bs-gutter-x` del `.row` `.75rem`; `padding-inline` de la
+  tarjeta 6 px; `margin-top` 12 px; radio 12 px; contenedor 1200 px.
+- Causa 1: el mismo elemento es columna y tarjeta, así que la canaleta de la
+  columna queda dentro de la caja de borde y el fondo de la tarjeta la cubre.
+- Causa 2: la escala de espaciado de v6 es más densa que la de v5
+  (`--bs-spacer-4: .75rem`, `g-7: 1.5rem`, `g-9: 2rem`, `--bs-spacer-12: 3rem`).
+- Sistemas de diseño de referencia: `docengine-docs/` (tokens, tipografía,
+  radios, superficies y mecanismo de tema).
+
+### Tareas de la iteración 2
+
+- [ ] DP-13 — Interfaz bilingüe ES/EN con español por defecto: tabla de mensajes en Go, `?lang=` con cookie de persistencia, atributo `lang` del documento y `sse-connect` en el idioma activo.
+- [ ] DP-14 — Tema oscuro y claro con conmutador accesible, sin destello al cargar y persistencia local.
+- [ ] DP-15 — Alinear tipografía, radios, superficies y color con `docengine-docs` sin copiar su layout de documentación.
+- [x] DP-16 — Corregir la separación de las tarjetas separando columna y tarjeta, y ajustar la canaleta a la escala de v6. Medición posterior: hueco horizontal 23–24 px y vertical 24 px (antes -1/0 y 12), ancho de tarjeta estable en 376 px, `nestedColumns: 0` y `columnsWithCardClass: 0` antes, después de un toggle y después de un tick SSE. La tarjeta se partió en `card-surface` (sólo la superficie, respuesta del toggle) y `server-card` (columna + superficie, rejilla inicial), porque la respuesta del toggle habría anidado una columna dentro de otra y reducido la tarjeta a un noveno.
+- [ ] DP-17 — Icono de ayuda por tarjeta con diálogo explicativo bilingüe servido por el servidor y clonado sin petición.
+- [ ] DP-18 — Verificación de la iteración 2: `go test`, `go vet`, `go build`, `curl` (idioma, OOB) y navegador (tema, idioma, separación medida, ayuda).
+- [ ] DP-19 — Confirmar los commits de la iteración 2 (pendiente de autorización).

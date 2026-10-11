@@ -4,7 +4,7 @@
 {{define "service-oob"}}{{template "status-fragment" .}}
 {{template "metrics-fragment" .}}
 {{template "logs-fragment" .}}{{end}}
-{{define "server-card"}}<article class="card service-card col-12 md:col-6 xl:col-4 h-100 border-subtle" x-show="match('{{.Service.Name}}')">
+{{define "card-surface"}}<article class="card service-card h-100 border-subtle">
     <div class="card-header d-flex justify-content-between align-items-center">
       <h2 class="h5 mb-0">{{.Service.Name}}</h2>
       {{template "status-fragment" .}}
@@ -19,4 +19,5 @@
       </form>
     </div>
     {{template "logs-fragment" .}}
-</article>{{end}}
+  </article>{{end}}
+{{define "server-card"}}<div class="col-12 md:col-6 xl:col-4" x-show="match('{{.Service.Name}}')">{{template "card-surface" .}}</div>{{end}}
