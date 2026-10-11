@@ -22,13 +22,23 @@ Alpine.data('pulseDashboard', () => ({
     document.documentElement.setAttribute('data-bs-theme', theme)
     try { localStorage.setItem('devops-pulse-theme', theme) } catch (e) { /* ignore */ }
   },
-  openLogs(id) {
+  openLogs(element, id) {
     const holder = document.getElementById(`logs-${id}`)
     const body = document.getElementById('logs-body')
     const dialog = document.getElementById('logs-dialog')
     if (!holder || !body || !dialog) return
-    const trigger = document.querySelector(`[data-dialog-title][data-service-id="${CSS.escape(id)}"]`)
-    document.getElementById('logs-title').textContent = trigger?.dataset.dialogTitle || document.getElementById('logs-title').textContent
+    const title = element?.dataset?.dialogTitle
+    if (title) document.getElementById('logs-title').textContent = title
+    body.replaceChildren(...[...holder.children].map(node => node.cloneNode(true)))
+    Dialog.getOrCreateInstance(dialog).show()
+  },
+  openHelp(element, id) {
+    const holder = document.getElementById(`help-${id}`)
+    const body = document.getElementById('service-help-body')
+    const dialog = document.getElementById('service-help-dialog')
+    if (!holder || !body || !dialog) return
+    const title = element?.dataset?.dialogTitle
+    if (title) document.getElementById('service-help-title').textContent = title
     body.replaceChildren(...[...holder.children].map(node => node.cloneNode(true)))
     Dialog.getOrCreateInstance(dialog).show()
   },

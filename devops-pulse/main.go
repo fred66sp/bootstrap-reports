@@ -14,9 +14,11 @@ import (
 	"os"
 	"os/signal"
 	"path/filepath"
+	"strings"
 	"sync"
 	"syscall"
 	"time"
+	"unicode/utf8"
 )
 
 //go:embed web/templates
@@ -40,10 +42,10 @@ type messages map[string]string
 
 var messageTable = map[language]messages{
 	languageSpanish: {
-		"title": "DevOps Pulse · Panel de servicios", "tagline": "operaciones / telemetría en vivo", "theme group label": "Tema de color", "theme light": "Claro", "theme light label": "Usar tema claro", "theme dark": "Oscuro", "theme dark label": "Usar tema oscuro", "language group label": "Idioma", "eyebrow": "Sala de control", "heading": "Salud de los servicios, sin ruido.", "subtitle": "Una vista en vivo de los sistemas que sostienen tu entrega.", "search label": "Filtrar servicios", "updates": "Se actualiza cada 2 segundos", "live": "En vivo", "reconnecting": "Reconectando", "cpu": "CPU", "ram": "Memoria", "view logs": "Ver registros", "toggle": "Cambiar estado", "logs fallback title": "Registros del servicio", "logs title": "%s · Registros", "close": "Cerrar", "toast header": "Actualización del servicio", "status online": "En línea", "status offline": "Desconectado", "toast message": "%s ahora está %s.",
+		"title": "DevOps Pulse · Panel de servicios", "tagline": "operaciones / telemetría en vivo", "theme group label": "Tema de color", "theme light": "Claro", "theme light label": "Usar tema claro", "theme dark": "Oscuro", "theme dark label": "Usar tema oscuro", "language group label": "Idioma", "eyebrow": "Sala de control", "heading": "Salud de los servicios, sin ruido.", "subtitle": "Una vista en vivo de los sistemas que sostienen tu entrega.", "search label": "Filtrar servicios", "updates": "Se actualiza cada 2 segundos", "live": "En vivo", "reconnecting": "Reconectando", "cpu": "CPU", "ram": "Memoria", "view logs": "Ver registros", "toggle": "Cambiar estado", "logs fallback title": "Registros del servicio", "logs title": "%s · Registros", "help fallback title": "Ayuda del servicio", "help title": "%s · Ayuda", "help label": "Ayuda sobre %s", "help intro": "Este servicio se monitoriza con métricas simuladas; el servidor envía un frame de Server-Sent Events cada dos segundos y la página intercambia los fragmentos afectados sin recargarse.", "help cpu": "CPU: porcentaje de uso simulado, con un paseo aleatorio acotado entre 2 y 98.", "help memory": "Memoria: porcentaje de uso simulado, con el mismo comportamiento.", "help status": "Estado: en línea o desconectado; el botón de cambio lo alterna en el servidor y devuelve la tarjeta actualizada.", "help logs": "Las líneas de registro las genera el servidor y se envían dentro de la tarjeta; el diálogo de registros detallados solo las clona, por eso se abre al instante.", "help disclaimer": "Este ejemplo no consulta ningún sistema real.", "close": "Cerrar", "toast header": "Actualización del servicio", "status online": "En línea", "status offline": "Desconectado", "toast message": "%s ahora está %s.",
 	},
 	languageEnglish: {
-		"title": "DevOps Pulse · Service dashboard", "tagline": "operations / live telemetry", "theme group label": "Color theme", "theme light": "Light", "theme light label": "Use light theme", "theme dark": "Dark", "theme dark label": "Use dark theme", "language group label": "Language", "eyebrow": "Control room", "heading": "Service health, without the noise.", "subtitle": "A live view of the systems keeping your delivery moving.", "search label": "Filter services", "updates": "Updates every 2 seconds", "live": "Live", "reconnecting": "Reconnecting", "cpu": "CPU", "ram": "Memory", "view logs": "View logs", "toggle": "Toggle", "logs fallback title": "Service logs", "logs title": "%s · Logs", "close": "Close", "toast header": "Service update", "status online": "Online", "status offline": "Offline", "toast message": "%s is now %s.",
+		"title": "DevOps Pulse · Service dashboard", "tagline": "operations / live telemetry", "theme group label": "Color theme", "theme light": "Light", "theme light label": "Use light theme", "theme dark": "Dark", "theme dark label": "Use dark theme", "language group label": "Language", "eyebrow": "Control room", "heading": "Service health, without the noise.", "subtitle": "A live view of the systems keeping your delivery moving.", "search label": "Filter services", "updates": "Updates every 2 seconds", "live": "Live", "reconnecting": "Reconnecting", "cpu": "CPU", "ram": "Memory", "view logs": "View logs", "toggle": "Toggle", "logs fallback title": "Service logs", "logs title": "%s · Logs", "help fallback title": "Service help", "help title": "%s · Help", "help label": "Help for %s", "help intro": "This service is monitored with simulated metrics; the server pushes a Server-Sent Events frame every two seconds, and the page swaps the affected fragments without reloading.", "help cpu": "CPU: simulated usage percentage, with a random walk bounded between 2 and 98.", "help memory": "Memory: simulated usage percentage, with the same behaviour.", "help status": "Status: online or offline; the toggle button flips it on the server and returns the updated card.", "help logs": "The log lines are generated by the server and shipped inside the card; the detailed-log dialog only clones them, which is why it opens instantly.", "help disclaimer": "This example does not query any real system.", "close": "Close", "toast header": "Service update", "status online": "Online", "status offline": "Offline", "toast message": "%s is now %s.",
 	},
 }
 
@@ -59,6 +61,31 @@ func resolveLanguage(r *http.Request) (language, bool) {
 
 func persistLanguageCookie(w http.ResponseWriter, lang language) {
 	http.SetCookie(w, &http.Cookie{Name: "devops-pulse-lang", Value: string(lang), Path: "/", MaxAge: 365 * 24 * 60 * 60, SameSite: http.SameSiteLaxMode})
+}
+
+// asciiJSON marshals value to JSON with every byte inside the ASCII range so the
+// result is safe as an HTTP header value. Browsers expose header values as
+// Latin-1, so raw UTF-8 in a header reaches JavaScript as mojibake; non-ASCII
+// runes become \uXXXX escapes instead, which JSON.parse decodes back to the
+// original text.
+func asciiJSON(value any) string {
+	encoded, err := json.Marshal(value)
+	if err != nil {
+		return "{}"
+	}
+	var builder strings.Builder
+	for _, current := range string(encoded) {
+		switch {
+		case current < utf8.RuneSelf:
+			builder.WriteRune(current)
+		case current > 0xFFFF:
+			current -= 0x10000
+			fmt.Fprintf(&builder, "\\u%04x\\u%04x", 0xD800+(current>>10), 0xDC00+(current&0x3FF))
+		default:
+			fmt.Fprintf(&builder, "\\u%04x", current)
+		}
+	}
+	return builder.String()
 }
 
 func localizedStatus(status serviceStatus, lang language) string {
@@ -158,6 +185,8 @@ type serviceView struct {
 	Language    language
 	StatusLabel string
 	LogsTitle   string
+	HelpTitle   string
+	HelpLabel   string
 }
 
 type pageView struct {
@@ -196,7 +225,7 @@ func serviceViews(services []service, outOfBand bool, lang language) []serviceVi
 	localized := messageTable[lang]
 	views := make([]serviceView, len(services))
 	for i, current := range services {
-		views[i] = serviceView{Service: current, OutOfBand: outOfBand, Messages: localized, Language: lang, StatusLabel: localizedStatus(current.Status, lang), LogsTitle: fmt.Sprintf(localized["logs title"], current.Name)}
+		views[i] = serviceView{Service: current, OutOfBand: outOfBand, Messages: localized, Language: lang, StatusLabel: localizedStatus(current.Status, lang), LogsTitle: fmt.Sprintf(localized["logs title"], current.Name), HelpTitle: fmt.Sprintf(localized["help title"], current.Name), HelpLabel: fmt.Sprintf(localized["help label"], current.Name)}
 	}
 	return views
 }
@@ -302,10 +331,10 @@ func (a *application) toggleService(w http.ResponseWriter, r *http.Request) {
 	if lang == languageSpanish {
 		adverbialStatus = map[serviceStatus]string{statusOnline: "en línea", statusOffline: "desconectado"}[current.Status]
 	}
-	trigger, _ := json.Marshal(map[string]map[string]string{"pulse-toggled": {
+	trigger := asciiJSON(map[string]map[string]string{"pulse-toggled": {
 		"id": current.ID, "name": current.Name, "status": string(current.Status), "message": fmt.Sprintf(localized["toast message"], current.Name, adverbialStatus), "statusLabel": statusLabel,
 	}})
-	w.Header().Set("HX-Trigger", string(trigger))
+	w.Header().Set("HX-Trigger", trigger)
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	output, err := a.render("card-surface", serviceViews([]service{current}, false, lang)[0])
 	if err != nil {

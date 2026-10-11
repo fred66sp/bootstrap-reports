@@ -44,10 +44,27 @@ func TestIndexRendersDashboard(t *testing.T) {
 		t.Fatal("initial page must not contain hx-swap-oob")
 	}
 	for _, service := range newStateStore().snapshot() {
-		for _, id := range []string{"status-" + service.ID, "metrics-" + service.ID, "logs-" + service.ID} {
+		for _, id := range []string{"status-" + service.ID, "metrics-" + service.ID, "logs-" + service.ID, "help-" + service.ID} {
 			if !strings.Contains(body, `id="`+id+`"`) {
 				t.Errorf("index missing target %q", id)
 			}
+		}
+		if !strings.Contains(body, `data-dialog-title="`+service.Name+` · Ayuda"`) {
+			t.Errorf("index missing Spanish help title for %q", service.ID)
+		}
+		if !strings.Contains(body, `aria-label="Ayuda sobre `+service.Name+`"`) {
+			t.Errorf("index missing Spanish help label for %q", service.ID)
+		}
+	}
+}
+
+func TestHelpIsLocalizedInEnglish(t *testing.T) {
+	response := httptest.NewRecorder()
+	newApplication().handler().ServeHTTP(response, httptest.NewRequest(http.MethodGet, "/?lang=en", nil))
+	body := response.Body.String()
+	for _, service := range newStateStore().snapshot() {
+		if !strings.Contains(body, `id="help-`+service.ID+`"`) || !strings.Contains(body, `data-dialog-title="`+service.Name+` · Help"`) || !strings.Contains(body, `aria-label="Help for `+service.Name+`"`) {
+			t.Errorf("English help is incomplete for %q", service.ID)
 		}
 	}
 }
@@ -180,6 +197,9 @@ func TestMetricsSSECanBeCancelledAfterInitialFrame(t *testing.T) {
 					t.Fatal("initial SSE frame is missing event or data")
 				}
 				for _, service := range application.store.snapshot() {
+					if strings.Contains(body, `help-`+service.ID) {
+						t.Errorf("SSE frame must not contain help holder %q", service.ID)
+					}
 					for _, id := range []string{"status-" + service.ID, "metrics-" + service.ID, "logs-" + service.ID} {
 						oobAttribute := `id="` + id + `" hx-swap-oob="true"`
 						if strings.HasPrefix(id, "logs-") {
@@ -196,6 +216,28 @@ func TestMetricsSSECanBeCancelledAfterInitialFrame(t *testing.T) {
 			cancel()
 			t.Fatal("timed out waiting for initial SSE frame")
 		}
+	}
+}
+
+func TestToggleTriggerHeaderStaysASCII(t *testing.T) {
+	application := newApplication()
+	request := httptest.NewRequest(http.MethodPost, "/toggle-service?lang=es", strings.NewReader("id=api-gateway"))
+	request.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	response := httptest.NewRecorder()
+	application.handler().ServeHTTP(response, request)
+
+	header := response.Header().Get("HX-Trigger")
+	for index := 0; index < len(header); index++ {
+		if header[index] > 0x7F {
+			t.Fatalf("HX-Trigger must stay ASCII; byte %#x at offset %d in %q", header[index], index, header)
+		}
+	}
+	var trigger map[string]map[string]string
+	if err := json.Unmarshal([]byte(header), &trigger); err != nil {
+		t.Fatalf("invalid HX-Trigger: %v", err)
+	}
+	if message := trigger["pulse-toggled"]["message"]; !strings.Contains(message, "está") {
+		t.Fatalf("decoded message lost its accent: %q", message)
 	}
 }
 
@@ -218,6 +260,9 @@ func TestToggleReturnsCardAndTrigger(t *testing.T) {
 	}
 	if strings.Contains(body, "hx-swap-oob") {
 		t.Fatal("toggle response must not contain hx-swap-oob")
+	}
+	if !strings.Contains(body, `id="help-api-gateway"`) {
+		t.Fatal("toggle response must carry the help holder")
 	}
 	var trigger map[string]map[string]string
 	if err := json.Unmarshal([]byte(response.Header().Get("HX-Trigger")), &trigger); err != nil {
