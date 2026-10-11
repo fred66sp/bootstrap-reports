@@ -16,6 +16,11 @@ description: Diseña interacciones HTMX basadas en HTML del servidor, swaps, for
 - CSRF para mutaciones, escape HTML, autorización por endpoint, no confiar en atributos del cliente.
 - No incluir HTML de origen no confiable; revisar CSP.
 
+## Contrato de fragmentos Jet 6
+- Los endpoints HTMX renderizan templates Jet de fragmentos sin documento HTML completo.
+- Si una vista sirve ambos tipos de solicitud, comprobar navegación normal, historial y peticiones parciales en tests.
+- No duplicar fragmentos entre rutas: extraer includes Jet cuando resulte útil.
+
 ## Principios obligatorios
 - Primero inspeccionar el repositorio, versiones, convenciones y pruebas. No inventar hechos: si no es verificable, indicar UNKNOWN.
 - Cambios mínimos, DRY y sin capas, dependencias, APIs o herramientas de build innecesarias.

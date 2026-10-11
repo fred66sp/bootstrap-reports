@@ -17,6 +17,11 @@ description: Añade estado efímero y comportamientos locales con Alpine.js, evi
 - x-html con contenido no confiable.
 - Reimplementar en Alpine componentes ya resueltos por Bootstrap.
 
+## Convivencia con Jet 6
+- Jet genera el HTML y escapa datos; Alpine solo gestiona el estado efímero del navegador.
+- Cuidar comillas y atributos HTML al combinar expresiones Alpine con templates Jet. No interpolar datos no confiables en código JavaScript.
+- Tras swaps HTMX, verificar inicialización, estado y limpieza de componentes Alpine; no asumir persistencia de estado cuando se reemplaza el nodo.
+
 ## Principios obligatorios
 - Primero inspeccionar el repositorio, versiones, convenciones y pruebas. No inventar hechos: si no es verificable, indicar UNKNOWN.
 - Cambios mínimos, DRY y sin capas, dependencias, APIs o herramientas de build innecesarias.

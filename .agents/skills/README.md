@@ -11,6 +11,7 @@ material del proyecto y tienen que sobrevivir a un clon.
 | `alpinejs-interactivity` | Local, escrita para este proyecto | Se edita en su sitio |
 | `go-htmx-server` | Local, escrita para este proyecto | Se edita en su sitio |
 | `htmx-interactions` | Local, escrita para este proyecto | Se edita en su sitio |
+| `jet-template-engine` | Local, escrita para este proyecto | Se edita en su sitio |
 | `web-stack-architecture` | Local, escrita para este proyecto | Se edita en su sitio |
 | `bootstrap-color-system` | `twbs/bootstrap`, MIT | Se restaura desde `skills-lock.json` |
 | `bootstrap-component` | `twbs/bootstrap`, MIT | Se restaura desde `skills-lock.json` |
