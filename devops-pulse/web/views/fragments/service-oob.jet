@@ -1,0 +1,3 @@
+{{ include "/fragments/status.jet" . }}
+{{ include "/fragments/metrics.jet" . }}
+{{ include "/fragments/logs.jet" . }}

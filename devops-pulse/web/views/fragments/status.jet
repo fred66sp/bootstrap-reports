@@ -1,0 +1,1 @@
+<span id="status-{{ .Service.ID }}"{{ if .OutOfBand }} hx-swap-oob="true"{{ end }} class="badge rounded-pill {{ if .Service.Status == "Online" }}theme-success{{ else }}theme-danger{{ end }}">{{ .StatusLabel }}</span>

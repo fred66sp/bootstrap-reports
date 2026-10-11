@@ -1,1 +1,0 @@
-{{define "server-grid"}}{{range .Services}}{{if .OutOfBand}}{{template "service-oob" .}}{{else}}{{template "server-card" .}}{{end}}{{end}}{{end}}

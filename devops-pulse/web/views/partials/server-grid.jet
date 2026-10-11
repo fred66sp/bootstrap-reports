@@ -1,0 +1,1 @@
+{{ range .Services }}{{ if .OutOfBand }}{{ include "/fragments/service-oob.jet" . }}{{ else }}{{ include "/partials/server-card.jet" . }}{{ end }}{{ end }}

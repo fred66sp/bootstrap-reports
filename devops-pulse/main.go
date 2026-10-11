@@ -8,23 +8,63 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"html/template"
 	"io"
+	"io/fs"
 	"log/slog"
 	"math/rand/v2"
 	"net/http"
 	"os"
 	"os/signal"
+	"path"
 	"path/filepath"
 	"strings"
 	"sync"
 	"syscall"
 	"time"
 	"unicode/utf8"
+
+	"github.com/CloudyKit/jet/v6"
 )
 
-//go:embed web/templates
-var templateFiles embed.FS
+//go:embed web/views
+var viewFiles embed.FS
+
+type viewLoader struct {
+	files fs.FS
+}
+
+func (l viewLoader) path(name string) (string, error) {
+	name = path.Clean(strings.ReplaceAll(name, "\\", "/"))
+	name = strings.TrimPrefix(name, "/")
+	if name == "." || name == "" || strings.HasPrefix(name, "../") || name == ".." {
+		return "", fmt.Errorf("invalid view path %q", name)
+	}
+	return name, nil
+}
+
+func (l viewLoader) Exists(name string) bool {
+	name, err := l.path(name)
+	if err != nil {
+		return false
+	}
+	info, err := fs.Stat(l.files, name)
+	return err == nil && !info.IsDir()
+}
+
+func (l viewLoader) Open(name string) (io.ReadCloser, error) {
+	name, err := l.path(name)
+	if err != nil {
+		return nil, err
+	}
+	info, err := fs.Stat(l.files, name)
+	if err != nil {
+		return nil, err
+	}
+	if info.IsDir() {
+		return nil, fmt.Errorf("view path %q is a directory", name)
+	}
+	return l.files.Open(name)
+}
 
 type serviceStatus string
 
@@ -202,18 +242,49 @@ type pageView struct {
 }
 
 type application struct {
-	store     *stateStore
-	templates *template.Template
+	store *stateStore
+	views *jet.Set
+}
+
+func newApplicationFromViews(files fs.FS) (*application, error) {
+	set := jet.NewSet(viewLoader{files: files}, jet.WithTemplateNameExtensions([]string{"", ".jet"}))
+	err := fs.WalkDir(files, ".", func(viewPath string, entry fs.DirEntry, walkErr error) error {
+		if walkErr != nil {
+			return walkErr
+		}
+		if entry.IsDir() || !strings.HasSuffix(viewPath, ".jet") {
+			return nil
+		}
+		if _, err := set.GetTemplate(viewPath); err != nil {
+			return fmt.Errorf("parse view %s: %w", viewPath, err)
+		}
+		return nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	return &application{store: newStateStore(), views: set}, nil
 }
 
 func newApplication() *application {
-	templates := template.Must(template.New("index.html").ParseFS(templateFiles, "web/templates/*.html", "web/templates/partials/*.html"))
-	return &application{store: newStateStore(), templates: templates}
+	files, err := fs.Sub(viewFiles, "web/views")
+	if err != nil {
+		panic(err)
+	}
+	application, err := newApplicationFromViews(files)
+	if err != nil {
+		panic(err)
+	}
+	return application
 }
 
 func (a *application) render(name string, data any) (bytes.Buffer, error) {
 	var output bytes.Buffer
-	err := a.templates.ExecuteTemplate(&output, name, data)
+	template, err := a.views.GetTemplate(name)
+	if err != nil {
+		return output, err
+	}
+	err = template.Execute(&output, nil, data)
 	return output, err
 }
 
@@ -242,7 +313,7 @@ func (a *application) index(w http.ResponseWriter, r *http.Request) {
 		persistLanguageCookie(w, lang)
 	}
 	localized := messageTable[lang]
-	output, err := a.render("index.html", pageView{Language: lang, Messages: localized, Services: serviceViews(a.store.snapshot(), false, lang)})
+	output, err := a.render("pages/index.jet", pageView{Language: lang, Messages: localized, Services: serviceViews(a.store.snapshot(), false, lang)})
 	if err != nil {
 		http.Error(w, "template rendering failed", http.StatusInternalServerError)
 		return
@@ -252,12 +323,12 @@ func (a *application) index(w http.ResponseWriter, r *http.Request) {
 }
 
 func (a *application) renderGrid(lang language) (string, error) {
-	output, err := a.render("server-grid", pageView{Language: lang, Messages: messageTable[lang], Services: serviceViews(a.store.snapshot(), true, lang)})
+	output, err := a.render("partials/server-grid.jet", pageView{Language: lang, Messages: messageTable[lang], Services: serviceViews(a.store.snapshot(), true, lang)})
 	return output.String(), err
 }
 
-func (a *application) renderFragment(name string, view serviceView) (string, error) {
-	output, err := a.render(name, view)
+func (a *application) renderFragment(viewPath string, view serviceView) (string, error) {
+	output, err := a.render(viewPath, view)
 	return output.String(), err
 }
 
@@ -265,18 +336,18 @@ func (a *application) renderTick(lang language, services []service, lastStatus m
 	var output strings.Builder
 	for _, current := range services {
 		view := serviceViews([]service{current}, true, lang)[0]
-		metrics, err := a.renderFragment("metrics-fragment", view)
+		metrics, err := a.renderFragment("fragments/metrics.jet", view)
 		if err != nil {
 			return "", err
 		}
 		output.WriteString(metrics)
-		logs, err := a.renderFragment("logs-fragment", view)
+		logs, err := a.renderFragment("fragments/logs.jet", view)
 		if err != nil {
 			return "", err
 		}
 		output.WriteString(logs)
 		if lastStatus[current.ID] != current.Status {
-			status, err := a.renderFragment("status-fragment", view)
+			status, err := a.renderFragment("fragments/status.jet", view)
 			if err != nil {
 				return "", err
 			}
@@ -391,7 +462,7 @@ func (a *application) toggleService(w http.ResponseWriter, r *http.Request) {
 	}})
 	w.Header().Set("HX-Trigger", trigger)
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	output, err := a.render("card-surface", serviceViews([]service{current}, false, lang)[0])
+	output, err := a.render("fragments/card-surface.jet", serviceViews([]service{current}, false, lang)[0])
 	if err != nil {
 		http.Error(w, "template rendering failed", http.StatusInternalServerError)
 		return
@@ -423,7 +494,14 @@ func run(ctx context.Context, addr string) error {
 	if err := verifyAssets(staticDir); err != nil {
 		return err
 	}
-	application := newApplication()
+	files, err := fs.Sub(viewFiles, "web/views")
+	if err != nil {
+		return err
+	}
+	application, err := newApplicationFromViews(files)
+	if err != nil {
+		return err
+	}
 	server := &http.Server{Addr: addr, Handler: application.handler()}
 	go func() {
 		ticker := time.NewTicker(2 * time.Second)

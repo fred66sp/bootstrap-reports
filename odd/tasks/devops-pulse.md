@@ -461,6 +461,90 @@ estacionario en unos 900 B. La cifra de gzip de la iteración 4 (276 B) sí se
 reproduce (271 B). No se reescribe la tabla histórica: se conserva y se corrige
 el presupuesto de esta iteración con la medición nueva.
 
+### Resultado de la migración a Jet 6 (JET-22)
+
+Dependencia fijada: `github.com/CloudyKit/jet/v6 v6.3.3`, con
+`github.com/CloudyKit/fastprinter` como indirecta. Diez vistas en
+`devops-pulse/web/views/`, y `web/templates/` eliminado:
+
+| Vista | Bytes |
+| --- | --- |
+| `layouts/base.jet` | 1.599 |
+| `pages/index.jet` | 4.289 |
+| `partials/server-grid.jet` | 155 |
+| `partials/server-card.jet` | 127 |
+| `partials/logs-dialog.jet` | 1.480 |
+| `fragments/card-surface.jet` | 2.119 |
+| `fragments/metrics.jet` | 914 |
+| `fragments/logs.jet` | 232 |
+| `fragments/status.jet` | 216 |
+| `fragments/service-oob.jet` | 118 |
+
+Contrato de render: `viewLoader` implementando `jet.Loader` sobre
+`fs.Sub(embed.FS, "web/views")`; `jet.NewSet` con
+`WithTemplateNameExtensions{"", ".jet"}`; y `newApplicationFromViews`, que
+**parsea todas las vistas al construir** la aplicación, de modo que una vista
+rota falla al arrancar nombrando su ruta en lugar de fallar en la primera
+petición. `newApplication()` conserva su firma y entra en pánico, como hacía
+`template.Must`; `run()` devuelve el error. Cada fragmento es un archivo
+renderizable por separado y a la vez incluible con
+`{{ include "/fragments/x.jet" . }}`, sin marcado duplicado.
+
+Identidad byte a byte comprobada por dos vías independientes:
+
+| Comprobación | Resultado |
+| --- | --- |
+| Seis golden files | 0 bytes de diferencia |
+| Cinco frames SSE consecutivos en el cable | idénticos a la baseline: 5.634 / 5.219 / 5.231 / 5.223 / 5.211 B |
+
+Coste medido después de migrar con `go test -run XXX -bench . -benchmem -count=5`:
+
+| Escenario | `html/template` | Jet 6 | Cambio |
+| --- | --- | --- | --- |
+| Página `/` | ~271.500 ns/op · 140.990 B/op · 2.167 allocs | ~82.700 ns/op · 70.730 B/op · 254 allocs | 3,3× menos tiempo, 8,5× menos asignaciones |
+| Frame SSE de 5.178 B | ~105.800 ns/op · 58.892 B/op · 801 allocs | ~39.500 ns/op · 44.130 B/op · 166 allocs | 2,7× menos tiempo, 4,8× menos asignaciones |
+
+Coste en el cable sobre ventanas equivalentes de diez frames, con 24 `<li>` en
+cada frame:
+
+| Motor | Sin comprimir (diez frames) | gzip por frame | Media estacionaria |
+| --- | --- | --- | --- |
+| `html/template` | 52.675 B | 263,6 B | 5.222,6 B |
+| Jet 6 | 52.667 B | 265,3 B | 5.221,7 B |
+
+Desviación declarada, no ocultada: el umbral presupuestado era 5.215 B por tick
+estacionario y la media medida es 5.221,7 B, 6,7 B por encima. Está dentro del
+rango que la propia baseline mostraba (5.211–5.231 B) y la causa es el texto de
+las líneas de log según la fase del testigo, no el motor: el payload sin
+comprimir difiere en 8 B sobre diez frames (0,015 %) y los seis golden files
+coinciden con 0 bytes de diferencia, que es el criterio exacto y el que se
+declara cumplido. La diferencia de gzip (0,6 %) tiene la misma causa y el camino
+de compresión no cambió.
+
+### Hallazgos verificados de Jet 6 en esta migración
+
+1. **Los comentarios JavaScript de un `<script>` en línea desaparecen con
+   `html/template` y reaparecen con Jet.** El escapador contextual sustituye un
+   comentario de bloque JS por **un solo espacio** —o por un salto de línea si el
+   comentario contiene un terminador de línea—: `$GOROOT/src/html/template/escape.go:781-795`,
+   «Comments behave like white space and are discarded». El comentario original
+   `/* storage unavailable */`, rodeado de dos espacios literales, se sirvió como
+   tres espacios. Verificado en el golden: `page-es` contiene `catch (e) {   }` y
+   ninguna aparición de «storage unavailable». Jet emite el texto literal, así
+   que la vista conserva esos tres espacios y un comentario Jet `{* *}` —que no
+   emite nada— explica por qué no deben «arreglarse».
+2. **El contenido de un archivo incluido se emite literal, incluido su salto de
+   línea final.** En `html/template` todo el texto fuera de `{{define}}` se
+   descarta, de modo que los archivos podían terminar en salto de línea sin
+afectar a la salida. En Jet, no: `fragments/` y `partials/` tienen que cerrar sin
+   salto de línea. Comprobado con `tail -c 1` sobre las diez vistas (último byte
+   `>` o `}`) y con la identidad byte a byte.
+3. **El parseo ocurre en `GetTemplate`**, no en la primera ejecución: recorrer
+   las vistas al construir la aplicación convierte un error de sintaxis en un
+   fallo de arranque con la ruta de la vista.
+4. **La indirección por nombre desaparece**: `extends`/`block`/`yield` para el
+   documento, `include` con contexto explícito para los componentes.
+
 ### Tareas de la iteración 5
 
 - [x] JET-20 — Registrar la actualización de skills: alta de `jet-template-engine`
@@ -473,9 +557,14 @@ el presupuesto de esta iteración con la medición nueva.
   previa de coste por tick. **Cerrada.** RED observado con los golden ausentes,
   GREEN tras `-update`, `gofmt` y `go vet` limpios, seis cifras de coste
   registradas y una discrepancia encontrada en la tabla histórica.
-- [ ] JET-22 — Migrar `devops-pulse` a Jet 6 `v6.3.3`: dependencia, loader sobre
+- [x] JET-22 — Migrar `devops-pulse` a Jet 6 `v6.3.3`: dependencia, loader sobre
   `embed.FS`, `Set` con compilación de todas las vistas al arrancar, vistas en
   `web/views/` y `main.go` enlazado, con los golden files byte-idénticos.
+  **Cerrada.** Unidad delegada a `gentle-ai-worker` y verificada después por el
+  orquestador: `gofmt`, `go vet`, `go test -count=1 ./...`, `-race` y el golden
+  forzado, todos correctos. El writer no podía borrar `web/templates/`, así que
+  el borrado y la eliminación de la indirección por nombre en `renderFragment`
+  los hizo el orquestador, con la identidad byte a byte re-verificada después.
 - [ ] JET-23 — Añadir guardas: escaping de metacaracteres HTML, invariante de
   los literales JS de Alpine, paridad de claves ES/EN, ruta de fallo de render
   sin escritura parcial y ejecución concurrente bajo `-race`.
@@ -492,3 +581,8 @@ el presupuesto de esta iteración con la medición nueva.
 - Exploración completada sin haber modificado ningún archivo del proyecto.
   Los cambios previos sin confirmar del usuario (cuatro `SKILL.md` y la skill
   nueva) se conservan intactos.
+- El toque de atención operativo de la unidad delegada: el writer reportó dos
+  afirmaciones que parecían contradictorias («comentario JavaScript sustituido
+  por espacios» junto con «salida byte-idéntica»). La verificación del
+  orquestador las confirmó ambas y encontró el mecanismo en la fuente de Go: no
+eran contradictorias, eran el hallazgo 1 de la lista anterior.

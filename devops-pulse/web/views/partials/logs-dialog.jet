@@ -1,0 +1,11 @@
+<dialog id="logs-dialog" class="dialog dialog-lg dialog-slide-up">
+  <div class="dialog-header"><h2 class="dialog-title" id="logs-title">{{ .Messages["logs fallback title"] }}</h2><button type="button" class="btn-close" data-bs-dismiss="dialog" aria-label="{{ .Messages["close"] }}"></button></div>
+  <div class="dialog-body" id="logs-body"></div>
+  <div class="dialog-footer"><button type="button" class="btn-solid theme-secondary" data-bs-dismiss="dialog">{{ .Messages["close"] }}</button></div>
+</dialog>
+<dialog id="service-help-dialog" class="dialog dialog-lg dialog-slide-up" aria-labelledby="service-help-title">
+  <div class="dialog-header"><h2 class="dialog-title" id="service-help-title">{{ .Messages["help fallback title"] }}</h2><button type="button" class="btn-close" data-bs-dismiss="dialog" aria-label="{{ .Messages["close"] }}"></button></div>
+  <div class="dialog-body" id="service-help-body"></div>
+  <div class="dialog-footer"><button type="button" class="btn-solid theme-secondary" data-bs-dismiss="dialog">{{ .Messages["close"] }}</button></div>
+</dialog>
+<div class="toast-container position-fixed bottom-0 end-0 p-3"><div id="pulse-toast" class="toast" role="status" aria-live="polite"><div class="toast-header"><strong class="me-auto">{{ .Messages["toast header"] }}</strong><button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="{{ .Messages["close"] }}"></button></div><div class="toast-body" id="pulse-toast-body"></div></div></div>

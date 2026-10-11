@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="{{ .Language }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Roboto+Condensed:wght@500;600;700&family=Roboto:wght@400;500;600;700&display=swap">
+  <script>
+    (function () {
+      var stored = null
+      try { stored = localStorage.getItem('devops-pulse-theme') } catch (e) {   }{* The three spaces in the empty catch block are not a typo: html/template's JavaScript escaper rewrote the comment that used to sit here into spaces, and the frozen rendering baseline keeps the served bytes unchanged across the move to Jet. *}
+      var theme = stored === 'light' || stored === 'dark' ? stored : null
+      if (!theme) {
+        try { theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light' } catch (e) { theme = 'light' }
+      }
+      document.documentElement.setAttribute('data-bs-theme', theme)
+    })()
+  </script>
+  <title>{{ .Messages["title"] }}</title>
+  <link rel="stylesheet" href="/static/vendor/bootstrap.min.css">
+  <link rel="stylesheet" href="/static/app.css">
+</head>
+<body class="bg-2" x-data="pulseDashboard">
+{{ yield body() }}
+  <script defer src="/static/vendor/htmx.min.js"></script>
+  <script defer src="/static/vendor/htmx-ext-sse.min.js"></script>
+  <script type="module" src="/static/app.js"></script>
+</body>
+</html>
