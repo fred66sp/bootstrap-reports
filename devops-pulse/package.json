@@ -1,0 +1,14 @@
+{
+  "name": "devops-pulse",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "sync:assets": "node scripts/sync-assets.mjs"
+  },
+  "dependencies": {
+    "alpinejs": "3.17.4",
+    "bootstrap": "6.0.0-alpha.1",
+    "htmx-ext-sse": "2.2.4",
+    "htmx.org": "2.0.11"
+  }
+}

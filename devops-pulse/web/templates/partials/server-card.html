@@ -1,0 +1,22 @@
+{{define "status-fragment"}}<span id="status-{{.Service.ID}}"{{if .OutOfBand}} hx-swap-oob="true"{{end}} class="badge rounded-pill {{if eq .Service.Status "Online"}}theme-success{{else}}theme-danger{{end}}">{{.Service.Status}}</span>{{end}}
+{{define "metrics-fragment"}}<div id="metrics-{{.Service.ID}}"{{if .OutOfBand}} hx-swap-oob="true"{{end}}><div class="metric-row"><div class="d-flex justify-content-between small mb-2"><span>CPU</span><span>{{.Service.CPU}}%</span></div><div class="progress" role="progressbar" aria-label="CPU usage" aria-valuenow="{{.Service.CPU}}" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar theme-primary" style="width: {{.Service.CPU}}%">{{.Service.CPU}}%</div></div></div><div class="metric-row"><div class="d-flex justify-content-between small mb-2"><span>Memory</span><span>{{.Service.RAM}}%</span></div><div class="progress" role="progressbar" aria-label="Memory usage" aria-valuenow="{{.Service.RAM}}" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar theme-info" style="width: {{.Service.RAM}}%">{{.Service.RAM}}%</div></div></div></div>{{end}}
+{{define "logs-fragment"}}<div id="logs-{{.Service.ID}}" hidden{{if .OutOfBand}} hx-swap-oob="true"{{end}}><ul class="list-group list-group-flush">{{range .Service.Logs}}<li class="list-group-item bg-transparent px-0">{{.}}</li>{{end}}</ul></div>{{end}}
+{{define "service-oob"}}{{template "status-fragment" .}}
+{{template "metrics-fragment" .}}
+{{template "logs-fragment" .}}{{end}}
+{{define "server-card"}}<article class="card service-card col-12 md:col-6 xl:col-4 h-100 border-subtle" x-show="match('{{.Service.Name}}')">
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <h2 class="h5 mb-0">{{.Service.Name}}</h2>
+      {{template "status-fragment" .}}
+    </div>
+    <div class="card-body">
+      {{template "metrics-fragment" .}}
+    </div>
+    <div class="card-footer d-flex justify-content-between align-items-center">
+      <button class="btn-text theme-primary p-0" type="button" @click="openLogs('{{.Service.ID}}', '{{.Service.Name}}')">View logs</button>
+      <form hx-post="/toggle-service" hx-vals='{"id":"{{.Service.ID}}"}' hx-target="closest .card" hx-swap="outerHTML" hx-indicator="#toggle-spinner-{{.Service.ID}}">
+        <button class="btn-outline theme-secondary btn-sm" type="submit"><span class="spinner-border spinner-sm htmx-indicator" id="toggle-spinner-{{.Service.ID}}" aria-hidden="true"></span><span>Toggle</span></button>
+      </form>
+    </div>
+    {{template "logs-fragment" .}}
+</article>{{end}}
