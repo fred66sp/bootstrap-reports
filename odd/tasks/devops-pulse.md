@@ -644,8 +644,11 @@ candidato no tiene ciclo de revisión nativa.
   bytes por tick antes y después, `curl` sobre las rutas reales y comprobación
   en navegador. **Cerrada**, con el detalle en «Verificación de cierre medida
   (JET-24)».
-- [ ] JET-26 — Documentar los hallazgos de Jet en `devops-pulse/README.md` y
-  cerrar la tarea.
+- [x] JET-26 — Documentar los hallazgos de Jet en `devops-pulse/README.md` y
+  cerrar la tarea. **Cerrada**: `docs/HALLAZGOS_JET_6.md`, las secciones «Jet 6
+  views» y «Jet 6 traps found while migrating this app» en el README, la ruta del
+  script de comprobación de clases corregida a `web/views/**/*.jet` y la
+  afirmación «UNPROVEN» sobre el navegador sustituida por la evidencia observada.
 
 ### Progreso de la iteración 5
 
@@ -656,4 +659,45 @@ candidato no tiene ciclo de revisión nativa.
   afirmaciones que parecían contradictorias («comentario JavaScript sustituido
   por espacios» junto con «salida byte-idéntica»). La verificación del
   orquestador las confirmó ambas y encontró el mecanismo en la fuente de Go: no
-eran contradictorias, eran el hallazgo 1 de la lista anterior.
+  eran contradictorias, eran el hallazgo 1 de la lista anterior.
+
+## Cierre de la iteración 5
+
+- **Rama de tarea:** `feature/jet6-devops-pulse`, con las unidades JET-20 a
+  JET-26 cerradas en seis commits: `48c64e5` (skills), `faada9d` (baseline
+  congelada), `ff18e9b` (migración), `b6c8fa9` (guardas), `b335e4d` (ruta muerta)
+  y `0f1b3d8` (evidencia de verificación), más el commit de cierre documental.
+  `main` sigue en `b8cf3ad`: la rama **no** se integró.
+- **Producto duradero:** `docs/HALLAZGOS_JET_6.md` con los hallazgos verificados
+  —API y contrato de carga, diferencia de escapado, comentarios JavaScript,
+  salto de línea de los archivos incluidos, parseo e inclusión, concurrencia—,
+  la tabla de coste medida y una sección explícita de límites y comprobaciones no
+  realizadas. Se añaden las secciones «Jet 6 views» y «Jet 6 traps found while
+  migrating this app» en `devops-pulse/README.md`.
+- **Resultado:** la aplicación sirve exactamente el mismo HTML que antes de la
+  migración (seis golden byte a byte, cinco frames SSE idénticos en el cable y
+  tres rutas del servidor real comparadas con `cmp`) y renderiza de 2,7 a 3,3
+  veces más rápido con entre 4,8 y 8,5 veces menos asignaciones.
+- **Carga de revisión:** la rama completa frente a `main` son 31 archivos y 1.500
+  inserciones, pero se revisa por unidad. La mayor unidad de código (`ff18e9b`)
+  suma 328 inserciones y 147 borrados, casi todos el marcado movido de
+  `web/templates/` a `web/views/`; el resto del volumen son este documento, los
+  golden congelados y las pruebas. Ninguna unidad supera por sí sola lo que una
+  revisión enfocada puede cubrir.
+- **Método:** la migración se delegó a un writer acotado y el orquestador verificó
+  después cada afirmación: repetición de la suite, `-race`, comparación byte a
+  byte, mutación de las guardas nuevas, medición en el cable y comprobación
+  funcional en Chromium. Dos afirmaciones del writer que parecían contradictorias
+  resultaron ciertas y se convirtieron en hallazgos documentados.
+- **Sin operaciones remotas:** no hubo `push`, `fetch` para integrar, `merge`,
+  etiqueta ni publicación. El repositorio no tiene remoto configurado.
+- **RDD:** apagado en este clon (`gentle-ai review mode status` → `global: off`),
+  así que este candidato no tiene ciclo de revisión nativa. El candidato
+  revisable es el commit de trabajo de la migración (`ff18e9b`) o la rebanada
+  completa de la rama, a decisión del usuario.
+- **Corrección de consistencia aplicada:** las skills `htmx-interactions` y
+  `alpinejs-interactivity` conservaban `pkg.go.dev/html/template` en su lista de
+  referencias mientras su propio cuerpo ya declaraba Jet 6 como motor del stack;
+  se sustituyó por la referencia a Jet v6, con el mismo patrón que el usuario
+  aplicó en `go-htmx-server`.
+- **Pendiente, no bloqueante:** la integración en `main` es decisión del usuario.

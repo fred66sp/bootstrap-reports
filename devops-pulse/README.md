@@ -23,7 +23,7 @@ npm install && npm run sync:assets
 ## Architecture
 
 - `main.go` contains the domain model, one mutex-protected in-memory state
-  store, templates, handlers, and server wiring.
+  store, the Jet 6 view set, handlers, and server wiring.
 - `GET /metrics` sends server-rendered HTML over SSE, gzip-compressed when the
   client advertises gzip. The grid uses `hx-swap="none"`; every frame sends
   complete per-service metrics and log-holder OOB fragments, while status is
@@ -31,7 +31,7 @@ npm install && npm run sync:assets
   survive every tick. Spanish is the default server-resolved language; valid
   `lang` query values persist in a cookie and the same language is carried by
   the SSE stream and toggle form.
-- One `serviceView` model and shared fragment templates render the initial card,
+- One `serviceView` model and one file per Jet fragment render the initial card,
   SSE OOB elements, and toggle response. The view's `OutOfBand` flag adds
   `hx-swap-oob` only to SSE output. Metrics use bounded random walks; each
   service retains six plain log lines, and each SSE connection tracks the
@@ -42,6 +42,29 @@ npm install && npm run sync:assets
 - Bootstrap 6's ESM `Dialog` and `Toast` APIs handle the dialog and toggle
   notification. The page uses `data-bs-theme` for light and dark modes; the
   choice is applied before paint and persisted in local storage.
+
+## Jet 6 views
+
+Templates are Jet 6 views under `web/views/`, compiled from the embedded file
+system when the application is built:
+
+- `layouts/base.jet` is the document shell and yields `body()`.
+- `pages/index.jet` extends the shell and holds the header, the toolbar, the grid
+  and the dialogs.
+- `partials/` holds the composed pieces: the grid loop, the card column and the
+  two dialogs.
+- `fragments/` holds one file per HTMX fragment. Each one is rendered standalone
+  by Go (the SSE frame and the toggle response) **and** included from another view
+  with `{{ include "/fragments/x.jet" . }}`, so a fragment has a single
+  definition.
+
+`newApplicationFromViews` parses every view while building the application, so a
+syntax error fails at startup and names the offending view instead of becoming a
+500 on the first request. Rendering goes through a buffer first, so a render
+error never writes half a document. The wire cost is unchanged by the move and
+the views are byte-identical to the previous `html/template` output; the
+comparison is frozen in `testdata/` and checked by
+`TestRenderedOutputMatchesFrozenBaseline`.
 
 ## Bootstrap 6 differences
 
@@ -121,7 +144,7 @@ Observed locally:
   css = Path('web/static/vendor/bootstrap.min.css').read_text()
   custom = {'brand', 'brand__mark', 'brand__tag', 'is-active', 'pulse-heading', 'pulse-icon', 'segmented', 'segmented__icon', 'segmented__option', 'service-card', 'site-controls', 'site-header', 'site-header__bar', 'toolbar', 'metric-row', 'search-box', 'eyebrow', 'htmx-indicator'}
   classes = set()
-  for path in Path('web/templates').rglob('*.html'):
+  for path in Path('web/views').rglob('*.jet'):
       text = path.read_text()
       text = re.sub(r'{{.*?}}', ' ', text)
       for value in re.findall(r'(?<!:)class="([^"]*)"', text):
@@ -141,9 +164,13 @@ rule (`grep -q '\\[hidden\\]' web/static/vendor/bootstrap.min.css`), so no
 custom hidden rule is needed.
 
 Browser-level animation, search, dialog, and toast behavior was not exercised
-with a browser here: **UNPROVEN**. Check the official Bootstrap 6 Dialog and
-Toast documentation at <https://getbootstrap.com/docs/6.0/> and the HTMX SSE
-extension documentation before treating those behaviors as browser-verified.
+with a browser in the first implementation. It was verified later on Chromium
+(Playwright, 1440x900) and re-verified after the move to Jet 6; the recorded
+result is in `odd/tasks/devops-pulse.md` under iteration 5. It covers the live
+badge after the stream connects, Alpine filtering, both dialogs as real modals,
+the localised toggle toast, the card root and its form surviving a full SSE tick,
+dark theme persistence across a reload, and the English navigation, with zero
+console errors, zero page errors, and zero `htmx:oobErrorNoTarget`.
 
 ## Deliberate scope exclusions
 
@@ -151,6 +178,30 @@ There is no database, authentication, persistence, third-party Go module,
 frontend bundler, Sass customization, or production deployment configuration.
 Generated `node_modules/`, vendored frontend assets, and `bin/` output are
 ignored.
+
+## Jet 6 traps found while migrating this app
+
+Each one was observed here, not assumed, and each one fails silently. The
+longer write-up is in `docs/HALLAZGOS_JET_6.md`.
+
+- Jet escapes with `text/template.HTMLEscape`, which covers NUL, `"`, `'`, `&`,
+  `<` and `>`. It is **not** contextual: `html/template` escaped a value for its
+  JavaScript context, Jet does not. `TestViewEscapesHTMLMetacharacters` pins both
+  the escaping and the limitation, and
+  `TestAlpineJSLiteralInterpolationsStaySafe` guards the values that reach a
+  single-quoted Alpine literal.
+- Jet does not escape `+` as `&#43;`, which `html/template` did. No message in
+  this app contains `+`, so the frozen output still matches.
+- An included file is emitted literally, **including its trailing newline**,
+  while `html/template` discarded text outside `{{define}}`. Files under
+  `fragments/` and `partials/` therefore must not end with a newline.
+- `include` is resolved at render time even though `GetTemplate` parses the rest
+  of the template, so a missing include is a runtime 500: render into a buffer
+  before writing headers.
+- `html/template` rewrote an inline JavaScript block comment into a single space.
+  Jet keeps it, so the empty `catch` block in `layouts/base.jet` keeps the three
+  spaces the old engine produced; restoring the comment there is the change that
+  looks right and breaks the baseline.
 
 ## Bootstrap 6 traps found while building this app
 

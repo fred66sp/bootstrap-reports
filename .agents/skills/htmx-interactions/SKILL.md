@@ -29,7 +29,9 @@ description: Diseña interacciones HTMX basadas en HTML del servidor, swaps, for
 - Consultar documentación oficial de la versión instalada ante dudas; no mezclar APIs de versiones mayores.
 
 ## Referencias oficiales
-- Go: https://go.dev/doc/ y https://pkg.go.dev/net/http y https://pkg.go.dev/html/template
+- Go: https://go.dev/doc/ y https://pkg.go.dev/net/http
 - HTMX: https://htmx.org/docs/ y https://htmx.org/reference/
 - Alpine.js: https://alpinejs.dev/start-here y https://alpinejs.dev/directives/data
 - Bootstrap 6: https://getbootstrap.com/docs/6.0/getting-started/ai/
+
+- Jet v6: https://pkg.go.dev/github.com/CloudyKit/jet/v6 y https://github.com/CloudyKit/jet/blob/master/docs/syntax.md
