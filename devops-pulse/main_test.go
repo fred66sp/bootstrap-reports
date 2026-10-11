@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"compress/gzip"
 	"context"
 	"encoding/json"
 	"net/http"
@@ -11,6 +12,168 @@ import (
 	"testing"
 	"time"
 )
+
+func TestLogRingKeepsSixPlainLines(t *testing.T) {
+	store := newStateStore()
+	if got := store.snapshot()[0].Logs[0]; got != "09:41:02 request router ready" {
+		t.Fatalf("initial log = %q", got)
+	}
+	for range 10 {
+		store.advanceMetrics()
+	}
+	logs := store.snapshot()[0].Logs
+	if len(logs) != 6 {
+		t.Fatalf("log ring length = %d, want 6", len(logs))
+	}
+	for _, line := range logs {
+		if strings.TrimSpace(line) == "" {
+			t.Fatal("log line must contain text")
+		}
+	}
+}
+
+func TestSSETickCarriesFullLogsAndDeduplicatesStatus(t *testing.T) {
+	application := newApplication()
+	lastStatus := make(map[string]serviceStatus)
+	first, err := application.renderTick(languageSpanish, application.store.snapshot(), lastStatus)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, service := range application.store.snapshot() {
+		if !strings.Contains(first, `id="metrics-`+service.ID+`" hx-swap-oob="true"`) || !strings.Contains(first, `id="logs-`+service.ID+`" hidden hx-swap-oob="true"`) {
+			t.Errorf("first frame missing metrics or logs for %s", service.ID)
+		}
+		if !strings.Contains(first, `id="status-`+service.ID+`"`) {
+			t.Errorf("first frame missing status for %s", service.ID)
+		}
+		lastStatus[service.ID] = service.Status
+	}
+	application.store.advanceMetrics()
+	second, err := application.renderTick(languageSpanish, application.store.snapshot(), lastStatus)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got := strings.Count(second, `hx-swap-oob="true"`); got != 8 {
+		t.Fatalf("metrics and logs fragments = %d, want 8", got)
+	}
+	if strings.Contains(second, `id="status-`) {
+		t.Fatal("unchanged statuses must not be resent")
+	}
+	if strings.Contains(second, ` id="logs-`+application.store.snapshot()[0].ID+`-`) {
+		t.Fatal("log lines must not carry ids")
+	}
+}
+
+func TestSSEToggleOnlySendsChangedStatus(t *testing.T) {
+	application := newApplication()
+	lastStatus := make(map[string]serviceStatus)
+	for _, service := range application.store.snapshot() {
+		lastStatus[service.ID] = service.Status
+	}
+	if _, ok := application.store.toggle("checkout"); !ok {
+		t.Fatal("toggle failed")
+	}
+	frame, err := application.renderTick(languageSpanish, application.store.snapshot(), lastStatus)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got := strings.Count(frame, `id="status-checkout"`); got != 1 {
+		t.Fatalf("toggled status fragments = %d, want 1", got)
+	}
+	if strings.Contains(frame, `id="status-api-gateway"`) || strings.Contains(frame, `id="status-worker-east"`) || strings.Contains(frame, `id="status-worker-west"`) {
+		t.Fatal("untoggled statuses were resent")
+	}
+}
+
+func TestSSEHandlerDoesNotAdvanceStore(t *testing.T) {
+	application := newApplication()
+	server := httptest.NewServer(application.handler())
+	defer server.Close()
+	response, err := http.Get(server.URL + "/metrics")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer response.Body.Close()
+	reader := bufio.NewReader(response.Body)
+	readFrame := func() string {
+		var frame strings.Builder
+		for {
+			line, readErr := reader.ReadString('\n')
+			if readErr != nil {
+				t.Fatal(readErr)
+			}
+			frame.WriteString(line)
+			if line == "\n" {
+				return frame.String()
+			}
+		}
+	}
+	first := readFrame()
+	second := readFrame()
+	values := func(frame string) []string {
+		match := regexp.MustCompile(`id="metrics-api-gateway".*?aria-valuenow="([0-9]+)".*?aria-valuenow="([0-9]+)"`).FindStringSubmatch(frame)
+		if len(match) != 3 {
+			t.Fatalf("frame missing API Gateway CPU/RAM metrics")
+		}
+		return match[1:]
+	}
+	if got, want := values(second), values(first); strings.Join(got, ",") != strings.Join(want, ",") {
+		t.Fatalf("consecutive frames changed metrics: first %v, second %v", want, got)
+	}
+}
+
+func TestSSEGzipAndPlainHeaders(t *testing.T) {
+	application := newApplication()
+	server := httptest.NewServer(application.handler())
+	defer server.Close()
+	for _, test := range []struct {
+		name, encoding string
+		compressed     bool
+	}{
+		{"gzip", "gzip", true},
+		{"plain", "", false},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			request, err := http.NewRequest(http.MethodGet, server.URL+"/metrics", nil)
+			if err != nil {
+				t.Fatal(err)
+			}
+			request.Header.Set("Accept-Encoding", test.encoding)
+			ctx, cancel := context.WithCancel(request.Context())
+			defer cancel()
+			request = request.WithContext(ctx)
+			response, err := http.DefaultTransport.RoundTrip(request)
+			if err != nil {
+				t.Fatal(err)
+			}
+			defer response.Body.Close()
+			if got := response.Header.Get("Vary"); got != "Accept-Encoding" {
+				t.Fatalf("Vary = %q", got)
+			}
+			if test.compressed {
+				if got := response.Header.Get("Content-Encoding"); got != "gzip" {
+					t.Fatalf("Content-Encoding = %q", got)
+				}
+				reader, err := gzip.NewReader(response.Body)
+				if err != nil {
+					t.Fatal(err)
+				}
+				line, err := bufio.NewReader(reader).ReadString('\n')
+				if err != nil || line != "event: metrics\n" {
+					t.Fatalf("gzip first line = %q, err %v", line, err)
+				}
+			} else {
+				if got := response.Header.Get("Content-Encoding"); got != "" {
+					t.Fatalf("plain Content-Encoding = %q", got)
+				}
+				line, err := bufio.NewReader(response.Body).ReadString('\n')
+				if err != nil || line != "event: metrics\n" {
+					t.Fatalf("plain first line = %q, err %v", line, err)
+				}
+			}
+		})
+	}
+}
 
 func TestStateRandomWalkAndToggle(t *testing.T) {
 	store := newStateStore()

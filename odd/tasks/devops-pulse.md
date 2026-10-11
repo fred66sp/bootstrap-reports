@@ -253,3 +253,43 @@ superior derecha.
   ocho diferencias verificadas en este proyecto (columna en `.card-header`, SVG sin
   tamaño, escala de espaciado, listas de fuentes, botones y `Dialog`, ESM sin
   `window.bootstrap`, `hx-swap="none"` con OOB y cabeceras ASCII).
+
+## Criterio de coste (regla permanente de este proyecto)
+
+Antes de escribir código, cada unidad declara su presupuesto y el diseño más
+barato que cumple el requisito. No se codifica y luego se optimiza.
+
+**Por qué está aquí.** En la primera versión del stream no se midió el coste por
+tick hasta que el usuario lo pidió: la línea base era de 5.625 B por tick y nadie
+lo sabía. Esa medición tardía es la causa de las tres vueltas siguientes
+(OOB por tarjeta, deltas por línea, reversión de los deltas).
+
+**Qué se declara antes de implementar:**
+
+- el presupuesto: bytes por tick y por hora, latencia, número de peticiones y de
+  nodos del DOM que se sustituyen;
+- la alternativa más barata que cumple el requisito, y por qué se descarta si no
+  se elige;
+- la medición exacta que demostrará el cumplimiento al cerrar la unidad.
+
+**Orden de preferencia aprendido aquí:**
+
+1. Comprimir antes de estructurar. La redundancia que un delta intenta eliminar
+   es justo lo que gzip ya reduce: el delta prometía 50 % y midió 11 %.
+2. Un protocolo con estado por conexión solo si la medición posterior a comprimir
+   lo justifica, nunca por intuición.
+3. Decidir la propiedad del estado en el diseño: el ritmo de los datos no puede
+   depender de cuántos clientes miren ni de conexiones que quedan abiertas.
+4. Toda afirmación de rendimiento se mide; ninguna se estima.
+
+**Cifras de referencia de esta aplicación:**
+
+| Estado | Bytes por tick | Por hora y pestaña |
+| --- | --- | --- |
+| Primera versión (grid completo, sin comprimir) | 5.625 | 9,65 MiB |
+| Con OOB por tarjeta y deltas, sin comprimir | ~4.450 | ~7,6 MiB |
+| Con gzip sobre el frame completo | ~322 | ~0,55 MiB |
+
+**Verificación que vale para protocolos DOM:** `curl` no verifica un cambio de
+`hx-swap-oob`, ids o swaps; hay que abrir el navegador y contar nodos, además de
+contar eventos `htmx:oobErrorNoTarget`, que htmx no escribe en consola.

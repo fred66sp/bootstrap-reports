@@ -29,7 +29,8 @@ Alpine.data('pulseDashboard', () => ({
     if (!holder || !body || !dialog) return
     const title = element?.dataset?.dialogTitle
     if (title) document.getElementById('logs-title').textContent = title
-    body.replaceChildren(...[...holder.children].map(node => node.cloneNode(true)))
+    const clones = [...holder.children].map(node => node.cloneNode(true))
+    body.replaceChildren(...clones)
     Dialog.getOrCreateInstance(dialog).show()
   },
   openHelp(element, id) {
@@ -39,7 +40,8 @@ Alpine.data('pulseDashboard', () => ({
     if (!holder || !body || !dialog) return
     const title = element?.dataset?.dialogTitle
     if (title) document.getElementById('service-help-title').textContent = title
-    body.replaceChildren(...[...holder.children].map(node => node.cloneNode(true)))
+    const clones = [...holder.children].map(node => node.cloneNode(true))
+    body.replaceChildren(...clones)
     Dialog.getOrCreateInstance(dialog).show()
   },
   notify(detail) {

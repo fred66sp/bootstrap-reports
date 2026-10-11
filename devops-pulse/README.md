@@ -24,16 +24,18 @@ npm install && npm run sync:assets
 
 - `main.go` contains the domain model, one mutex-protected in-memory state
   store, templates, handlers, and server wiring.
-- `GET /metrics` sends server-rendered `server-grid` HTML over SSE. The grid
-  uses `hx-swap="none"`, so HTMX applies only the three per-service OOB
-  fragments (status, metrics, and logs); no browser JSON parsing is used and
-  card roots and footer forms survive every tick. Spanish is the default
-  server-resolved language; valid `lang` query values persist in a cookie and
-  the same language is carried by the SSE stream and toggle form.
+- `GET /metrics` sends server-rendered HTML over SSE, gzip-compressed when the
+  client advertises gzip. The grid uses `hx-swap="none"`; every frame sends
+  complete per-service metrics and log-holder OOB fragments, while status is
+  sent only when it changed for that connection. No browser JSON parsing is used and card roots and footer forms
+  survive every tick. Spanish is the default server-resolved language; valid
+  `lang` query values persist in a cookie and the same language is carried by
+  the SSE stream and toggle form.
 - One `serviceView` model and shared fragment templates render the initial card,
   SSE OOB elements, and toggle response. The view's `OutOfBand` flag adds
-  `hx-swap-oob="true"` only to SSE output. Metrics use bounded random walks and
-  each service retains six log lines.
+  `hx-swap-oob` only to SSE output. Metrics use bounded random walks; each
+  service retains six plain log lines, and each SSE connection tracks the
+  statuses it has sent.
 - Alpine state wraps the toolbar and stable grid. Logs are cloned from each
   card's hidden `<div>` holder into the shared dialog without `x-html` or
   server-data `innerHTML`.

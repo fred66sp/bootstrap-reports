@@ -2,12 +2,14 @@ package main
 
 import (
 	"bytes"
+	"compress/gzip"
 	"context"
 	"embed"
 	"encoding/json"
 	"flag"
 	"fmt"
 	"html/template"
+	"io"
 	"log/slog"
 	"math/rand/v2"
 	"net/http"
@@ -112,11 +114,15 @@ type stateStore struct {
 
 func newStateStore() *stateStore {
 	return &stateStore{services: []service{
-		{ID: "api-gateway", Name: "API Gateway", Status: statusOnline, CPU: 34, RAM: 48, Logs: []string{"09:41:02 request router ready"}},
-		{ID: "checkout", Name: "Checkout API", Status: statusOnline, CPU: 62, RAM: 57, Logs: []string{"09:41:02 payment queue healthy"}},
-		{ID: "worker-east", Name: "Worker East", Status: statusOnline, CPU: 27, RAM: 39, Logs: []string{"09:41:02 job runner waiting"}},
-		{ID: "worker-west", Name: "Worker West", Status: statusOffline, CPU: 8, RAM: 31, Logs: []string{"09:41:02 deployment paused"}},
+		newService("api-gateway", "API Gateway", statusOnline, 34, 48, "09:41:02 request router ready"),
+		newService("checkout", "Checkout API", statusOnline, 62, 57, "09:41:02 payment queue healthy"),
+		newService("worker-east", "Worker East", statusOnline, 27, 39, "09:41:02 job runner waiting"),
+		newService("worker-west", "Worker West", statusOffline, 8, 31, "09:41:02 deployment paused"),
 	}}
+}
+
+func newService(id, name string, status serviceStatus, cpu, ram int, initialLog string) service {
+	return service{ID: id, Name: name, Status: status, CPU: cpu, RAM: ram, Logs: []string{initialLog}}
 }
 
 func (s *stateStore) snapshot() []service {
@@ -250,7 +256,37 @@ func (a *application) renderGrid(lang language) (string, error) {
 	return output.String(), err
 }
 
-func writeSSEFrame(w http.ResponseWriter, html string) error {
+func (a *application) renderFragment(name string, view serviceView) (string, error) {
+	output, err := a.render(name, view)
+	return output.String(), err
+}
+
+func (a *application) renderTick(lang language, services []service, lastStatus map[string]serviceStatus) (string, error) {
+	var output strings.Builder
+	for _, current := range services {
+		view := serviceViews([]service{current}, true, lang)[0]
+		metrics, err := a.renderFragment("metrics-fragment", view)
+		if err != nil {
+			return "", err
+		}
+		output.WriteString(metrics)
+		logs, err := a.renderFragment("logs-fragment", view)
+		if err != nil {
+			return "", err
+		}
+		output.WriteString(logs)
+		if lastStatus[current.ID] != current.Status {
+			status, err := a.renderFragment("status-fragment", view)
+			if err != nil {
+				return "", err
+			}
+			output.WriteString(status)
+		}
+	}
+	return output.String(), nil
+}
+
+func writeSSEFrame(w io.Writer, html string) error {
 	if _, err := fmt.Fprint(w, "event: metrics\n"); err != nil {
 		return err
 	}
@@ -272,17 +308,37 @@ func (a *application) metrics(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Cache-Control", "no-cache")
 	w.Header().Set("Connection", "keep-alive")
 	w.Header().Set("X-Accel-Buffering", "no")
+	w.Header().Add("Vary", "Accept-Encoding")
 	flusher, ok := w.(http.Flusher)
 	if !ok {
 		http.Error(w, "streaming unsupported", http.StatusInternalServerError)
 		return
 	}
-	writeFrame := func() bool {
-		html, err := a.renderGrid(lang)
-		if err != nil || writeSSEFrame(w, html) != nil {
-			return false
+	var output io.Writer = w
+	var compressor *gzip.Writer
+	if strings.Contains(strings.ToLower(r.Header.Get("Accept-Encoding")), "gzip") {
+		w.Header().Set("Content-Encoding", "gzip")
+		compressor = gzip.NewWriter(w)
+		defer compressor.Close()
+		output = compressor
+	}
+	lastStatus := make(map[string]serviceStatus)
+	flush := func() {
+		if compressor != nil {
+			_ = compressor.Flush()
 		}
 		flusher.Flush()
+	}
+	writeFrame := func() bool {
+		services := a.store.snapshot()
+		html, err := a.renderTick(lang, services, lastStatus)
+		if err != nil || writeSSEFrame(output, html) != nil {
+			return false
+		}
+		for _, current := range services {
+			lastStatus[current.ID] = current.Status
+		}
+		flush()
 		return true
 	}
 	if !writeFrame() {
@@ -297,15 +353,14 @@ func (a *application) metrics(w http.ResponseWriter, r *http.Request) {
 		case <-r.Context().Done():
 			return
 		case <-tick.C:
-			a.store.advanceMetrics()
 			if !writeFrame() {
 				return
 			}
 		case <-heartbeat.C:
-			if _, err := fmt.Fprint(w, ": keep-alive\n\n"); err != nil {
+			if _, err := fmt.Fprint(output, ": keep-alive\n\n"); err != nil {
 				return
 			}
-			flusher.Flush()
+			flush()
 		}
 	}
 }
@@ -368,7 +423,20 @@ func run(ctx context.Context, addr string) error {
 	if err := verifyAssets(staticDir); err != nil {
 		return err
 	}
-	server := &http.Server{Addr: addr, Handler: newApplication().handler()}
+	application := newApplication()
+	server := &http.Server{Addr: addr, Handler: application.handler()}
+	go func() {
+		ticker := time.NewTicker(2 * time.Second)
+		defer ticker.Stop()
+		for {
+			select {
+			case <-ticker.C:
+				application.store.advanceMetrics()
+			case <-ctx.Done():
+				return
+			}
+		}
+	}()
 	go func() {
 		<-ctx.Done()
 		_ = server.Shutdown(context.Background())
