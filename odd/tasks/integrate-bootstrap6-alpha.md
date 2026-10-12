@@ -32,7 +32,7 @@ Instalar Bootstrap 6 Alpha 1 de forma reproducible y dejar documentada una integ
 - [x] BSA-01 — Instalar `bootstrap@6.0.0-alpha.1` con npm.
 - [x] BSA-02 — Documentar e integrar instalación, ESM, Sass, peer dependencies, navegador y skills oficiales.
 - [x] BSA-03 — Verificar la dependencia, artefactos publicados y consistencia del lockfile.
-- [ ] BSA-04 — Proponer el commit de integración según el contrato Git.
+- [x] BSA-04 — Proponer el commit de integración según el contrato Git. Creado: `ad06c1d feat: add Bootstrap 6 alpha workspace baseline`.
 
 ## Criterios de aceptación
 
@@ -53,7 +53,7 @@ Instalar Bootstrap 6 Alpha 1 de forma reproducible y dejar documentada una integ
 ## Progreso
 
 - Rama: `chore/prepare-repository`.
-- Estado: instalación, documentación y verificación completadas; commit pendiente de autorización.
+- Estado: instalación, documentación y verificación completadas; commit de integración creado (`ad06c1d`).
 - Gotcha: al no existir inicialmente un `package.json` local, npm detectó el proyecto ascendente de `/home/alfredo`; la instalación accidental se deshizo y se repitió con un `package.json` propio en este repositorio.
 - Skills integradas: `bootstrap-v6-install`, `bootstrap-npm`, `bootstrap-vite`, `bootstrap-component`, `bootstrap-component-js`, `bootstrap-color-system` y `bootstrap-utility-api`.
-- Estrategia: un work unit de integración, sin commit creado todavía.
+- Estrategia: un work unit de integración, creado como `ad06c1d`.

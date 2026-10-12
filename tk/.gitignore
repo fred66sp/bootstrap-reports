@@ -1,0 +1,11 @@
+# Base de tareas: la posee el binario tk y no se versiona (cada máquina tiene la suya)
+.tacks/
+
+# Catálogo de etiquetas: estado local, se recrea vacío al arrancar
+data/
+
+# Copias de seguridad locales de las bases
+.respaldo-banco/
+
+# Dependencias del servidor (hoy no tiene ninguna)
+node_modules/

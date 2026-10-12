@@ -1,0 +1,13 @@
+{
+  "name": "tk",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Gestor de tareas local: servidor e interfaz web sobre el binario tk (tacks).",
+  "type": "commonjs",
+  "scripts": {
+    "server": "node server/index.js"
+  },
+  "engines": {
+    "node": ">=22.5"
+  }
+}

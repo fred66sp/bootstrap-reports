@@ -1,6 +1,6 @@
 # Instrucciones del repositorio
 
-Este repositorio es un workspace de informes, documentación y ejemplos de integración. Las aplicaciones con identidad propia viven en subdirectorios, actualmente `docengine-docs/` (Vite + Bootstrap) y `devops-pulse/` (Go + templ + HTMX + Alpine con SSE).
+Este repositorio es un workspace de informes, documentación y ejemplos de integración. Las aplicaciones con identidad propia viven en subdirectorios, actualmente `docengine-docs/` (Vite + Bootstrap), `devops-pulse/` (Go + templ + HTMX + Alpine con SSE) y `tk/` (gestor de tareas local: Node sin dependencias sobre el binario `tacks`).
 
 ## Leer antes de trabajar
 
@@ -10,7 +10,8 @@ Este repositorio es un workspace de informes, documentación y ejemplos de integ
 - `docs/inference-protocol.md` — protocolo obligatorio de evidencia, inferencia y trazabilidad.
 - `docengine-docs/package.json`, `docengine-docs/package-lock.json` y `skills-lock.json` — dependencias de la aplicación y skills reproducibles.
 - `devops-pulse/go.mod`, `devops-pulse/package.json` y `devops-pulse/README.md` — módulo Go con templ, assets del panel y su funcionamiento verificado.
-- `odd/tasks/` — tarea ODD activa y evidencia recuperable.
+- `tk/AGENTS.md`, `tk/package.json` y `tk/server/tk.js` — gestor de tareas local: cómo se arranca, qué carpetas tiene y dónde vive el binario de `tk`.
+- `tk/AGENTS.md` — el registro ODD de este repositorio vive en tk (ver «ODD en tk»). `odd/tasks/` conserva los registros anteriores, congelados.
 
 ## Comandos de trabajo
 
@@ -82,10 +83,22 @@ npx skills list --agent opencode
 - No editar a mano las copias de origen remoto (`bootstrap-*`): se restauran desde el lockfile con `npx skills experimental_install`. Las skills locales del proyecto sí se editan en su sitio.
 - Antes de cambiar integración, componentes, JavaScript, color o utilities, leer la `SKILL.md` oficial aplicable y la documentación enlazada desde `docs/INTEGRACION_BOOTSTRAP_6_ALPHA.md`.
 
+## ODD en tk
+
+El registro ODD de este repositorio vive en el gestor de tareas `tk/`, no en ficheros.
+
+- Un frente de trabajo = una tarea de nivel superior: el título del frente y su objetivo en la descripción.
+- Cada spec o punto de alcance = un comentario.
+- Cada tarea del plan (`T#`, `DC-##`, …) = una subtarea; al cerrarla, su evidencia y su commit van en un comentario.
+- La petición del usuario, literal, y las decisiones = comentarios: en tk son inmutables y conservan el orden.
+- El estado se lee en el tablero (`npm --prefix tk run server`) o con `tk/tk --db tk/.tacks/tacks.db --json list -a`.
+- Los documentos de `odd/tasks/*.md` anteriores a esta regla se conservan **congelados** como historia; no se crean documentos nuevos.
+- El cierre va con el commit: no se commitea nada que no esté revisado y claro para cerrar, y al commit la tarea se cierra. No se dejan tareas abiertas con el trabajo hecho.
+
 ## Flujo del repositorio
 
 - Ejecutar `git status --short --branch` antes de empezar y conservar cambios previos.
-- Mantener documentos e informes en `docs/`; registrar trabajo coordinado en `odd/tasks/`.
+- Mantener documentos e informes en `docs/`; registrar el trabajo coordinado en tk (ver «ODD en tk»).
 - La documentación del proyecto está en español; los mensajes de commit usan inglés y Conventional Commits.
 - No hacer `push`, `fetch` para integrar, merge, tag, publicación ni operaciones destructivas sin autorización explícita.
 - `CHANGELOG.md` solo se añade o actualiza cuando exista valor para usuarios, una versión publicada o mantenimiento futuro; no por cada cambio interno.
