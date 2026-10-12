@@ -2,29 +2,15 @@
 
 ## Petición del usuario
 
-«Sí lo apruebo»: aplicar como criterio, en la próxima revisión de documentación
-de `docs/`, la nota propia del usuario
-`IDEAS/__LIMBO/Cómo escribir documentación útil (y cuándo no hacerlo).md`
-(basada en Diátaxis), y ejecutar la propuesta en el orden aceptado.
+Aplicar como criterio de documentación del repositorio el que el usuario aportó
+al revisar `docs/`, y ejecutar la propuesta en el orden aceptado.
 
-## Criterio adoptado (de la nota, con sus secciones)
+## Criterio adoptado
 
-- **Cuatro tipos sin mezclar** (§3, «El consejo central»): tutorial, guía
-  práctica, referencia y explicación. El `README` reparte: qué es, cómo
-  arrancar, dónde está la documentación y a quién preguntar (§4).
-- **Un lugar principal por dato**; los demás documentos enlazan (§5.2, §8.5).
-- **Lo incorrecto es peor que lo ausente**: se corrige en el mismo cambio que lo
-  vuelve falso (§6.1–§6.2).
-- **No documentar** lo que el código ya dice, lo que nadie mantendrá ni lo que
-  una prueba puede verificar; ni crear estructuras vacías por adelantado
-  (§8.1, §8.5).
-- **Decisiones difíciles de revertir → ADR** numerado con contexto, decisión y
-  consecuencias; un ADR no se reescribe, se reemplaza (§5.2, §10).
-- **Dueño y fecha de última revisión** en cada documento; las reglas
-  innegociables, respaldadas por pruebas o permisos, no solo por texto (§10).
-
-Límite declarado: se leyeron íntegras §8.5, §9 y §10 de la nota y se verificó su
-estructura completa; §3–§5 se conocen por un resumen citado, no línea a línea.
+El criterio **vive en el repositorio**, en la sección «Documentación» de
+`AGENTS.md`, y no se repite aquí: este registro solo anota el trabajo hecho para
+aplicarlo, con la evidencia de cada paso. La procedencia de la idea no se anota
+como enlace porque queda fuera del control del proyecto.
 
 ## Hallazgos verificados en el repositorio
 
@@ -42,8 +28,8 @@ Documentos correctos según el criterio: `docs/CONTRATO_FLUJO_GIT_VERSIONADO.md`
 `README.md` y `docengine-docs/README.md`.
 
 **Contrapunto:** no se propone crear un tutorial ni un árbol de documentación
-por adelantado; el repositorio no tiene producto que enseñar y §8.1 prohíbe las
-estructuras vacías.
+por adelantado; el repositorio no tiene producto que enseñar, y crear estructura
+vacía lo prohíbe el propio criterio.
 
 ## Plan aceptado, por partes
 
@@ -69,13 +55,25 @@ estructuras vacías.
   propósito: una mención en un comentario también la hace fallar, porque analizar
   JavaScript para excluir comentarios volvería frágil la guarda y cualquier
   aparición nueva merece una revisión humana.
+- [x] DC-05 — Desacoplamiento, a raíz de la revisión del usuario: fuera los
+  punteros a fuentes externas mutables, a documentos retirados y a secciones por
+  su título; el criterio se lee en `AGENTS.md` y no se repite aquí. Verificado:
+  `rg -i 'bóveda|__LIMBO|miyo|vault|obsidian'` solo devuelve la propia regla en
+  `AGENTS.md`, `rg 'git show|320ceed' docs/` no devuelve nada y ninguna ruta
+  citada en `docs/` deja de existir. La revisión encontró además dos punteros ya
+  rotos, ambos corregidos: el ADR apuntaba a una sección que la separación por
+  tipos había movido, y el registro de la iteración 5 nombraba secciones del
+  README con sus títulos anteriores. A petición del usuario se retiró además el
+  último rastro de la retirada: el registro de esa tarea ya no enseña a recuperar
+  el documento borrado, y la regla de `AGENTS.md` lo prohíbe expresamente.
 
 ## Cierre
 
-Los cuatro pasos están hechos y verificados. El criterio queda escrito en
+Los cinco pasos están hechos y verificados. El criterio queda escrito en
 `AGENTS.md` y respaldado donde el propio criterio lo pide: la regla innegociable
-del global `window.bootstrap` tiene prueba automática, y cada documento de `docs/`
-declara dueño y caducidad.
+del global `window.bootstrap` tiene prueba automática, cada documento de `docs/`
+declara dueño y caducidad, y la documentación viva no depende de fuentes externas
+ni conserva punteros que envejezcan.
 
 **Verificación de DC-04, por mutación y no por inspección:** verde antes de tocar
 nada; rojo al añadir `window.bootstrap = null` a `web/static/app.js`, señalando
@@ -97,7 +95,7 @@ cada punto señalado con el mismo comando que lo detectó:
 | Bloques de código cercados | Ninguna línea original ausente |
 | Líneas duplicadas de 40 caracteres o más | Solo el pie de dueño y fechas, que es convención deliberada; el resto, sin duplicados |
 | Encabezados originales | Todos tienen contenido asignado a un documento |
-| Enlaces relativos | Todos resuelven; el puntero al documento retirado por `git show 320ceed:…` se conserva |
+| Enlaces relativos | Todos resuelven |
 | Convención de documentos nuevos | Los tres nuevos abren con la pregunta que responden y cierran con el pie de fechas |
 | Pureza de tipo | Falló en la primera pasada: se corrigieron cuatro imperativos de procedimiento en `docs/devops-pulse/REFERENCIA.md` (25, 37, 45 y 109) y se retiró la descripción duplicada y la lista de exclusiones repetida de `ARQUITECTURA.md` |
 
@@ -118,7 +116,7 @@ sin conflicto esperado, porque ambas parten de `main` en `815c454`.
   queda **declarado** con un lugar principal explícito en DC-01; la poda de las
   frases repetidas se hace en DC-03, cuando ese documento se separa por tipos,
   para no editar dos veces las mismas líneas.
-- La lista de comprobación de la nota (§10) pide que la referencia de API se
-  genere desde el código; aquí no aplica porque el repositorio no publica API.
+- El criterio pide que la referencia de API se genere desde el código; aquí no
+  aplica porque el repositorio no publica API.
 - No se auditó el contenido de `odd/tasks/` contra el criterio: son registros de
   trabajo, no documentación de producto.

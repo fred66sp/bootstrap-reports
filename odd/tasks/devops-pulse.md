@@ -742,13 +742,9 @@ candidato no tiene ciclo de revisión nativa.
   inexistentes (`TestBrokenViewFailsAtConstruction`,
   `TestMissingIncludedViewDoesNotWritePartialOutput`,
   `TestConcurrentRenderingMatchesFrozenBaseline`).
-- **Recuperación:** el contenido íntegro queda en el historial de Git, en el
-  commit `320ceed` (merge de `feature/templ-poc` en `main`), blob
-  `ff4f166286f26c094eb3735915f2de25a839bd6448d5344931ff92d455878788`:
-  `git show 320ceed:docs/HALLAZGOS_JET_6.md`.
-- **Lo que sigue vigente:** las secciones del README «Templ views» y «Templ
-  differences found while porting this app» —sucesoras de «Jet 6 views» y «Jet 6
-  traps found while migrating this app»— y las guardas de prueba que el
-  documento justificaba, conservadas en `devops-pulse/views_test.go`.
+- **Retirada:** el documento no se conserva ni como puntero que haya que seguir.
+  Lo que importaba de él sigue en el árbol: las diferencias medidas al portar,
+  en `docs/devops-pulse/REFERENCIA.md`, y las guardas de prueba que justificaba,
+  en `devops-pulse/views_test.go`.
 - **Registro:** la traza de esta enmienda está en
   `odd/tasks/retire-jet-findings-doc.md`.

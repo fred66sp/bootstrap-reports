@@ -100,20 +100,18 @@ Autorizado el 2026-10-12: se adopta templ como motor definitivo y se retira Jet.
   `jet-template-engine`.
   - Nota posterior (2026-10-12): el usuario autorizó retirar
     `docs/HALLAZGOS_JET_6.md`, porque `docs/` seguía describiendo un motor que el
-    stack ya no usa. Su contenido queda en el historial de Git
-    (`git show 320ceed:docs/HALLAZGOS_JET_6.md`). Esta entrada describe lo que se
-    hizo en su momento y no se reescribe; el registro de la retirada está en
+    stack ya no usa. Esta entrada describe lo que se hizo en su momento y no se
+    reescribe; la retirada se registra en
     `odd/tasks/retire-jet-findings-doc.md`.
 - Estado Git en ese momento: rama `feature/templ-poc`, árbol con cambios sin
   commitear y sin integración. Nota posterior (2026-10-12): los cambios se
-  registraron en esa rama y `main` la integró en el merge `320ceed`
-  (`parents=565b069 5563675`), así que la rama es ancestro de `main`.
+  registraron en esa rama y `main` la integró, así que la rama es ancestro de
+  `main`.
 
 ## Pendiente de decisión del usuario
 
 - Autorización para crear los commits de la rama y para cerrar Git.
-  **Resuelto:** los commits se crearon y la rama se integró en `main`
-  (`320ceed`).
+  **Resuelto:** los commits se crearon y la rama se integró en `main`.
 - Valorar si la skill retirada necesita un equivalente de templ.
   **Resuelto, y la afirmación anterior de este documento era falsa:** el
   equivalente existe. `.agents/skills/templ-template-engine/SKILL.md` se creó en

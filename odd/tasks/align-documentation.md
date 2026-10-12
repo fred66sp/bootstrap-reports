@@ -72,7 +72,7 @@ comprobarlos (ver «Descartados»).
 | Órdenes documentadas en `AGENTS.md` | `go version`, `go -C devops-pulse tool templ --help`, `vet`, `test` | `go1.27.1`; `vet` rc=0; `test` → `ok devops-pulse 2.263s` |
 | Estilos | `git diff --check` | Sin errores de espacio en blanco |
 
-**Falsos positivos descartados:** la verificación delegada marcó como fallo de alcance las seis rutas que el orquestador editó en línea (AGENTS.md, README.md, HALLAZGOS_BOOTSTRAP, devops-pulse.md, templ-poc.md y esta tarea), y como enlace roto el puntero intencional a `docs/HALLAZGOS_JET_6.md`, que el propio texto declara recuperable del historial. Ambos se comprobaron y no son defectos.
+**Falsos positivos descartados:** la verificación delegada marcó como fallo de alcance las seis rutas que el orquestador editó en línea (AGENTS.md, README.md, HALLAZGOS_BOOTSTRAP, devops-pulse.md, templ-poc.md y esta tarea), y como enlace roto el puntero intencional a `docs/HALLAZGOS_JET_6.md`, que en ese momento declaraba su propia retirada. Ambos se comprobaron y no eran defectos entonces; después se retiró ese puntero y otros análogos, por decisión del usuario.
 
 ## Carga de revisión declarada
 

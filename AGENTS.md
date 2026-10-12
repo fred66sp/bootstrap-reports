@@ -58,6 +58,14 @@ npx skills list --agent opencode
   `docs/decisions/`; un ADR no se reescribe, se reemplaza por uno nuevo.
 - No se documenta lo que el código ya dice, lo que nadie mantendrá ni lo que una
   prueba puede verificar.
+- La documentación **no se ancla a fuentes externas mutables** (una bóveda
+  personal, una ruta local, un servicio de terceros): lo que gobierna el
+  repositorio vive dentro del repositorio. Las fuentes oficiales se citan como
+  referencia, nunca como dependencia.
+- En los documentos de `docs/` no se conservan punteros a documentos retirados, a
+  números de commit ni a secciones por su título: un dato que importa está en el
+  árbol, y lo que se retira, se retira, sin recetas para recuperarlo. El rastro
+  de lo que se hizo pertenece a `odd/tasks/`, que sí es un registro histórico.
 
 ## Skills del agente
 

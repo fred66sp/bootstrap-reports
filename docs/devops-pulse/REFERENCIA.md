@@ -90,7 +90,7 @@ La animación, la búsqueda, el diálogo y el toast a nivel de navegador no se e
 
 ## Diferencias de templ encontradas al portar esta aplicación
 
-Cada una se midió contra templ v0.3.1070, no se supuso. El documento de hallazgos de la era Jet se retiró el 2026-10-12, una vez que Jet 6 desapareció de la pila: ya no está en el árbol y se puede recuperar del historial de Git con `git show 320ceed:docs/HALLAZGOS_JET_6.md`.
+Cada una se midió contra templ v0.3.1070, no se supuso.
 
 - La salida generada está minimizada: desaparecen los espacios entre elementos y un salto de línea entre nodos inline se convierte en un espacio único. El DOM es equivalente, los bytes no.
 - Los valores de atributos construidos desde una expresión se escapan con `&#34;` y `&#39;`, las mismas entidades que producía Jet, pero templ también escapa los literales escritos por el autor de la plantilla, por lo que `hx-vals='{"a":1}'` se sirve como `hx-vals="{&#34;a&#34;:1}"`. El analizador HTML decodifica ambos al mismo valor.

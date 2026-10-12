@@ -17,18 +17,15 @@ el repositorio:
 2. **Jet 6 (`github.com/CloudyKit/jet/v6 v6.3.3`, iteración 5)**: se adoptó por
    coste de render medido (2,7–3,3 veces menos tiempo y 4,8–8,5 veces menos
    asignaciones sobre la misma salida byte a byte). Se retiró después.
-3. **templ (`github.com/a-h/templ v0.3.1070`)**: motor actual, adoptado en el
-   commit `5563675`.
+3. **templ (`github.com/a-h/templ v0.3.1070`)**: motor actual desde que Jet se
+   retiró.
 
 La evidencia de cada paso está repartida y conviene saber dónde:
 
-- Iteración 5 completa, incluidas la baseline congelada y la tabla de coste:
-  `odd/tasks/devops-pulse.md`, secciones «Iteración 5» y «Cierre de la iteración 5».
+- La iteración 5 de la migración, con la baseline congelada y la tabla de coste
+  medida: `odd/tasks/devops-pulse.md`.
 - Migración a templ, oracle temporal y golden regenerados: `odd/tasks/templ-poc.md`.
-- Diferencias observadas al portar: `devops-pulse/README.md`, sección
-  «Diferencias de templ encontradas al portar esta aplicación».
-- Hallazgos verificados de Jet: documento retirado, recuperable con
-  `git show 320ceed:docs/HALLAZGOS_JET_6.md`.
+- Diferencias observadas al portar: `docs/devops-pulse/REFERENCIA.md`.
 
 ## Decisión
 
