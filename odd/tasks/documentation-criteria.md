@@ -56,10 +56,34 @@ estructuras vacías.
   de lo que no se afirma, más el índice `docs/decisions/README.md` y su fila en
   el `README.md` raíz. Se registra **solo** la decisión del motor: fijar la alpha
   y usar ESM se revierten sin coste alto y se quedan como restricciones.
-- [ ] DC-03 — F4 y F5: separar por tipos `docs/INTEGRACION_BOOTSTRAP_6_ALPHA.md`
-  y `devops-pulse/README.md`.
+- [x] DC-03 — F4 y F5: separado por tipos. La guía de Bootstrap baja de 154 a
+  58 líneas y aparece `docs/REFERENCIA_BOOTSTRAP_6_ALPHA.md` (77); el cartel de
+  `devops-pulse` baja de 235 a 63 líneas y aparecen
+  `docs/devops-pulse/ARQUITECTURA.md` (24) y `docs/devops-pulse/REFERENCIA.md`
+  (118). Delegado a un writer acotado y verificado después (tabla siguiente).
 - [ ] DC-04 — F6: prueba que falle si aparece el global `window.bootstrap`,
   verificada por mutación.
+
+## Verificación de DC-03
+
+Verificación delegada e independiente (read-only), más re-verificación propia de
+cada punto señalado con el mismo comando que lo detectó:
+
+| Comprobación | Resultado |
+| --- | --- |
+| Alcance del writer | `git status --short` → solo las rutas autorizadas |
+| Cifras y spans de código ausentes | Comparación multi-conjunto contra los dos originales: ninguna cifra perdida; de los spans, solo `@import` no está en el conjunto dividido, y vive en su lugar principal (`AGENTS.md:32`) |
+| Bloques de código cercados | Ninguna línea original ausente |
+| Líneas duplicadas de 40 caracteres o más | Solo el pie de dueño y fechas, que es convención deliberada; el resto, sin duplicados |
+| Encabezados originales | Todos tienen contenido asignado a un documento |
+| Enlaces relativos | Todos resuelven; el puntero al documento retirado por `git show 320ceed:…` se conserva |
+| Convención de documentos nuevos | Los tres nuevos abren con la pregunta que responden y cierran con el pie de fechas |
+| Pureza de tipo | Falló en la primera pasada: se corrigieron cuatro imperativos de procedimiento en `docs/devops-pulse/REFERENCIA.md` (25, 37, 45 y 109) y se retiró la descripción duplicada y la lista de exclusiones repetida de `ARQUITECTURA.md` |
+
+**Corrección de diseño del orquestador:** el reparto inicial duplicaba las
+exclusiones de alcance entre el cartel y la explicación, y dejaba procedimiento
+dentro de la referencia. Las dos cosas las detectó la verificación, no el diseño
+previo; la segunda pasada las confirma resueltas.
 
 ## Rama
 

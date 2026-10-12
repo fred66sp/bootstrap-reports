@@ -38,12 +38,14 @@ La referencia inicial del trabajo es el anuncio oficial:
 | --- | --- |
 | `docs/` | Contratos, documentación e informes del proyecto. |
 | `docs/CONTRATO_FLUJO_GIT_VERSIONADO.md` | Referencia operativa para Git, commits, versionado e integración. |
-| `docs/INTEGRACION_BOOTSTRAP_6_ALPHA.md` | Instalación, decisiones y fuentes para Bootstrap 6 Alpha. |
+| `docs/INTEGRACION_BOOTSTRAP_6_ALPHA.md` | Guía práctica para integrar Bootstrap 6 Alpha. |
+| `docs/REFERENCIA_BOOTSTRAP_6_ALPHA.md` | Datos, compatibilidad, dependencias, skills y fuentes de Bootstrap 6 Alpha. |
 | `docs/HALLAZGOS_BOOTSTRAP_6_ALPHA.md` | Diferencias verificadas de Bootstrap 6 Alpha 1 que fallan en silencio, con la comprobación reproducible de cada una. |
 | `docs/inference-protocol.md` | Protocolo obligatorio de evidencia, inferencia y trazabilidad. |
 | `docs/decisions/` | Registros de decisión (ADR) de las decisiones difíciles de revertir. |
 | `docengine-docs/` | Aplicación web de documentación de docengine, autocontenida (Vite + Bootstrap). |
 | `devops-pulse/` | Panel de servicios en tiempo real de ejemplo: Go con templ y SSE, HTMX, Alpine y Bootstrap 6 sobre el CSS y el bundle que publica `docengine-docs/`. |
+| `docs/devops-pulse/` | Explicación y referencia técnica del panel DevOps Pulse. |
 | `odd/tasks/` | Tareas de trabajo recuperables del flujo ODD. |
 | `skills-lock.json` | Selección y hashes de las skills oficiales instaladas para el proyecto. |
 | `.agents/skills/` | Skills del agente para este proyecto, versionadas; las de origen remoto se fijan en `skills-lock.json`. |
@@ -75,8 +77,9 @@ Bootstrap `6.0.0-alpha.1` ya está fijado como dependencia npm dentro de la
 aplicación `docengine-docs/`. La integración de la documentación web de
 docengine está implementada en `docengine-docs/src/`, con Sass compilado por
 Vite, tema claro/oscuro y cambio de idioma ES/EN con español por defecto. Las
-decisiones y límites de Bootstrap están documentados en
-[`docs/INTEGRACION_BOOTSTRAP_6_ALPHA.md`](docs/INTEGRACION_BOOTSTRAP_6_ALPHA.md).
+la guía y los datos de referencia de Bootstrap están documentados en
+[`docs/INTEGRACION_BOOTSTRAP_6_ALPHA.md`](docs/INTEGRACION_BOOTSTRAP_6_ALPHA.md) y
+[`docs/REFERENCIA_BOOTSTRAP_6_ALPHA.md`](docs/REFERENCIA_BOOTSTRAP_6_ALPHA.md).
 
 Para revisarla localmente, desde `docengine-docs/`:
 
