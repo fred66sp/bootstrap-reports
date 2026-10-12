@@ -40,7 +40,9 @@ La referencia inicial del trabajo es el anuncio oficial:
 | `docs/CONTRATO_FLUJO_GIT_VERSIONADO.md` | Referencia operativa para Git, commits, versionado e integración. |
 | `docs/INTEGRACION_BOOTSTRAP_6_ALPHA.md` | Instalación, decisiones y fuentes para Bootstrap 6 Alpha. |
 | `docs/HALLAZGOS_BOOTSTRAP_6_ALPHA.md` | Diferencias verificadas de Bootstrap 6 Alpha 1 que fallan en silencio, con la comprobación reproducible de cada una. |
+| `docs/inference-protocol.md` | Protocolo obligatorio de evidencia, inferencia y trazabilidad. |
 | `docengine-docs/` | Aplicación web de documentación de docengine, autocontenida (Vite + Bootstrap). |
+| `devops-pulse/` | Panel de servicios en tiempo real de ejemplo: Go con templ y SSE, HTMX, Alpine y Bootstrap 6 sobre el CSS y el bundle que publica `docengine-docs/`. |
 | `odd/tasks/` | Tareas de trabajo recuperables del flujo ODD. |
 | `skills-lock.json` | Selección y hashes de las skills oficiales instaladas para el proyecto. |
 | `.agents/skills/` | Skills del agente para este proyecto, versionadas; las de origen remoto se fijan en `skills-lock.json`. |

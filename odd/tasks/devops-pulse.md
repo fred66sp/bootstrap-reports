@@ -33,8 +33,10 @@ Bootstrap 6 Alpha 1 para la maquetación y los componentes.
 
 - Aplicación con identidad propia en `devops-pulse/`, con su propio módulo Go y
   su propio `package.json` (igual que `docengine-docs/`).
-- Go sin frameworks: `net/http`, `html/template`, `embed`, `log/slog`,
-  `math/rand/v2`.
+- Go sin frameworks: `net/http`, `embed`, `log/slog`, `math/rand/v2` y el motor
+  de vistas. En el momento de escribir este objetivo el motor era
+  `html/template`; la iteración 5 lo sustituyó por templ (`5563675`), que es el
+  motor actual de `devops-pulse/`.
 - **Un único partial por fragmento**: la tarjeta de servidor se renderiza con la
   misma plantilla desde la página inicial, desde el tick SSE y desde el POST de
   alternancia. Es el patrón central del enfoque HTML-first.
@@ -68,7 +70,7 @@ Bootstrap 6 Alpha 1 para la maquetación y los componentes.
 - [x] DP-07 — Verificación en navegador del modo oscuro, el filtrado, el diálogo y los avisos.
 - [x] DP-08 — Corregir los defectos de la revisión de código: eventos `htmx:sseOpen/sseClose/sseError`, clases `md:`/`xl:` de v6, `fs-4xl` en lugar de `display-5`, cierre ordenado con `signal.NotifyContext` y diagnóstico de assets con ruta absoluta.
 - [x] DP-09 — Corregir la pérdida de `HX-Trigger` cuando el tick SSE reemplaza la tarjeta con una petición en vuelo (ver «Defecto corregido»).
-- [ ] DP-11 — Confirmar los commits por unidad de trabajo en `feature/devops-pulse`: `03aa77e chore: ignore local pi state directory` creado y `feat: add devops pulse realtime dashboard` creado al cerrar esta tarea.
+- [x] DP-11 — Confirmar los commits por unidad de trabajo: `03aa77e chore: ignore local pi state directory` y `e7434ca feat: add devops pulse realtime dashboard`, ambos existentes en el historial. Nota posterior (2026-10-12): la rama `feature/devops-pulse` en la que se pedían ya no existe; los commits integrados sí, y siguen en `main`.
 
 ## Defecto corregido (DP-09)
 
@@ -341,6 +343,9 @@ una sección explícita de límites y comprobaciones pendientes.
 - **Integración:** `main` avanzó por avance rápido desde `a472d52` hasta
   `f5a6455`, con los 16 commits de la rama. `main` y `feature/devops-pulse`
   quedaron idénticos, y la rama se conserva para revisión o para retomar el POC.
+  Nota posterior (2026-10-12): la rama `feature/devops-pulse` ya **no** existe
+  —el único ref remoto es `origin/main`— y los commits integrados siguen en
+  `main`.
 - **Comprobación previa:** árbol limpio, `main` ancestro de la rama, ninguna ruta
   generada en el diff, y `go test ./...`, `go vet ./...` y `go build` correctos.
   Tras integrar se repitió `go test -count=1 ./...` sobre `main`, sin caché, con
