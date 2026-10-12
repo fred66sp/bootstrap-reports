@@ -42,6 +42,23 @@ npx skills list --agent opencode
 - Para afirmaciones que afecten a decisiones, cambios, riesgos o validaciones, conservar clasificación, fuente/localización, justificación y evidencia pendiente cuando aplique.
 - Si las fuentes discrepan o falta evidencia, conservar la discrepancia y declarar el límite; consultar el protocolo completo en `docs/inference-protocol.md`.
 
+## Documentación
+
+- Cuatro tipos que no se mezclan en un documento: **tutorial** (enseñar),
+  **guía práctica** (resolver una tarea), **referencia** (el dato exacto) y
+  **explicación** (el porqué). El `README` reparte y enlaza.
+- **Un lugar principal por dato.** Las restricciones innegociables de Bootstrap
+  viven aquí, en `AGENTS.md`, y el procedimiento con su evidencia en
+  `docs/INTEGRACION_BOOTSTRAP_6_ALPHA.md`; los demás documentos enlazan.
+- Todo documento de `docs/` cierra con **dueño**, **última revisión** y **próxima
+  revisión**; si caduca, se revisa o se retira.
+- Un documento que deja de decir la verdad se corrige en el mismo cambio que lo
+  vuelve falso.
+- Una decisión difícil de revertir se registra como ADR numerado en
+  `docs/decisions/`; un ADR no se reescribe, se reemplaza por uno nuevo.
+- No se documenta lo que el código ya dice, lo que nadie mantendrá ni lo que una
+  prueba puede verificar.
+
 ## Skills del agente
 
 - Las skills del proyecto están en `.agents/skills/` y se versionan con el repositorio; las de origen remoto se fijan además en `skills-lock.json` con su origen y su hash. La procedencia de cada una está en `.agents/skills/README.md`.

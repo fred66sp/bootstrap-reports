@@ -142,3 +142,7 @@ en `odd/tasks/devops-pulse.md`.
 - **Localización:** 4.259 B por frame sin comprimir frente a 276 B en el cable; verificación en Chromium sin errores de consola
 - **Justificación:** medido sobre frames completos, contando frames por separador de evento
 - **Evidencia pendiente:** ninguna
+
+---
+
+**Dueño:** Alfredo González P. · **Última revisión:** 2026-10-12 · **Próxima revisión:** 2027-04-12

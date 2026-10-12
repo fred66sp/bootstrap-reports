@@ -23,6 +23,9 @@ La dependencia está declarada y fijada en
 4. Verificar el resultado en navegadores compatibles antes de publicar un
    informe.
 
+Las restricciones innegociables de esta integración viven en `AGENTS.md`; aquí se
+documenta cómo se aplican y con qué evidencia.
+
 ## Integración JavaScript
 
 Bootstrap 6 usa módulos ES exclusivamente. En una aplicación con bundler se
@@ -145,3 +148,7 @@ Lo que sigue sin estar demostrado, y conviene no dar por hecho: el comportamient
 en Firefox y WebKit, los paquetes opcionales (`@floating-ui/dom`,
 `vanilla-calendar-pro`) y la sobrescritura de tokens por Sass dentro de
 `devops-pulse`, que al servir el `dist` sobrescribe tokens desde CSS propio.
+
+---
+
+**Dueño:** Alfredo González P. · **Última revisión:** 2026-10-12 · **Próxima revisión:** 2027-04-12

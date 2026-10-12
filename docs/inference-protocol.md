@@ -129,3 +129,7 @@ Cuando exista esa tensión, el agente debe conservar la trazabilidad, declarar l
 ## Regla operativa final
 
 Si el agente no puede demostrar una afirmación con la evidencia disponible, no debe presentarla como hecho. Debe marcarla con la categoría correspondiente, explicar el límite de conocimiento y, cuando sea útil, indicar la comprobación necesaria.
+
+---
+
+**Dueño:** Alfredo González P. · **Última revisión:** 2026-10-12 · **Próxima revisión:** 2027-04-12

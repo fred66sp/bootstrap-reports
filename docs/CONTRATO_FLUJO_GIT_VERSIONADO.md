@@ -366,3 +366,7 @@ El agente aplicará estas prioridades, en este orden:
 5. evitar ramas, commits, comprobaciones y documentación que no aporten valor real.
 
 Cuando una regla entre en conflicto con la agilidad, el agente debe explicar brevemente el riesgo y proponer la opción más sencilla que lo controle.
+
+---
+
+**Dueño:** Alfredo González P. · **Última revisión:** 2026-10-12 · **Próxima revisión:** 2027-04-12
