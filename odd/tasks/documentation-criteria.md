@@ -61,8 +61,29 @@ estructuras vacías.
   `devops-pulse` baja de 235 a 63 líneas y aparecen
   `docs/devops-pulse/ARQUITECTURA.md` (24) y `docs/devops-pulse/REFERENCIA.md`
   (118). Delegado a un writer acotado y verificado después (tabla siguiente).
-- [ ] DC-04 — F6: prueba que falle si aparece el global `window.bootstrap`,
-  verificada por mutación.
+- [x] DC-04 — F6: `devops-pulse/assets_test.go` con
+  `TestClientCodeNeverReachesTheBootstrapGlobal`. Recorre `web/views` y
+  `web/static`, salta `web/static/vendor` (código de terceros) y falla con
+  `ruta:línea` si la cadena aparece; exige haber leído algún archivo, así que no
+  puede pasar en vacío tras un cambio de rutas. La comprobación es literal a
+  propósito: una mención en un comentario también la hace fallar, porque analizar
+  JavaScript para excluir comentarios volvería frágil la guarda y cualquier
+  aparición nueva merece una revisión humana.
+
+## Cierre
+
+Los cuatro pasos están hechos y verificados. El criterio queda escrito en
+`AGENTS.md` y respaldado donde el propio criterio lo pide: la regla innegociable
+del global `window.bootstrap` tiene prueba automática, y cada documento de `docs/`
+declara dueño y caducidad.
+
+**Verificación de DC-04, por mutación y no por inspección:** verde antes de tocar
+nada; rojo al añadir `window.bootstrap = null` a `web/static/app.js`, señalando
+`web/static/app.js:60`; archivo restaurado idéntico (`cmp`) y verde otra vez;
+suite completa `ok devops-pulse 2.255s`, `go vet ./...` rc=0.
+
+**Pendiente de decisión del usuario:** integrar en `main` las dos ramas apiladas
+—`docs/align-documentation` y `docs/documentation-criteria`— y publicarlas.
 
 ## Verificación de DC-03
 

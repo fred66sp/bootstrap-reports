@@ -28,7 +28,7 @@ npx skills list --agent opencode
 ```
 
 - `bootstrap@6.0.0-alpha.1` está fijado exactamente; no actualizarlo implícitamente.
-- El paquete usa ESM (`"type": "module"`); Bootstrap 6 no debe integrarse mediante el global `window.bootstrap`.
+- El paquete usa ESM (`"type": "module"`); Bootstrap 6 no debe integrarse mediante el global `window.bootstrap`. Lo comprueba `TestClientCodeNeverReachesTheBootstrapGlobal` en `devops-pulse/assets_test.go`, que falla si la cadena aparece en el código de cliente (el bundle incluido en `web/static/vendor/` queda fuera).
 - Para Sass, usar `@use` y mapas de tokens; no iniciar código nuevo con `@import`.
 - Añadir `@floating-ui/dom` o `vanilla-calendar-pro` solo cuando el ejemplo use las capacidades que requieren esos peer dependencies.
 - Para cualquier decisión o cambio de Bootstrap, apoyarse siempre en la documentación oficial: <https://getbootstrap.com/docs/6.0/> y en la `SKILL.md` oficial aplicable; no usar resúmenes como única fuente.
