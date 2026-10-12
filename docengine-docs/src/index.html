@@ -117,6 +117,12 @@
               <span class="d-block fs-sm" data-i18n="hero.status.desc">docengine está en la versión v0.2.1: integrada en <code>main</code>, etiquetada y con release en GitHub. La instalación publicada (<code>go install @latest</code> o binarios de release) requiere acceso al módulo; compilar desde el código fuente está disponible.</span>
             </div>
           </div>
+          <div class="alert theme-warning" role="note">
+            <div class="flex-grow-1">
+              <strong class="d-block mb-1" data-i18n="hero.preRelease.title">En preparación</strong>
+              <span class="d-block fs-sm" data-i18n="hero.preRelease.desc">La comprobación <code>links</code>, la severidad por comprobación, <code>regex_set</code> y sus códigos están en preparación en la rama <code>feature/link-integrity-check</code>; todavía no forman parte de una versión publicada.</span>
+            </div>
+          </div>
 
           <div class="hero__facts">
             <span class="badge rounded-pill fs-sm"><span data-i18n="hero.fact1">Sin red</span></span>
@@ -497,6 +503,21 @@
                         <code class="d-block fs-sm fg-accent mb-2">LANGUAGE_UNDETERMINED</code>
                         <p class="fg-2 mb-0" data-i18n="contracts.codes.docs.LANGUAGE_UNDETERMINED">El idioma detectado no es concluyente, así que no puede comprobarse.</p>
                       </li>
+                      <li class="sm:col-6">
+                        <code class="d-block fs-sm fg-accent mb-2">LINK_TARGET_MISSING</code>
+                        <span class="badge badge-subtle theme-warning fs-sm mb-2" data-i18n="status.preRelease.badge">en preparación</span>
+                        <p class="fg-2 mb-0" data-i18n="contracts.codes.docs.LINK_TARGET_MISSING">Un destino de enlace (relativo al documento o a la raíz) no existe, escapa por encima de la raíz de auditoría o cruza un enlace simbólico.</p>
+                      </li>
+                      <li class="sm:col-6">
+                        <code class="d-block fs-sm fg-accent mb-2">LINK_ANCHOR_MISSING</code>
+                        <span class="badge badge-subtle theme-warning fs-sm mb-2" data-i18n="status.preRelease.badge">en preparación</span>
+                        <p class="fg-2 mb-0" data-i18n="contracts.codes.docs.LINK_ANCHOR_MISSING">El <code>#fragment</code> de un enlace no se resuelve en un encabezado del documento destino.</p>
+                      </li>
+                      <li class="sm:col-6">
+                        <code class="d-block fs-sm fg-accent mb-2">LINK_SCHEME_INVALID</code>
+                        <span class="badge badge-subtle theme-warning fs-sm mb-2" data-i18n="status.preRelease.badge">en preparación</span>
+                        <p class="fg-2 mb-0" data-i18n="contracts.codes.docs.LINK_SCHEME_INVALID">Una URL externa no tiene esquema (es <code>//host</code>) o usa uno distinto de <code>http</code>/<code>https</code>; <code>mailto:</code> y cualquier otro esquema son inválidos.</p>
+                      </li>
                     </ul>
                   </div>
                 </section>
@@ -671,7 +692,9 @@
                         </li>
                         <li>
                           <div class="d-flex align-items-center flex-wrap gap-2 mb-1"><code class="fg-accent">documents</code><span class="badge badge-subtle fs-sm" data-i18n="profile.optional">opcional</span></div>
-                          <p class="fg-2 mb-0" data-i18n="profile.field.documents">Reglas por documento. Cada regla lleva <code>globs</code> (qué archivos), <code>id_pattern</code> (patrón del identificador), <code>severity</code> (<code>error</code> por defecto), <code>required_headings</code>, <code>language</code> y <code>checks</code> (<code>ids</code>, <code>references</code>, <code>headings</code>, <code>language</code>).</p>
+                          <p class="fg-2 mb-0" data-i18n="profile.field.documents">Reglas por documento. Cada regla lleva <code>globs</code> (qué archivos), <code>id_pattern</code> (patrón del identificador), <code>severity</code> (<code>error</code> por defecto), <code>required_headings</code>, <code>language</code> y <code>checks</code> (<code>ids</code>, <code>references</code>, <code>headings</code>, <code>language</code>, <code>links</code>).</p>
+                          <span class="badge badge-subtle theme-warning fs-sm mt-2" data-i18n="status.preRelease.badge">en preparación</span>
+                          <p class="fg-2 mb-0 mt-2" data-i18n="profile.field.documentsSeverity"><code>checks</code> acepta cadenas simples como <code>"ids"</code> u objetos como <code>{"name": "links", "severity": "error"}</code>. Una cadena u objeto sin <code>severity</code> usa la severidad de la regla; la del objeto solo sobrescribe esa comprobación. Los nombres deben ser uno de los cinco checks, sin duplicados. Para sobrescribir una comprobación y mantener las demás con la severidad de la regla debes enumerarlas: omitir <code>checks</code> ejecuta todas y no permite adjuntar una sobrescritura; enumerarlas tampoco selecciona automáticamente futuras comprobaciones.</p>
                         </li>
                         <li>
                           <div class="d-flex align-items-center flex-wrap gap-2 mb-1"><code class="fg-accent">coverage</code><span class="badge badge-subtle fs-sm" data-i18n="profile.optional">opcional</span></div>
@@ -679,7 +702,9 @@
                         </li>
                         <li>
                           <div class="d-flex align-items-center flex-wrap gap-2 mb-1"><code class="fg-accent">facts</code><span class="badge badge-subtle fs-sm" data-i18n="profile.optional">opcional</span></div>
-                          <p class="fg-2 mb-0" data-i18n="profile.field.facts">Hechos a contrastar. Cada hecho lleva <code>id</code>, <code>sources</code> (tipos <code>path_count</code>, <code>path_set</code>, <code>directory_set</code>, <code>frontmatter_set</code>, <code>text_value</code>, <code>json_count</code>) y <code>targets</code> (<code>value</code>, <code>set</code>, <code>contains_source_set</code>).</p>
+                          <p class="fg-2 mb-0" data-i18n="profile.field.facts">Hechos a contrastar. Cada hecho lleva <code>id</code>, <code>sources</code> (tipos <code>path_count</code>, <code>path_set</code>, <code>directory_set</code>, <code>frontmatter_set</code>, <code>text_value</code>, <code>json_count</code>, <code>regex_set</code>) y <code>targets</code> (<code>value</code>, <code>set</code>, <code>contains_source_set</code>).</p>
+                          <span class="badge badge-subtle theme-warning fs-sm mt-2" data-i18n="status.preRelease.badge">en preparación</span>
+                          <p class="fg-2 mb-0 mt-2" data-i18n="profile.field.factsRegexSet"><code>regex_set</code> lleva <code>path</code>, <code>pattern</code> y <code>value_type</code>; produce el conjunto de cada coincidencia capturada por el grupo con nombre <code>value</code> de <code>pattern</code>. Cero coincidencias es <code>FACT_SOURCE_MISSING</code>; los duplicados se colapsan y se ignora el orden; varias fuentes deben producir el mismo conjunto o el hecho emite <code>FACT_SOURCE_MISMATCH</code>.</p>
                         </li>
                         <li>
                           <div class="d-flex align-items-center flex-wrap gap-2 mb-1"><code class="fg-accent">exclusions</code><span class="badge badge-subtle fs-sm" data-i18n="profile.optional">opcional</span></div>
