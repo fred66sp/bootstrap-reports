@@ -44,9 +44,11 @@ Autorizado el 2026-10-12 (opción 3 de la consulta de alcance): eliminar
   blob previo al borrado.
 - [x] RJD-04 — Commit de unidad de trabajo. Autorizado por el usuario y creado en
   la rama `docs/retire-jet-findings-doc`:
-  `docs: retire the jet 6 findings document`, con `320ceed` como padre y sin
-  `push`, `fetch`, etiqueta ni merge (operaciones que quedan pendientes de una
-  autorización aparte).
+  `docs: retire the jet 6 findings document`, con `320ceed` como padre.
+- [x] RJD-05 — Integración en `main`, autorizada por el usuario. Avance rápido de
+  `320ceed` a `1ae8f4c`; la rama local se conserva y `main` queda **un commit por
+  delante de `origin/main`**. Sin `push`, `fetch` para integrar, etiqueta ni
+  publicación.
 
 ## Verificación aplicada (RJD-03)
 
@@ -72,5 +74,25 @@ es la tabla anterior.
   únicamente en el historial de Git.
 - No se verificó el contenido del documento contra `v6.3.3` en esta tarea: no
   se reescribe, se retira.
-- La «revisión nativa (RDD)» de esta unidad queda sujeta a la política
-  ordinaria; el interruptor no se consultó aquí.
+- **Revisión nativa (RDD):** el interruptor está apagado (`gentle-ai review mode
+  status` → `receipt-driven development: off (decided by global)`, clon sin
+  valor propio), así que este candidato no tiene ciclo de revisión nativa. Es
+  coherente con el tipo de cambio: solo documentación, sin comportamiento
+  ejecutable. El candidato revisable sería el commit `1ae8f4c`, a decisión del
+  usuario si reactiva el interruptor.
+
+## Cierre (2026-10-12)
+
+- **Resultado:** `docs/` ya no describe un motor que el stack no usa. El
+  documento retirado no dejó ninguna referencia colgante y su contenido sigue
+  recuperable en el historial (`git show 320ceed:docs/HALLAZGOS_JET_6.md`).
+- **Integración:** `docs/retire-jet-findings-doc` → `main` por avance rápido
+  (`320ceed` → `1ae8f4c`), autorizado por el usuario. La rama se conserva, igual
+  que `feature/jet6-devops-pulse` y `feature/templ-poc`.
+- **Carga de revisión:** 5 archivos, 115 inserciones y 140 borrados; el grueso de
+  los borrados es el documento retirado (138 líneas) y el grueso de las
+  inserciones es el registro de la decisión. No hay código ejecutable en el
+  diff.
+- **Pendiente, no bloqueante:** el `push` a `origin` no se hizo y requiere
+  autorización explícita; `main` local está un commit por delante de
+  `origin/main` (`320ceed`).
