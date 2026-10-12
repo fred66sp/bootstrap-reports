@@ -46,9 +46,9 @@ Autorizado el 2026-10-12 (opción 3 de la consulta de alcance): eliminar
   la rama `docs/retire-jet-findings-doc`:
   `docs: retire the jet 6 findings document`, con `320ceed` como padre.
 - [x] RJD-05 — Integración en `main`, autorizada por el usuario. Avance rápido de
-  `320ceed` a `1ae8f4c`; la rama local se conserva y `main` queda **un commit por
-  delante de `origin/main`**. Sin `push`, `fetch` para integrar, etiqueta ni
-  publicación.
+  `320ceed` a `1ae8f4c`; la rama local se conserva. Sin `fetch` para integrar,
+  etiqueta ni publicación por parte del agente; el `push` lo ejecutó el usuario
+  después (ver «Cierre»).
 
 ## Verificación aplicada (RJD-03)
 
@@ -93,6 +93,14 @@ es la tabla anterior.
   los borrados es el documento retirado (138 líneas) y el grueso de las
   inserciones es el registro de la decisión. No hay código ejecutable en el
   diff.
-- **Pendiente, no bloqueante:** el `push` a `origin` no se hizo y requiere
-  autorización explícita; `main` local está un commit por delante de
-  `origin/main` (`320ceed`).
+- **Publicación:** el usuario ejecutó `git push` el 2026-10-12. Verificado
+  después por tres vías coincidentes —`main` local, la ref de seguimiento
+  `origin/main` y `git ls-remote origin refs/heads/main`— en `59e90ba`: la
+  retirada del documento (`1ae8f4c`) y este registro (`59e90ba`) están
+  publicados.
+- **Pendiente, no bloqueante:** el commit que corrige este mismo apartado
+  (`docs: correct the publication state in the retirement record`) queda sin
+  publicar hasta que se ejecute otro `push`. Se creó porque el texto anterior
+  afirmaba que el `push` no se había hecho y contaba mal la distancia frente a
+  `origin/main`, un error del agente al redactar el estado antes de que su propio
+  commit existiera.
