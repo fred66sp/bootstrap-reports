@@ -12,6 +12,7 @@ material del proyecto y tienen que sobrevivir a un clon.
 | `go-htmx-server` | Local, escrita para este proyecto | Se edita en su sitio |
 | `htmx-interactions` | Local, escrita para este proyecto | Se edita en su sitio |
 | `templ-template-engine` | Local, escrita para este proyecto | Se edita en su sitio |
+| `tk` | Local, portada desde `PROJECT-TASK-MANAGER` y corregida aquí | Se edita en su sitio |
 | `web-stack-architecture` | Local, escrita para este proyecto | Se edita en su sitio |
 | `bootstrap-color-system` | `twbs/bootstrap`, MIT | Se restaura desde `skills-lock.json` |
 | `bootstrap-component` | `twbs/bootstrap`, MIT | Se restaura desde `skills-lock.json` |
