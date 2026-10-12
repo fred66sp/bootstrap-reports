@@ -114,7 +114,7 @@
           <div class="alert theme-success" role="status">
             <div class="flex-grow-1">
               <strong class="d-block mb-1" data-i18n="hero.status.title">v0.2.1 etiquetada</strong>
-              <span class="d-block fs-sm" data-i18n="hero.status.desc">docengine está en la versión v0.2.1: integrada en <code>main</code>, etiquetada y con release en GitHub. La instalación publicada (<code>go install @latest</code> o binarios de release) requiere acceso al módulo; compilar desde el código fuente está disponible.</span>
+              <span class="d-block fs-sm" data-i18n="hero.status.desc">docengine está en la versión v0.2.1: integrada en la rama <code>main</code> y etiquetada en GitHub; puede que no haya un release publicado ni una descarga de módulo disponible, pero compilar desde el código fuente sí está disponible. <code>go install @latest</code> y los binarios de release dependen de que exista una versión publicada.</span>
             </div>
           </div>
           <div class="alert theme-warning" role="note">
@@ -358,6 +358,8 @@
                     </div>
                     <pre><code class="language-bash">./docengine plan --root .
 ./docengine apply --root . --yes
+./docengine context --root .
+./docengine help
 ./docengine version</code></pre>
                   </div>
                 </div>
@@ -366,7 +368,7 @@
               <div class="alert theme-info mt-4" role="note">
                 <div class="flex-grow-1">
                   <h3 class="alert-heading h4 mb-1" data-i18n="quickstart.note.title">Importante</h3>
-                  <p class="mb-0" data-i18n="quickstart.note.text"><code>audit</code> recibe siempre <code>--profile</code> de forma explícita; el perfil mínimo que propone <code>init</code> no declara documentos y audita cero archivos. Añade reglas para que el motor compruebe contratos.</p>
+                  <p class="mb-0" data-i18n="quickstart.note.text"><code>audit</code> recibe siempre <code>--profile</code> de forma explícita; el perfil mínimo que propone <code>init</code> no declara documentos y audita cero archivos. Añade reglas para que el motor compruebe contratos. <code>audit</code>, <code>status</code> y <code>context</code> son de solo lectura; <code>plan</code> propone cambios y <code>apply</code> escribe solo con autorización explícita y <code>--yes</code>.</p>
                 </div>
               </div>
             </section>
@@ -716,7 +718,7 @@
                         </li>
                         <li>
                           <div class="d-flex align-items-center flex-wrap gap-2 mb-1"><code class="fg-accent">bm25</code><span class="badge badge-subtle fs-sm" data-i18n="profile.optional">opcional</span></div>
-                          <p class="fg-2 mb-0" data-i18n="profile.field.bm25">Avisos léxicos. Campos: <code>enabled</code>, <code>documents</code>, <code>capabilities</code> (<code>duplicates</code>, <code>coverage</code>, <code>impact</code>), <code>max_candidates</code>, <code>title_weight</code>, <code>body_weight</code>, <code>min_score</code> y <code>acknowledged</code>.</p>
+                          <p class="fg-2 mb-0" data-i18n="profile.field.bm25">Avisos léxicos. Campos: <code>enabled</code>, <code>documents</code>, <code>capabilities</code> (<code>duplicates</code>, <code>coverage</code>, <code>impact</code>), <code>max_candidates</code>, <code>title_weight</code>, <code>body_weight</code>, <code>min_score</code>, <code>algorithm_version</code> y <code>acknowledged</code>.</p>
                         </li>
                       </ul>
                       <div class="code-block" data-code-block>
@@ -916,7 +918,7 @@
                 <span class="badge badge-subtle theme-accent" aria-hidden="true">10</span>
               </div>
               <h2 class="section-title mb-3" id="evidence-title" data-i18n="evidence.title">Qué sostiene este sitio</h2>
-              <p class="section-lead measure fs-lg" data-i18n="evidence.lead">El contenido de esta página describe la versión etiquetada v0.2.1 del repositorio de docengine, integrada en <code>main</code>.</p>
+              <p class="section-lead measure fs-lg" data-i18n="evidence.lead">El contenido de esta página describe la versión etiquetada v0.2.1 del repositorio de docengine, integrada en <code>main</code>; lo que esa versión todavía no incluye se marca como en preparación.</p>
               <div class="row g-3 mb-4">
                 <div class="md:col-4">
                   <div class="card h-100">
@@ -930,7 +932,7 @@
                   <div class="card h-100">
                     <div class="card-body">
                       <h3 class="h4" data-i18n="evidence.point2.title">Versionado y acceso</h3>
-                      <p class="fg-2 mb-0" data-i18n="evidence.point2.text">docengine sigue SemVer: la versión v0.2.1 está integrada en <code>main</code>, etiquetada y con release en GitHub. La instalación publicada (<code>go install github.com/fred66sp/docengine/cmd/docengine@latest</code> o binarios de release) requiere acceso al módulo; la compilación desde el código fuente está disponible.</p>
+                      <p class="fg-2 mb-0" data-i18n="evidence.point2.text">docengine sigue SemVer: la versión v0.2.1 está integrada en la rama <code>main</code> y etiquetada en GitHub; puede que no haya un release publicado ni una descarga de módulo disponible, pero compilar desde el código fuente sí está disponible. <code>go install github.com/fred66sp/docengine/cmd/docengine@latest</code> y los binarios de release dependen de que exista una versión publicada.</p>
                     </div>
                   </div>
                 </div>
@@ -995,7 +997,7 @@
         </div>
         <div class="site-footer__base">
           <p data-i18n="footer.note">Sitio de documentación construido con Bootstrap 6 Alpha 1 y Vite. Bilingüe ES/EN; modo claro y oscuro.</p>
-          <p data-i18n="footer.sources">Contenido basado en la versión etiquetada v0.2.1 del repositorio de docengine.</p>
+          <p data-i18n="footer.sources">Contenido basado en la versión etiquetada v0.2.1 del repositorio de docengine; lo que esa versión todavía no incluye se marca como en preparación.</p>
         </div>
       </div>
     </footer>
