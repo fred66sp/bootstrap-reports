@@ -198,15 +198,23 @@ async function handleTagUpdate(req, res, oldName) {
 
   // Primero las tareas, despues los metadatos: si falla a mitad, se revierte
   // lo ya aplicado.
+  //
+  // Solo se tocan las tareas cuando el nombre cambia de verdad. Con el mismo
+  // nombre (editar color o descripcion) tk aplica --remove-tags despues de
+  // --add-tags, de modo que pedirle quitar y volver a poner la misma etiqueta
+  // la borra de la tarea. Comprobado en tk 0.2.4.
+  const renaming = !sameTagName(tag.name, oldName);
   const updated = [];
-  for (const task of tasks) {
-    const actualName = task.tags.find((taskTag) => sameTagName(taskTag, oldName));
-    const result = await updateTaskTag(task, actualName, tag.name);
-    if (result?.error) {
-      const note = await restoreTagUpdates(updated, tag.name, oldName);
-      return sendJson(res, 409, { error: `No se pudo renombrar la etiqueta en ${task.id}.${note}` });
+  if (renaming) {
+    for (const task of tasks) {
+      const actualName = task.tags.find((taskTag) => sameTagName(taskTag, oldName));
+      const result = await updateTaskTag(task, actualName, tag.name);
+      if (result?.error) {
+        const note = await restoreTagUpdates(updated, tag.name, oldName);
+        return sendJson(res, 409, { error: `No se pudo renombrar la etiqueta en ${task.id}.${note}` });
+      }
+      updated.push(task);
     }
-    updated.push(task);
   }
 
   try {
