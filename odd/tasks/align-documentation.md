@@ -92,8 +92,9 @@ comprobarlos (ver «Descartados»).
   comprobación directa de cada afirmación corregida.
 - `npx skills list --agent opencode` (`AGENTS.md`) no se ejecutó: no se verificó
   si «opencode» sigue siendo el agente destinatario de las skills.
-- La rama `docs/align-documentation` **no** se integró en `main`: queda a
-  decisión del usuario, igual que el `push`.
+- La rama `docs/align-documentation` se integró en `main` por avance rápido,
+  junto con `docs/documentation-criteria`, y se publicó: la ref remota y la local
+  coincidían en `8d25b3d` al hacerlo.
 
 ## Commits de la tarea
 

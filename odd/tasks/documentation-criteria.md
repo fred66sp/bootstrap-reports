@@ -91,8 +91,9 @@ nada; rojo al añadir `window.bootstrap = null` a `web/static/app.js`, señaland
 `web/static/app.js:60`; archivo restaurado idéntico (`cmp`) y verde otra vez;
 suite completa `ok devops-pulse 2.255s`, `go vet ./...` rc=0.
 
-**Pendiente de decisión del usuario:** integrar en `main` las dos ramas apiladas
-—`docs/align-documentation` y `docs/documentation-criteria`— y publicarlas.
+**Integración y publicación:** autorizadas por el usuario. `main` avanzó por
+avance rápido de `815c454` a `8d25b3d` y se publicó (`815c454..8d25b3d main ->
+main`); la ref remota y la local coincidían en `8d25b3d` al hacerlo.
 
 ## Verificación de DC-03
 
