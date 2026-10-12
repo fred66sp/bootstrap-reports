@@ -45,6 +45,7 @@ La referencia inicial del trabajo es el anuncio oficial:
 | `docs/decisions/` | Registros de decisión (ADR) de las decisiones difíciles de revertir. |
 | `docengine-docs/` | Aplicación web de documentación de docengine, autocontenida (Vite + Bootstrap). |
 | `devops-pulse/` | Panel de servicios en tiempo real de ejemplo: Go con templ y SSE, HTMX, Alpine y Bootstrap 6 sobre el CSS y el bundle que publica `docengine-docs/`. |
+| `tk/` | Gestor de tareas local: interfaz web y servidor Node sin dependencias sobre el binario `tk` (tacks) y su base SQLite. |
 | `docs/devops-pulse/` | Explicación y referencia técnica del panel DevOps Pulse. |
 | `odd/tasks/` | Tareas de trabajo recuperables del flujo ODD. |
 | `skills-lock.json` | Selección y hashes de las skills oficiales instaladas para el proyecto. |

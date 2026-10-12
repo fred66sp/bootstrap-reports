@@ -1,6 +1,6 @@
 # Instrucciones del repositorio
 
-Este repositorio es un workspace de informes, documentación y ejemplos de integración. Las aplicaciones con identidad propia viven en subdirectorios, actualmente `docengine-docs/` (Vite + Bootstrap) y `devops-pulse/` (Go + templ + HTMX + Alpine con SSE).
+Este repositorio es un workspace de informes, documentación y ejemplos de integración. Las aplicaciones con identidad propia viven en subdirectorios, actualmente `docengine-docs/` (Vite + Bootstrap), `devops-pulse/` (Go + templ + HTMX + Alpine con SSE) y `tk/` (gestor de tareas local: Node sin dependencias sobre el binario `tacks`).
 
 ## Leer antes de trabajar
 
@@ -10,6 +10,7 @@ Este repositorio es un workspace de informes, documentación y ejemplos de integ
 - `docs/inference-protocol.md` — protocolo obligatorio de evidencia, inferencia y trazabilidad.
 - `docengine-docs/package.json`, `docengine-docs/package-lock.json` y `skills-lock.json` — dependencias de la aplicación y skills reproducibles.
 - `devops-pulse/go.mod`, `devops-pulse/package.json` y `devops-pulse/README.md` — módulo Go con templ, assets del panel y su funcionamiento verificado.
+- `tk/AGENTS.md`, `tk/package.json` y `tk/server/tk.js` — gestor de tareas local: cómo se arranca, qué carpetas tiene y dónde vive el binario de `tk`.
 - `odd/tasks/` — tarea ODD activa y evidencia recuperable.
 
 ## Comandos de trabajo
