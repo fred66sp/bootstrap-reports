@@ -93,7 +93,7 @@ El registro ODD de este repositorio vive en el gestor de tareas `tk/`, no en fic
 - La petición del usuario, literal, y las decisiones = comentarios: en tk son inmutables y conservan el orden.
 - El estado se lee en el tablero (`npm --prefix tk run server`) o con `tk/tk --db tk/.tacks/tacks.db --json list -a`.
 - Los documentos de `odd/tasks/*.md` anteriores a esta regla se conservan **congelados** como historia; no se crean documentos nuevos.
-- El cierre de un frente lo valida el usuario, no el agente.
+- El cierre va con el commit: no se commitea nada que no esté revisado y claro para cerrar, y al commit la tarea se cierra. No se dejan tareas abiertas con el trabajo hecho.
 
 ## Flujo del repositorio
 

@@ -70,7 +70,7 @@ tablero, no entra.
 - **`notes` es el relevo** entre sesiones: ahí va qué falta y de quién, porque se
   sobrescribe y siempre refleja el estado actual. Los comentarios son el registro
   de cómo se llegó hasta ahí.
-- **El cierre lo valida el usuario.** El agente propone; no cierra por su cuenta.
+- **El cierre va con el commit.** No se commitea sin que el trabajo esté revisado y claro para cerrar; al commit, la tarea se cierra. Una tarea abierta con el trabajo hecho es un registro que miente.
 
 **Para leer el estado**, `stats` y `ready --limit 1` bastan. `prime` vuelca el
 _backlog_ entero y es caro.
