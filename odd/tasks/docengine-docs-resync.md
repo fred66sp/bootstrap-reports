@@ -180,7 +180,7 @@ afirmación falsa en el otro.
   herramienta, no de verificación: la página renderizada **sí** se observó, en
   tema claro y oscuro y en los dos idiomas.
 
-## Rama, commits y límites de publicación
+## Rama, commits e integración
 
 Rama `docs/docengine-docs-resync`, creada desde `main` en `14450b2`. Dos commits
 de unidad de trabajo:
@@ -190,8 +190,15 @@ de unidad de trabajo:
 - `2183f09` — `docs(docengine-docs): correct published omissions and an
   unsupported claim` (U2: D5-D7 y D8).
 
-Los commits son locales. **No se ha hecho `push`, ni fusión, ni PR:** eso sigue
-siendo decisión del usuario.
+**Integración y publicación:** autorizadas por el usuario. `main` avanzó por
+avance rápido de `14450b2` a `cc07379` y se publicó (`14450b2..cc07379 main ->
+main`); la referencia local, la de seguimiento y la del remoto coincidían en
+`cc07379` al hacerlo. Después se retiraron las siete ramas de trabajo ya
+integradas con `git branch -d`, que se niega por diseño a borrar una rama con
+trabajo no integrado; ninguna tenía commits fuera de `main`.
+
+Se anota sin cláusula sobre lo que queda por publicar: esa cláusula es la que
+hizo caducar la frase equivalente en la tarea anterior.
 
 ## Dueño y revisiones
 
