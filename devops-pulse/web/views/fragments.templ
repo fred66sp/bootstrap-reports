@@ -1,0 +1,96 @@
+package views
+
+import "strconv"
+
+templ LogsDialog(m Messages) {
+	<dialog id="logs-dialog" class="dialog dialog-lg dialog-slide-up">
+		<div class="dialog-header"><h2 class="dialog-title" id="logs-title">{ m["logs fallback title"] }</h2><button type="button" class="btn-close" data-bs-dismiss="dialog" aria-label={ m["close"] }></button></div>
+		<div class="dialog-body" id="logs-body"></div>
+		<div class="dialog-footer"><button type="button" class="btn-solid theme-secondary" data-bs-dismiss="dialog">{ m["close"] }</button></div>
+	</dialog>
+	<dialog id="service-help-dialog" class="dialog dialog-lg dialog-slide-up" aria-labelledby="service-help-title">
+		<div class="dialog-header"><h2 class="dialog-title" id="service-help-title">{ m["help fallback title"] }</h2><button type="button" class="btn-close" data-bs-dismiss="dialog" aria-label={ m["close"] }></button></div>
+		<div class="dialog-body" id="service-help-body"></div>
+		<div class="dialog-footer"><button type="button" class="btn-solid theme-secondary" data-bs-dismiss="dialog">{ m["close"] }</button></div>
+	</dialog>
+	<div class="toast-container position-fixed bottom-0 end-0 p-3"><div id="pulse-toast" class="toast" role="status" aria-live="polite"><div class="toast-header"><strong class="me-auto">{ m["toast header"] }</strong><button type="button" class="btn-close" data-bs-dismiss="toast" aria-label={ m["close"] }></button></div><div class="toast-body" id="pulse-toast-body"></div></div></div>
+}
+
+templ ServerGrid(services []ServiceView) {
+	for _, view := range services {
+		@ServerCard(view)
+	}
+}
+
+templ ServerCard(view ServiceView) {
+	<div class="col-12 md:col-6 xl:col-4" x-show={ alpineMatch(view.Name) }>
+		@CardSurface(view)
+	</div>
+}
+
+templ CardSurface(view ServiceView) {
+	<article class="card service-card h-100 border-subtle">
+		<div class="card-header d-flex flex-row justify-content-between align-items-center">
+			<div class="d-flex flex-row align-items-center gap-2">
+				<h2 class="h5 mb-0">{ view.Name }</h2>
+				@Status(view)
+			</div>
+			<button type="button" class="btn-icon theme-secondary" data-dialog-title={ view.HelpTitle } data-service-id={ view.ID } aria-label={ view.HelpLabel } @click={ alpineOpenHelp(view.ID) }><svg class="pulse-icon" width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1zm0 13A6 6 0 1 1 8 2a6 6 0 0 1 0 12zM7.25 5.25a.75.75 0 1 1 1.5 0 .75.75 0 0 1-1.5 0zM7 7h2v5H7V7z"></path></svg></button>
+		</div>
+		<div class="card-body">
+			@Metrics(view)
+		</div>
+		<div class="card-footer d-flex justify-content-between align-items-center">
+			<button class="btn-text theme-primary p-0" type="button" data-dialog-title={ view.LogsTitle } data-service-id={ view.ID } aria-label={ view.Messages["view logs"] + ": " + view.Name } @click={ alpineOpenLogs(view.ID) }>{ view.Messages["view logs"] }</button>
+			<form hx-post="/toggle-service" hx-vals={ hxVals(view.ID, view.Language) } hx-target="closest .card" hx-swap="outerHTML" hx-indicator={ "#toggle-spinner-" + view.ID }>
+				<button class="btn-outline theme-secondary btn-sm" type="submit"><span class="spinner-border spinner-sm htmx-indicator" id={ "toggle-spinner-" + view.ID } aria-hidden="true"></span><span>{ view.Messages["toggle"] }</span></button>
+			</form>
+		</div>
+		@Logs(view)
+		<div id={ "help-" + view.ID } hidden>
+			<p>{ view.Messages["help intro"] }</p>
+			<ul>
+				<li>{ view.Messages["help cpu"] }</li>
+				<li>{ view.Messages["help memory"] }</li>
+				<li>{ view.Messages["help status"] }</li>
+			</ul>
+			<p>{ view.Messages["help logs"] }</p>
+			<p>{ view.Messages["help disclaimer"] }</p>
+		</div>
+	</article>
+}
+
+templ Status(view ServiceView) {
+	<span
+		id={ "status-" + view.ID }
+		if view.OutOfBand {
+			hx-swap-oob="true"
+		}
+		class={ "badge rounded-pill", templ.KV("theme-success", view.Status == "Online"), templ.KV("theme-danger", view.Status != "Online") }
+	>{ view.StatusLabel }</span>
+}
+
+templ Metrics(view ServiceView) {
+	<div
+		id={ "metrics-" + view.ID }
+		if view.OutOfBand {
+			hx-swap-oob="true"
+		}
+	><div class="metric-row"><div class="d-flex justify-content-between small mb-2"><span>{ view.Messages["cpu"] }</span><span>{ view.CPU }%</span></div><div class="progress" role="progressbar" aria-label={ view.Messages["cpu"] } aria-valuenow={ strconv.Itoa(view.CPU) } aria-valuemin="0" aria-valuemax="100"><div class="progress-bar theme-primary" style={ metricStyle(view.CPU) }>{ view.CPU }%</div></div></div><div class="metric-row"><div class="d-flex justify-content-between small mb-2"><span>{ view.Messages["ram"] }</span><span>{ view.RAM }%</span></div><div class="progress" role="progressbar" aria-label={ view.Messages["ram"] } aria-valuenow={ strconv.Itoa(view.RAM) } aria-valuemin="0" aria-valuemax="100"><div class="progress-bar theme-info" style={ metricStyle(view.RAM) }>{ view.RAM }%</div></div></div></div>
+}
+
+templ Logs(view ServiceView) {
+	<div
+		id={ "logs-" + view.ID }
+		hidden
+		if view.OutOfBand {
+			hx-swap-oob="true"
+		}
+	>
+		<ul class="list-group list-group-flush">
+			for _, line := range view.Logs {
+				<li class="list-group-item bg-transparent px-0">{ line }</li>
+			}
+		</ul>
+	</div>
+}

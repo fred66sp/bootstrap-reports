@@ -17,9 +17,9 @@ description: Añade estado efímero y comportamientos locales con Alpine.js, evi
 - x-html con contenido no confiable.
 - Reimplementar en Alpine componentes ya resueltos por Bootstrap.
 
-## Convivencia con Jet 6
-- Jet genera el HTML y escapa datos; Alpine solo gestiona el estado efímero del navegador.
-- Cuidar comillas y atributos HTML al combinar expresiones Alpine con templates Jet. No interpolar datos no confiables en código JavaScript.
+## Convivencia con templ
+- templ genera el HTML y escapa datos; Alpine solo gestiona el estado efímero del navegador.
+- Cuidar comillas y atributos HTML al combinar expresiones Alpine con componentes templ. El escapado de templ no es contextual en atributos JavaScript, así que no interpolar datos no confiables en código JavaScript.
 - Tras swaps HTMX, verificar inicialización, estado y limpieza de componentes Alpine; no asumir persistencia de estado cuando se reemplaza el nodo.
 
 ## Principios obligatorios
@@ -35,4 +35,4 @@ description: Añade estado efímero y comportamientos locales con Alpine.js, evi
 - Alpine.js: https://alpinejs.dev/start-here y https://alpinejs.dev/directives/data
 - Bootstrap 6: https://getbootstrap.com/docs/6.0/getting-started/ai/
 
-- Jet v6: https://pkg.go.dev/github.com/CloudyKit/jet/v6 y https://github.com/CloudyKit/jet/blob/master/docs/syntax.md
+- templ: https://templ.guide/ y https://pkg.go.dev/github.com/a-h/templ

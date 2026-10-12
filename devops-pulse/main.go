@@ -4,18 +4,15 @@ import (
 	"bytes"
 	"compress/gzip"
 	"context"
-	"embed"
 	"encoding/json"
 	"flag"
 	"fmt"
 	"io"
-	"io/fs"
 	"log/slog"
 	"math/rand/v2"
 	"net/http"
 	"os"
 	"os/signal"
-	"path"
 	"path/filepath"
 	"strings"
 	"sync"
@@ -23,48 +20,9 @@ import (
 	"time"
 	"unicode/utf8"
 
-	"github.com/CloudyKit/jet/v6"
+	"devops-pulse/web/views"
+	"github.com/a-h/templ"
 )
-
-//go:embed web/views
-var viewFiles embed.FS
-
-type viewLoader struct {
-	files fs.FS
-}
-
-func (l viewLoader) path(name string) (string, error) {
-	name = path.Clean(strings.ReplaceAll(name, "\\", "/"))
-	name = strings.TrimPrefix(name, "/")
-	if name == "." || name == "" || strings.HasPrefix(name, "../") || name == ".." {
-		return "", fmt.Errorf("invalid view path %q", name)
-	}
-	return name, nil
-}
-
-func (l viewLoader) Exists(name string) bool {
-	name, err := l.path(name)
-	if err != nil {
-		return false
-	}
-	info, err := fs.Stat(l.files, name)
-	return err == nil && !info.IsDir()
-}
-
-func (l viewLoader) Open(name string) (io.ReadCloser, error) {
-	name, err := l.path(name)
-	if err != nil {
-		return nil, err
-	}
-	info, err := fs.Stat(l.files, name)
-	if err != nil {
-		return nil, err
-	}
-	if info.IsDir() {
-		return nil, fmt.Errorf("view path %q is a directory", name)
-	}
-	return l.files.Open(name)
-}
 
 type serviceStatus string
 
@@ -224,67 +182,17 @@ func jitter(span int) int {
 	return rand.IntN(span) - span/2
 }
 
-type serviceView struct {
-	Service     service
-	OutOfBand   bool
-	Messages    messages
-	Language    language
-	StatusLabel string
-	LogsTitle   string
-	HelpTitle   string
-	HelpLabel   string
-}
-
-type pageView struct {
-	Language language
-	Messages messages
-	Services []serviceView
-}
-
 type application struct {
 	store *stateStore
-	views *jet.Set
-}
-
-func newApplicationFromViews(files fs.FS) (*application, error) {
-	set := jet.NewSet(viewLoader{files: files}, jet.WithTemplateNameExtensions([]string{"", ".jet"}))
-	err := fs.WalkDir(files, ".", func(viewPath string, entry fs.DirEntry, walkErr error) error {
-		if walkErr != nil {
-			return walkErr
-		}
-		if entry.IsDir() || !strings.HasSuffix(viewPath, ".jet") {
-			return nil
-		}
-		if _, err := set.GetTemplate(viewPath); err != nil {
-			return fmt.Errorf("parse view %s: %w", viewPath, err)
-		}
-		return nil
-	})
-	if err != nil {
-		return nil, err
-	}
-	return &application{store: newStateStore(), views: set}, nil
 }
 
 func newApplication() *application {
-	files, err := fs.Sub(viewFiles, "web/views")
-	if err != nil {
-		panic(err)
-	}
-	application, err := newApplicationFromViews(files)
-	if err != nil {
-		panic(err)
-	}
-	return application
+	return &application{store: newStateStore()}
 }
 
-func (a *application) render(name string, data any) (bytes.Buffer, error) {
+func (a *application) renderComponent(component templ.Component) (bytes.Buffer, error) {
 	var output bytes.Buffer
-	template, err := a.views.GetTemplate(name)
-	if err != nil {
-		return output, err
-	}
-	err = template.Execute(&output, nil, data)
+	err := component.Render(context.Background(), &output)
 	return output, err
 }
 
@@ -298,13 +206,13 @@ func (a *application) handler() http.Handler {
 	return mux
 }
 
-func serviceViews(services []service, outOfBand bool, lang language) []serviceView {
-	localized := messageTable[lang]
-	views := make([]serviceView, len(services))
+func serviceViews(services []service, outOfBand bool, lang language) []views.ServiceView {
+	localized := views.Messages(messageTable[lang])
+	result := make([]views.ServiceView, len(services))
 	for i, current := range services {
-		views[i] = serviceView{Service: current, OutOfBand: outOfBand, Messages: localized, Language: lang, StatusLabel: localizedStatus(current.Status, lang), LogsTitle: fmt.Sprintf(localized["logs title"], current.Name), HelpTitle: fmt.Sprintf(localized["help title"], current.Name), HelpLabel: fmt.Sprintf(localized["help label"], current.Name)}
+		result[i] = views.ServiceView{ID: current.ID, Name: current.Name, Status: string(current.Status), StatusLabel: localizedStatus(current.Status, lang), Language: string(lang), CPU: current.CPU, RAM: current.RAM, Logs: current.Logs, OutOfBand: outOfBand, Messages: localized, LogsTitle: fmt.Sprintf(localized["logs title"], current.Name), HelpTitle: fmt.Sprintf(localized["help title"], current.Name), HelpLabel: fmt.Sprintf(localized["help label"], current.Name)}
 	}
-	return views
+	return result
 }
 
 func (a *application) index(w http.ResponseWriter, r *http.Request) {
@@ -313,7 +221,7 @@ func (a *application) index(w http.ResponseWriter, r *http.Request) {
 		persistLanguageCookie(w, lang)
 	}
 	localized := messageTable[lang]
-	output, err := a.render("pages/index.jet", pageView{Language: lang, Messages: localized, Services: serviceViews(a.store.snapshot(), false, lang)})
+	output, err := a.renderComponent(views.Index(string(lang), views.Messages(localized), serviceViews(a.store.snapshot(), false, lang)))
 	if err != nil {
 		http.Error(w, "template rendering failed", http.StatusInternalServerError)
 		return
@@ -322,31 +230,26 @@ func (a *application) index(w http.ResponseWriter, r *http.Request) {
 	_, _ = w.Write(output.Bytes())
 }
 
-func (a *application) renderFragment(viewPath string, view serviceView) (string, error) {
-	output, err := a.render(viewPath, view)
-	return output.String(), err
-}
-
 func (a *application) renderTick(lang language, services []service, lastStatus map[string]serviceStatus) (string, error) {
 	var output strings.Builder
 	for _, current := range services {
 		view := serviceViews([]service{current}, true, lang)[0]
-		metrics, err := a.renderFragment("fragments/metrics.jet", view)
+		metrics, err := a.renderComponent(views.Metrics(view))
 		if err != nil {
 			return "", err
 		}
-		output.WriteString(metrics)
-		logs, err := a.renderFragment("fragments/logs.jet", view)
+		output.Write(metrics.Bytes())
+		logs, err := a.renderComponent(views.Logs(view))
 		if err != nil {
 			return "", err
 		}
-		output.WriteString(logs)
+		output.Write(logs.Bytes())
 		if lastStatus[current.ID] != current.Status {
-			status, err := a.renderFragment("fragments/status.jet", view)
+			status, err := a.renderComponent(views.Status(view))
 			if err != nil {
 				return "", err
 			}
-			output.WriteString(status)
+			output.Write(status.Bytes())
 		}
 	}
 	return output.String(), nil
@@ -457,7 +360,7 @@ func (a *application) toggleService(w http.ResponseWriter, r *http.Request) {
 	}})
 	w.Header().Set("HX-Trigger", trigger)
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	output, err := a.render("fragments/card-surface.jet", serviceViews([]service{current}, false, lang)[0])
+	output, err := a.renderComponent(views.CardSurface(serviceViews([]service{current}, false, lang)[0]))
 	if err != nil {
 		http.Error(w, "template rendering failed", http.StatusInternalServerError)
 		return
@@ -489,14 +392,7 @@ func run(ctx context.Context, addr string) error {
 	if err := verifyAssets(staticDir); err != nil {
 		return err
 	}
-	files, err := fs.Sub(viewFiles, "web/views")
-	if err != nil {
-		return err
-	}
-	application, err := newApplicationFromViews(files)
-	if err != nil {
-		return err
-	}
+	application := newApplication()
 	server := &http.Server{Addr: addr, Handler: application.handler()}
 	go func() {
 		ticker := time.NewTicker(2 * time.Second)

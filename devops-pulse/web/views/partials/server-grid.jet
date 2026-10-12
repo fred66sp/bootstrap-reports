@@ -1,1 +1,0 @@
-{{ range .Services }}{{ include "/partials/server-card.jet" . }}{{ end }}

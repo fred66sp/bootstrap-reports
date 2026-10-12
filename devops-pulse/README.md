@@ -23,7 +23,7 @@ npm install && npm run sync:assets
 ## Architecture
 
 - `main.go` contains the domain model, one mutex-protected in-memory state
-  store, the Jet 6 view set, handlers, and server wiring.
+  store, the templ view set, handlers, and server wiring.
 - `GET /metrics` sends server-rendered HTML over SSE, gzip-compressed when the
   client advertises gzip. The grid uses `hx-swap="none"`; every frame sends
   complete per-service metrics and log-holder OOB fragments, while status is
@@ -31,8 +31,8 @@ npm install && npm run sync:assets
   survive every tick. Spanish is the default server-resolved language; valid
   `lang` query values persist in a cookie and the same language is carried by
   the SSE stream and toggle form.
-- One `serviceView` model and one file per Jet fragment render the initial card,
-  SSE OOB elements, and toggle response. The view's `OutOfBand` flag adds
+- One `views.ServiceView` model and one templ fragment per element render the
+  initial card, SSE OOB elements, and toggle response. The view's `OutOfBand` flag adds
   `hx-swap-oob` only to SSE output. Metrics use bounded random walks; each
   service retains six plain log lines, and each SSE connection tracks the
   statuses it has sent.
@@ -43,28 +43,29 @@ npm install && npm run sync:assets
   notification. The page uses `data-bs-theme` for light and dark modes; the
   choice is applied before paint and persisted in local storage.
 
-## Jet 6 views
+## Templ views
 
-Templates are Jet 6 views under `web/views/`, compiled from the embedded file
-system when the application is built:
+Views are templ components in the Go package `web/views/`:
 
-- `layouts/base.jet` is the document shell and yields `body()`.
-- `pages/index.jet` extends the shell and holds the header, the toolbar, the grid
-  and the dialogs.
-- `partials/` holds the composed pieces: the grid loop, the card column and the
-  two dialogs.
-- `fragments/` holds one file per HTMX fragment. Each one is rendered standalone
-  by Go (the SSE frame and the toggle response) **and** included from another view
-  with `{{ include "/fragments/x.jet" . }}`, so a fragment has a single
-  definition.
+- `layout.templ` is the document shell and takes the page as `{ children... }`.
+- `page.templ` holds the dashboard and the two dialogs.
+- `fragments.templ` holds the grid loop, the card column, the card and the three
+  fragments. `views.Metrics`, `views.Logs` and `views.Status` are rendered
+  standalone by Go (the SSE frame and the toggle response) **and** called from the
+  card component, so a fragment has a single definition.
 
-`newApplicationFromViews` parses every view while building the application, so a
-syntax error fails at startup and names the offending view instead of becoming a
-500 on the first request. Rendering goes through a buffer first, so a render
-error never writes half a document. The wire cost is unchanged by the move and
-the views are byte-identical to the previous `html/template` output; the
-comparison is frozen in `testdata/` and checked by
-`TestRenderedOutputMatchesFrozenBaseline`.
+`go tool templ generate` compiles those files into the generated `*_templ.go`
+that `go build` compiles. The templ CLI is pinned in the `tool` directive of
+`go.mod`, so the generated code is reproducible. Rendering still goes through a
+buffer, so a render error never writes half a document.
+
+templ minifies during generation: it drops the whitespace between elements,
+collapses a line break between inline nodes to one space and closes every
+non-void element explicitly. The `testdata/` baseline was regenerated from that
+validated output and `TestRenderedOutputMatchesFrozenBaseline` freezes it byte
+for byte. It is equivalent to the Jet-era baseline, not identical: the trailing
+semicolon templ appends to `style`, the attribute quoting and `<path/>` versus
+`<path></path>` differ, and the DOM both build is the same.
 
 ## Bootstrap 6 differences
 
@@ -131,32 +132,49 @@ Observed locally:
   `newStateStore`, `statusOffline`, and `newApplication` (RED). After
   implementation, `go test ./...` returned `ok   devops-pulse 0.042s` (GREEN).
 - `go vet ./...` succeeded, and `go build -o bin/devops-pulse .` succeeded.
+- POC Templ, now the engine: `go tool templ generate`, `go build ./...`,
+  `go vet ./...` and `go test ./...` succeed, and the golden baseline in
+  `testdata/` was regenerated from the validated templ output. The smoke test
+  below was repeated against the templ build with the same status codes, headers
+  and `event: metrics` frames.
+- POC Templ: the browser checks were repeated on Chromium at 1440x900 — live SSE
+  badge, Alpine filter, the six-line log ring, the toggle toast with the status
+  badge consistent, both dialogs, dark theme plus reload persistence and English
+  navigation — with zero console errors, page errors and failed requests.
 - A real server smoke test showed two `event: metrics` frames from
   `curl -sN --max-time 5 .../metrics`. A POST for `api-gateway` returned `200`,
   `Content-Type: text/html; charset=utf-8`, an `HX-Trigger` JSON header with
   status `Offline`, and the updated card HTML.
+- A Jet-versus-templ A/B on that same card showed the identical ~20 ms
+  intermediate DOM state while htmx applies the swapped markup (one attribute
+  and one text node of the status badge settle in separate steps), so it is htmx
+  behaviour and not a rendering difference.
 - The template class check below reported no missing Bootstrap classes:
 
-  ```sh
-  python3 - <<'PY'
-  import re
-  from pathlib import Path
-  css = Path('web/static/vendor/bootstrap.min.css').read_text()
-  custom = {'brand', 'brand__mark', 'brand__tag', 'is-active', 'pulse-heading', 'pulse-icon', 'segmented', 'segmented__icon', 'segmented__option', 'service-card', 'site-controls', 'site-header', 'site-header__bar', 'toolbar', 'metric-row', 'search-box', 'eyebrow', 'htmx-indicator'}
-  classes = set()
-  for path in Path('web/views').rglob('*.jet'):
-      text = path.read_text()
-      text = re.sub(r'{{.*?}}', ' ', text)
-      for value in re.findall(r'(?<!:)class="([^"]*)"', text):
-          classes.update(value.split())
-  missing = []
-  for name in sorted(classes - custom):
-      selector = re.escape(name.replace(':', r'\:'))
-      if not re.search(r'\.' + selector + r'(?:[,{: .])', css):
-          missing.append(name)
-  print('missing Bootstrap classes:', missing)
-  PY
-  ```
+```sh
+python3 - <<'PY'
+import re
+from pathlib import Path
+css = Path('web/static/vendor/bootstrap.min.css').read_text()
+custom = {'brand', 'brand__mark', 'brand__tag', 'is-active', 'pulse-heading', 'pulse-icon', 'segmented', 'segmented__icon', 'segmented__option', 'service-card', 'site-controls', 'site-header', 'site-header__bar', 'toolbar', 'metric-row', 'search-box', 'eyebrow', 'htmx-indicator'}
+classes = set()
+for path in Path('web/views').rglob('*.templ'):
+    text = path.read_text()
+    for value in re.findall(r'class=\{([^}]*)\}', text):
+        value = re.sub(r'[!=]=\s*"[^"]*"', '', value)  # drop comparison operands
+        for name in re.findall(r'"([^"]+)"', value):
+            classes.update(name.split())
+    text = re.sub(r'\{[^{}]*\}', ' ', text)
+    for value in re.findall(r'(?<!:)class="([^"]*)"', text):
+        classes.update(value.split())
+missing = []
+for name in sorted(classes - custom):
+    selector = re.escape(name.replace(':', r'\:'))
+    if not re.search(r'\.' + selector + r'(?:[,{: .])', css):
+        missing.append(name)
+print('missing Bootstrap classes:', missing)
+PY
+```
 
 The OOB update design specifically avoids replacing card roots while a toggle
 request is in flight. Bootstrap's vendored CSS already provides a `[hidden]`
@@ -179,29 +197,34 @@ frontend bundler, Sass customization, or production deployment configuration.
 Generated `node_modules/`, vendored frontend assets, and `bin/` output are
 ignored.
 
-## Jet 6 traps found while migrating this app
+## Templ differences found while porting this app
 
-Each one was observed here, not assumed, and each one fails silently. The
-longer write-up is in `docs/HALLAZGOS_JET_6.md`.
+Each one was measured against templ v0.3.1070, not assumed. The Jet-era record
+is in `docs/HALLAZGOS_JET_6.md`.
 
-- Jet escapes with `text/template.HTMLEscape`, which covers NUL, `"`, `'`, `&`,
-  `<` and `>`. It is **not** contextual: `html/template` escaped a value for its
-  JavaScript context, Jet does not. `TestViewEscapesHTMLMetacharacters` pins both
-  the escaping and the limitation, and
-  `TestAlpineJSLiteralInterpolationsStaySafe` guards the values that reach a
-  single-quoted Alpine literal.
-- Jet does not escape `+` as `&#43;`, which `html/template` did. No message in
-  this app contains `+`, so the frozen output still matches.
-- An included file is emitted literally, **including its trailing newline**,
-  while `html/template` discarded text outside `{{define}}`. Files under
-  `fragments/` and `partials/` therefore must not end with a newline.
-- `include` is resolved at render time even though `GetTemplate` parses the rest
-  of the template, so a missing include is a runtime 500: render into a buffer
-  before writing headers.
-- `html/template` rewrote an inline JavaScript block comment into a single space.
-  Jet keeps it, so the empty `catch` block in `layouts/base.jet` keeps the three
-  spaces the old engine produced; restoring the comment there is the change that
-  looks right and breaks the baseline.
+- The generated output is minified: inter-element whitespace disappears and a
+  line break between inline nodes becomes a single space. The DOM is equivalent,
+  the bytes are not.
+- Attribute values built from an expression are escaped with `&#34;` and
+  `&#39;`, the same entities Jet produced, but templ escapes the literals the
+  template author wrote as well, so `hx-vals='{"a":1}'` is served as
+  `hx-vals="{&#34;a&#34;:1}"`. The HTML parser decodes both to the same value.
+- Escaping is still not contextual for JavaScript: a value inside a
+  single-quoted Alpine literal round-trips through the HTML parser and reaches
+  Alpine as a bare quote. `TestAlpineJSLiteralInterpolationsStaySafe` keeps
+  guarding the values that reach that position.
+- `style={ templ.SafeCSS(...) }` appends a trailing semicolon; a plain string
+  value is sanitized and loses its spaces.
+- A self-closing non-void element is expanded: `<path/>` is served as
+  `<path></path>`.
+- The content of `<script>` and `<style>` is emitted verbatim from the source,
+  indentation included, so the inline theme script is written flush-left inside
+  the component.
+- `templ fmt` rewrites the markup into its canonical form (`<!DOCTYPE html>`,
+  tab indentation, `<meta .../>`), and `templ fmt -fail` reformats the tree
+  before reporting, so a check meant to be read-only still writes.
+- Two tests lost their subject: a syntax error is now a compile error, and a
+  missing include can no longer happen at render time.
 
 ## Bootstrap 6 traps found while building this app
 

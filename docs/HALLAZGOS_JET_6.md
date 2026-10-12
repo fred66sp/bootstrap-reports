@@ -1,5 +1,10 @@
 # Hallazgos verificados de Jet 6
 
+> Registro histórico del motor retirado. Jet 6 ya no forma parte del stack de
+> `devops-pulse`, que usa templ; las comprobaciones de este documento siguen
+> siendo válidas para `v6.3.3`, pero los golden de `devops-pulse/testdata/` y las
+> pruebas que se citan más abajo describen ahora la salida de templ.
+
 Notas sobre `github.com/CloudyKit/jet/v6` recogidas al migrar `devops-pulse`
 desde `html/template`. La mayoría de estas diferencias no producen error: el
 motor compila, la página se sirve y el fallo aparece más tarde, como un byte de
@@ -17,8 +22,8 @@ cada afirmación va con la comprobación que la sostiene y no con un resumen.
   `html/template/escape.go`).
 - **Evidencia secundaria:** documentación oficial
   (<https://github.com/CloudyKit/jet/blob/master/docs/syntax.md>,
-  <https://pkg.go.dev/github.com/CloudyKit/jet/v6>) y
-  `.agents/skills/jet-template-engine/SKILL.md`.
+  <https://pkg.go.dev/github.com/CloudyKit/jet/v6>) y la skill local
+  `.agents/skills/jet-template-engine/SKILL.md`, retirada al adoptar templ.
 - **Cómo reproducir:** `devops-pulse` es el caso de estudio. Las pruebas citadas
   están en `devops-pulse/render_test.go` y `devops-pulse/views_test.go`, y los
   golden congelados en `devops-pulse/testdata/`.
