@@ -1,10 +1,10 @@
 # DevOps Pulse
 
-DevOps Pulse is a small real-time operations dashboard. It demonstrates an
-HTML-first integration of a Go standard-library HTTP server, server-sent
-HTML events, HTMX, Alpine.js, and Bootstrap 6 Alpha.
+DevOps Pulse es un pequeño panel de operaciones en tiempo real. Demuestra una
+integración HTML-first de un servidor HTTP de la biblioteca estándar de Go, eventos
+HTML enviados por el servidor, HTMX, Alpine.js y Bootstrap 6 Alpha.
 
-## Run
+## Ejecutar
 
 ```sh
 npm install
@@ -12,84 +12,76 @@ npm run sync:assets
 go run .
 ```
 
-Open <http://localhost:8080>. Use `go run . -addr :9090` to choose another
-address. The server checks the vendored assets at startup and reports the exact
-repair command when one is missing:
+Abra <http://localhost:8080>. Use `go run . -addr :9090` para elegir otra
+ dirección. El servidor comprueba los activos incluidos al iniciarse e informa del
+ comando exacto de reparación cuando falta uno:
 
 ```text
 npm install && npm run sync:assets
 ```
 
-## Architecture
+## Arquitectura
 
-- `main.go` contains the domain model, one mutex-protected in-memory state
-  store, the templ view set, handlers, and server wiring.
-- `GET /metrics` sends server-rendered HTML over SSE, gzip-compressed when the
-  client advertises gzip. The grid uses `hx-swap="none"`; every frame sends
-  complete per-service metrics and log-holder OOB fragments, while status is
-  sent only when it changed for that connection. No browser JSON parsing is used and card roots and footer forms
-  survive every tick. Spanish is the default server-resolved language; valid
-  `lang` query values persist in a cookie and the same language is carried by
-  the SSE stream and toggle form.
-- One `views.ServiceView` model and one templ fragment per element render the
-  initial card, SSE OOB elements, and toggle response. The view's `OutOfBand` flag adds
-  `hx-swap-oob` only to SSE output. Metrics use bounded random walks; each
-  service retains six plain log lines, and each SSE connection tracks the
-  statuses it has sent.
-- Alpine state wraps the toolbar and stable grid. Logs are cloned from each
-  card's hidden `<div>` holder into the shared dialog without `x-html` or
-  server-data `innerHTML`.
-- Bootstrap 6's ESM `Dialog` and `Toast` APIs handle the dialog and toggle
-  notification. The page uses `data-bs-theme` for light and dark modes; the
-  choice is applied before paint and persisted in local storage.
+- `main.go` contiene el modelo de dominio, un almacén de estado en memoria protegido por un mutex,
+  el conjunto de vistas templ, los handlers y la conexión del servidor.
+- `GET /metrics` envía HTML renderizado por el servidor mediante SSE, comprimido con gzip cuando el
+  cliente anuncia gzip. La cuadrícula usa `hx-swap="none"`; cada frame envía métricas completas por
+  servicio y fragmentos OOB del contenedor de logs, mientras que el estado solo se envía cuando cambia
+  para esa conexión. No se analiza JSON en el navegador y las raíces de las tarjetas y los formularios
+  del pie sobreviven a cada tick. El español es el idioma predeterminado resuelto por el servidor; los
+  valores válidos de consulta `lang` persisten en una cookie y el mismo idioma se transmite por el flujo
+  SSE y el formulario de alternancia.
+- Un modelo `views.ServiceView` y un fragmento templ por elemento renderizan la tarjeta inicial, los
+  elementos SSE OOB y la respuesta de alternancia. El flag `OutOfBand` añade `hx-swap-oob` solo a la
+  salida SSE. Las métricas usan recorridos aleatorios acotados; cada servicio conserva seis líneas de
+  log simples y cada conexión SSE registra los estados que ha enviado.
+- El estado de Alpine envuelve la barra de herramientas y la cuadrícula estable. Los logs se clonan
+  desde el `<div>` oculto de cada tarjeta al diálogo compartido sin `x-html` ni `innerHTML` con datos del servidor.
+- Las API ESM `Dialog` y `Toast` de Bootstrap 6 gestionan el diálogo y la notificación de alternancia.
+  La página usa `data-bs-theme` para los modos claro y oscuro; la elección se aplica antes del pintado
+  y persiste en el almacenamiento local.
 
-## Templ views
+## Vistas Templ
 
-Views are templ components in the Go package `web/views/`:
+Las vistas son componentes templ del paquete Go `web/views/`:
 
-- `layout.templ` is the document shell and takes the page as `{ children... }`.
-- `page.templ` holds the dashboard and the two dialogs.
-- `fragments.templ` holds the grid loop, the card column, the card and the three
-  fragments. `views.Metrics`, `views.Logs` and `views.Status` are rendered
-  standalone by Go (the SSE frame and the toggle response) **and** called from the
-  card component, so a fragment has a single definition.
+- `layout.templ` es la envoltura del documento y recibe la página como `{ children... }`.
+- `page.templ` contiene el panel y los dos diálogos.
+- `fragments.templ` contiene el bucle de la cuadrícula, la columna de la tarjeta, la tarjeta y los tres
+  fragmentos. `views.Metrics`, `views.Logs` y `views.Status` se renderizan de forma independiente desde Go
+  (el frame SSE y la respuesta de alternancia) **y** se invocan desde el componente de tarjeta, por lo
+  que un fragmento tiene una única definición.
 
-`go tool templ generate` compiles those files into the generated `*_templ.go`
-that `go build` compiles. The templ CLI is pinned in the `tool` directive of
-`go.mod`, so the generated code is reproducible. Rendering still goes through a
-buffer, so a render error never writes half a document.
+`go tool templ generate` compila esos archivos en los `*_templ.go` generados que compila `go build`.
+La CLI de templ está fijada en la directiva `tool` de `go.mod`, por lo que el código generado es
+reproducible. El renderizado sigue pasando por un buffer, así que un error de renderizado nunca escribe
+medio documento.
 
-templ minifies during generation: it drops the whitespace between elements,
-collapses a line break between inline nodes to one space and closes every
-non-void element explicitly. The `testdata/` baseline was regenerated from that
-validated output and `TestRenderedOutputMatchesFrozenBaseline` freezes it byte
-for byte. It is equivalent to the Jet-era baseline, not identical: the trailing
-semicolon templ appends to `style`, the attribute quoting and `<path/>` versus
-`<path></path>` differ, and the DOM both build is the same.
+templ minimiza durante la generación: elimina los espacios entre elementos, convierte un salto de línea
+entre nodos inline en un espacio y cierra explícitamente cada elemento no vacío. La línea base de
+`testdata/` se regeneró a partir de esa salida validada y `TestRenderedOutputMatchesFrozenBaseline` la
+fija byte por byte. Es equivalente a la línea base de la era Jet, no idéntica: el punto y coma final que
+templ añade a `style`, las comillas de atributos y `<path/>` frente a `<path></path>` difieren, y el DOM
+que construyen es el mismo.
 
-## Bootstrap 6 differences
+## Diferencias de Bootstrap 6
 
-This example intentionally uses `.btn-solid` with `.theme-*`, `.fg-3`,
-`.border-subtle`, and native `<dialog class="dialog">`. It does not use the
-Bootstrap 5-only `.btn-primary`, `.modal`, `.offcanvas`, or `window.bootstrap`.
-The vendored Bootstrap CSS and ESM bundle are used as-is; there is no Sass or
-PostCSS step.
+Este ejemplo usa intencionadamente `.btn-solid` con `.theme-*`, `.fg-3`, `.border-subtle` y `<dialog class="dialog">` nativo. No usa `.btn-primary`, `.modal`, `.offcanvas` ni `window.bootstrap`, exclusivos de Bootstrap 5. El CSS y el bundle ESM de Bootstrap incluidos se usan tal cual; no hay ningún paso de Sass o PostCSS.
 
-## Alpine and SSE asset decisions
+## Decisiones sobre activos de Alpine y SSE
 
-The preferred Alpine ESM strategy is used: `alpinejs/dist/module.esm.js` is
-copied to `web/static/vendor/alpine.module.esm.js`, imported by `app.js`, and
-started after registering `pulseDashboard`. The source contains no bare import
-lines: `grep -nE "(^import |from ['\"]|require\\()" node_modules/alpinejs/dist/module.esm.js`
-returned no matches.
+Se usa la estrategia ESM preferida de Alpine: `alpinejs/dist/module.esm.js` se copia a
+`web/static/vendor/alpine.module.esm.js`, `app.js` lo importa y se inicia después de registrar
+`pulseDashboard`. El código fuente no contiene líneas de importación desnudas: `grep -nE "(^import |from ['\"]|require\\()" node_modules/alpinejs/dist/module.esm.js`
+no devolvió coincidencias.
 
-The SSE extension directory contains `sse.esm.js`, `sse.js`, `sse.min.js`, and
-`sse.min.js.gz` (`ls -l node_modules/htmx-ext-sse/dist`). The sync script detects
-and copies the minified `sse.min.js` as `htmx-ext-sse.min.js`.
+El directorio de extensión SSE contiene `sse.esm.js`, `sse.js`, `sse.min.js` y `sse.min.js.gz`
+(`ls -l node_modules/htmx-ext-sse/dist`). El script de sincronización detecta y copia el `sse.min.js`
+minificado como `htmx-ext-sse.min.js`.
 
-## Token verification
+## Verificación de tokens
 
-Keep the Bootstrap token contract explicit when changing `web/static/app.css`:
+Mantenga explícito el contrato de tokens de Bootstrap al cambiar `web/static/app.css`:
 
 ```sh
 missing=$(for token in $(grep -oE -- '--bs-[a-z0-9-]+' web/static/app.css | sort -u); do grep -qF -- "$token" web/static/vendor/bootstrap.min.css || printf '%s\n' "$token"; done)
@@ -97,15 +89,15 @@ printf 'missing Bootstrap tokens:\n%s' "$missing"
 test -z "$missing"
 ```
 
-The command exits non-zero if any `--bs-*` token used by the page is absent from
-vendored Bootstrap CSS.
+El comando termina con un estado distinto de cero si falta en el CSS de Bootstrap incluido algún token
+`--bs-*` usado por la página.
 
-## Font stacks
+## Familias tipográficas
 
-Quote only the family names that need it, never the whole list. In a custom
-property, `"Roboto, system-ui, sans-serif"` is a single family name containing
-commas: it never resolves, and the browser falls back to its default font, which
-is serif. Write the list unquoted and quote only multi-word names:
+Entrecomille solo los nombres de familia que lo necesitan, nunca la lista completa. En una propiedad
+personalizada, `"Roboto, system-ui, sans-serif"` es un único nombre de familia que contiene comas: nunca
+se resuelve y el navegador vuelve a su fuente predeterminada, que es serif. Escriba la lista sin comillas
+y entrecomille solo los nombres de varias palabras:
 
 ```css
 --bs-body-font-family: Roboto, system-ui, sans-serif;
@@ -113,43 +105,40 @@ is serif. Write the list unquoted and quote only multi-word names:
 --bs-font-mono: "JetBrains Mono", ui-monospace, monospace;
 ```
 
-Check the resolved family, not only the declared value, because both look right
-in the source. In the browser console, compare the width a canvas reports for the
-element's computed `font-family` against the widths of the real family and of
-`serif`; equal widths for the family and a different width for `serif` prove the
-text is not falling back.
+Compruebe la familia resuelta, no solo el valor declarado, porque ambas cosas parecen correctas en el
+código fuente. En la consola del navegador, compare el ancho que un canvas informa para el `font-family`
+calculado del elemento con los anchos de la familia real y de `serif`; anchos iguales para la familia y
+un ancho distinto para `serif` demuestran que el texto no recurre a la alternativa.
 
-## Verification status
+## Estado de verificación
 
-Observed locally:
+Observado localmente:
 
-- `npm install`: succeeded; the root lockfile pins `alpinejs 3.17.4`,
-  `bootstrap 6.0.0-alpha.1`, `htmx-ext-sse 2.2.4`, and `htmx.org 2.0.11`.
-- `npm run sync:assets`: succeeded. Files: `alpine.module.esm.js` (128289
-  bytes), `bootstrap.bundle.min.js` (219860), `bootstrap.min.css` (381199),
-  `htmx-ext-sse.min.js` (2853), and `htmx.min.js` (52182).
-- Before implementation, `go test ./...` produced build failures for undefined
-  `newStateStore`, `statusOffline`, and `newApplication` (RED). After
-  implementation, `go test ./...` returned `ok   devops-pulse 0.042s` (GREEN).
-- `go vet ./...` succeeded, and `go build -o bin/devops-pulse .` succeeded.
-- POC Templ, now the engine: `go tool templ generate`, `go build ./...`,
-  `go vet ./...` and `go test ./...` succeed, and the golden baseline in
-  `testdata/` was regenerated from the validated templ output. The smoke test
-  below was repeated against the templ build with the same status codes, headers
-  and `event: metrics` frames.
-- POC Templ: the browser checks were repeated on Chromium at 1440x900 — live SSE
-  badge, Alpine filter, the six-line log ring, the toggle toast with the status
-  badge consistent, both dialogs, dark theme plus reload persistence and English
-  navigation — with zero console errors, page errors and failed requests.
-- A real server smoke test showed two `event: metrics` frames from
-  `curl -sN --max-time 5 .../metrics`. A POST for `api-gateway` returned `200`,
-  `Content-Type: text/html; charset=utf-8`, an `HX-Trigger` JSON header with
-  status `Offline`, and the updated card HTML.
-- A Jet-versus-templ A/B on that same card showed the identical ~20 ms
-  intermediate DOM state while htmx applies the swapped markup (one attribute
-  and one text node of the status badge settle in separate steps), so it is htmx
-  behaviour and not a rendering difference.
-- The template class check below reported no missing Bootstrap classes:
+- `npm install`: correcto; el lockfile raíz fija `alpinejs 3.17.4`, `bootstrap 6.0.0-alpha.1`,
+  `htmx-ext-sse 2.2.4` y `htmx.org 2.0.11`.
+- `npm run sync:assets`: correcto. Archivos: `alpine.module.esm.js` (128289 bytes),
+  `bootstrap.bundle.min.js` (219860), `bootstrap.min.css` (381199), `htmx-ext-sse.min.js` (2853) y
+  `htmx.min.js` (52182).
+- Antes de la implementación, `go test ./...` produjo fallos de compilación por `newStateStore`,
+  `statusOffline` y `newApplication` indefinidos (RED). Después de la implementación, `go test ./...`
+  devolvió `ok   devops-pulse 0.042s` (GREEN).
+- `go vet ./...` fue correcto y `go build -o bin/devops-pulse .` fue correcto.
+- POC Templ, ahora el motor: `go tool templ generate`, `go build ./...`, `go vet ./...` y `go test ./...`
+  son correctos, y la línea base dorada en `testdata/` se regeneró a partir de la salida templ validada.
+  La prueba de humo siguiente se repitió contra la compilación templ con los mismos códigos de estado,
+  encabezados y frames `event: metrics`.
+- POC Templ: las comprobaciones del navegador se repitieron en Chromium a 1440x900 — insignia SSE activa,
+  filtro Alpine, anillo de logs de seis líneas, toast de alternancia con la insignia de estado coherente,
+  ambos diálogos, tema oscuro con persistencia tras recarga y navegación en inglés — con cero errores de
+  consola, errores de página o solicitudes fallidas.
+- Una prueba de humo con un servidor real mostró dos frames `event: metrics` de
+  `curl -sN --max-time 5 .../metrics`. Un POST para `api-gateway` devolvió `200`,
+  `Content-Type: text/html; charset=utf-8`, una cabecera JSON `HX-Trigger` con estado `Offline` y el HTML
+  actualizado de la tarjeta.
+- Una prueba A/B de Jet frente a templ sobre esa misma tarjeta mostró el mismo estado intermedio de ~20 ms
+  mientras htmx aplica el markup intercambiado (un atributo y un nodo de texto de la insignia de estado se
+  estabilizan en pasos separados); por tanto, es comportamiento de htmx y no una diferencia de renderizado.
+- La comprobación de clases de plantilla siguiente no informó clases de Bootstrap ausentes:
 
 ```sh
 python3 - <<'PY'
@@ -176,83 +165,71 @@ print('missing Bootstrap classes:', missing)
 PY
 ```
 
-The OOB update design specifically avoids replacing card roots while a toggle
-request is in flight. Bootstrap's vendored CSS already provides a `[hidden]`
-rule (`grep -q '\\[hidden\\]' web/static/vendor/bootstrap.min.css`), so no
-custom hidden rule is needed.
+El diseño de actualización OOB evita específicamente reemplazar las raíces de las tarjetas mientras hay
+una solicitud de alternancia en curso. El CSS de Bootstrap incluido ya proporciona una regla `[hidden]`
+(`grep -q '\\[hidden\\]' web/static/vendor/bootstrap.min.css`), por lo que no se necesita una regla
+hidden personalizada.
 
-Browser-level animation, search, dialog, and toast behavior was not exercised
-with a browser in the first implementation. It was verified later on Chromium
-(Playwright, 1440x900) and re-verified after the move to Jet 6; the recorded
-result is in `odd/tasks/devops-pulse.md` under iteration 5. It covers the live
-badge after the stream connects, Alpine filtering, both dialogs as real modals,
-the localised toggle toast, the card root and its form surviving a full SSE tick,
-dark theme persistence across a reload, and the English navigation, with zero
-console errors, zero page errors, and zero `htmx:oobErrorNoTarget`.
+La animación, la búsqueda, el diálogo y el toast a nivel de navegador no se ejercitaron con un navegador
+en la primera implementación. Más tarde se verificaron en Chromium (Playwright, 1440x900) y se volvieron
+a verificar tras el cambio de Jet 6 a templ; el resultado registrado está en `odd/tasks/devops-pulse.md`, bajo la
+iteración 5. Cubre la insignia activa después de conectar el flujo, el filtrado Alpine, ambos diálogos
+como modales reales, el toast de alternancia localizado, la supervivencia de la raíz de la tarjeta y su
+formulario a un tick SSE completo, la persistencia del tema oscuro tras una recarga y la navegación en
+inglés, con cero errores de consola, cero errores de página y cero `htmx:oobErrorNoTarget`.
 
-## Deliberate scope exclusions
+## Exclusiones deliberadas de alcance
 
-There is no database, authentication, persistence, third-party Go module,
-frontend bundler, Sass customization, or production deployment configuration.
-Generated `node_modules/`, vendored frontend assets, and `bin/` output are
-ignored.
+No hay base de datos, autenticación, persistencia, módulo Go de terceros, bundler de frontend,
+personalización de Sass ni configuración de despliegue en producción. `node_modules/`, los activos frontend
+incluidos y la salida de `bin/` generada están ignorados.
 
-## Templ differences found while porting this app
+## Diferencias de templ encontradas al portar esta aplicación
 
-Each one was measured against templ v0.3.1070, not assumed. The Jet-era findings
-document was retired on 2026-10-12, once Jet 6 was gone from the stack: it is no
-longer in the tree and it is recoverable from Git history with
+Cada una se midió contra templ v0.3.1070, no se supuso. El documento de hallazgos de la era Jet se retiró
+el 2026-10-12, una vez que Jet 6 desapareció de la pila: ya no está en el árbol y se puede recuperar del
+historial de Git con
 `git show 320ceed:docs/HALLAZGOS_JET_6.md`.
 
-- The generated output is minified: inter-element whitespace disappears and a
-  line break between inline nodes becomes a single space. The DOM is equivalent,
-  the bytes are not.
-- Attribute values built from an expression are escaped with `&#34;` and
-  `&#39;`, the same entities Jet produced, but templ escapes the literals the
-  template author wrote as well, so `hx-vals='{"a":1}'` is served as
-  `hx-vals="{&#34;a&#34;:1}"`. The HTML parser decodes both to the same value.
-- Escaping is still not contextual for JavaScript: a value inside a
-  single-quoted Alpine literal round-trips through the HTML parser and reaches
-  Alpine as a bare quote. `TestAlpineJSLiteralInterpolationsStaySafe` keeps
-  guarding the values that reach that position.
-- `style={ templ.SafeCSS(...) }` appends a trailing semicolon; a plain string
-  value is sanitized and loses its spaces.
-- A self-closing non-void element is expanded: `<path/>` is served as
-  `<path></path>`.
-- The content of `<script>` and `<style>` is emitted verbatim from the source,
-  indentation included, so the inline theme script is written flush-left inside
-  the component.
-- `templ fmt` rewrites the markup into its canonical form (`<!DOCTYPE html>`,
-  tab indentation, `<meta .../>`), and `templ fmt -fail` reformats the tree
-  before reporting, so a check meant to be read-only still writes.
-- Two tests lost their subject: a syntax error is now a compile error, and a
-  missing include can no longer happen at render time.
+- La salida generada está minimizada: desaparecen los espacios entre elementos y un salto de línea entre
+  nodos inline se convierte en un espacio único. El DOM es equivalente, los bytes no.
+- Los valores de atributos construidos desde una expresión se escapan con `&#34;` y `&#39;`, las mismas
+  entidades que producía Jet, pero templ también escapa los literales escritos por el autor de la plantilla,
+  por lo que `hx-vals='{"a":1}'` se sirve como `hx-vals="{&#34;a&#34;:1}"`. El analizador HTML decodifica
+  ambos al mismo valor.
+- El escape sigue sin ser contextual para JavaScript: un valor dentro de un literal Alpine entre comillas
+  simples atraviesa el analizador HTML y llega a Alpine como una comilla desnuda.
+  `TestAlpineJSLiteralInterpolationsStaySafe` sigue protegiendo los valores que llegan a esa posición.
+- `style={ templ.SafeCSS(...) }` añade un punto y coma final; un valor de cadena simple se sanea y pierde
+  sus espacios.
+- Un elemento no vacío autocerrado se expande: `<path/>` se sirve como `<path></path>`.
+- El contenido de `<script>` y `<style>` se emite literalmente desde el código fuente, incluida la
+  indentación, por lo que el script de tema inline se escribe pegado al margen dentro del componente.
+- `templ fmt` reescribe el markup en su forma canónica (`<!DOCTYPE html>`, indentación con tabuladores,
+  `<meta .../>`) y `templ fmt -fail` reformatea el árbol antes de informar, de modo que una comprobación
+  destinada a ser de solo lectura todavía escribe.
+- Dos pruebas perdieron su objeto: un error de sintaxis ahora es un error de compilación y ya no puede
+  producirse una inclusión ausente durante el renderizado.
 
-## Bootstrap 6 traps found while building this app
+## Trampas de Bootstrap 6 encontradas al construir esta aplicación
 
-Each one was observed here, not assumed. They are listed because every one of
-them fails silently, in a way that looks like a CSS mistake rather than a
-framework difference.
+Cada una se observó aquí, no se supuso. Se enumeran porque todas fallan silenciosamente, de una manera que
+parece un error de CSS y no una diferencia del framework.
 
-- `.card-header` is a **column** flex container in v6. `d-flex` plus
-  `justify-content-between` does not revert it, so the header needs an explicit
-  `flex-row` or its children stack and centre.
-- An inline SVG with only a `viewBox` and no width or height collapses to
-  `0x0` and disappears. Give it explicit attributes or a sizing rule.
-- The spacing scale is denser than v5: `g-4` is `.75rem`, and the v5 `g-4`
-  equivalent is `g-7` at `1.5rem`.
-- A font stack must not be quoted as a whole: `"Roboto, system-ui"` becomes a
-  single family name containing commas and never resolves, so the browser falls
-  back to serif.
-- There is no `.btn-primary` and no `Modal`. Variants are `.btn-solid`,
-  `.btn-outline`, `.btn-subtle`, `.btn-text` and `.btn-icon`, coloured by a
-  separate `.theme-*` class, and the modal window is `<dialog class="dialog">`
-  driven by the `Dialog` plugin.
-- The JavaScript is ESM-only and never sets `window.bootstrap`; import the
-  plugins from the vendored bundle instead.
-- `hx-swap="none"` still applies the out-of-band swaps of the response: the
-  out-of-band pass runs before the main swap and the `none` branch only skips
-  that main swap.
-- Header values must stay ASCII. Browsers expose response headers as Latin-1,
-  so raw UTF-8 in a header (an accented toast message, for instance) reaches
-  JavaScript as mojibake; escape it as `\uXXXX` instead.
+- `.card-header` es un contenedor flex de **columna** en v6. `d-flex` más `justify-content-between` no lo
+  revierte, por lo que el encabezado necesita un `flex-row` explícito o sus hijos se apilan y centran.
+- Un SVG inline que solo tiene un `viewBox` y no tiene ancho ni alto colapsa a
+  `0x0` y desaparece. Asígnele atributos explícitos o una regla de dimensionamiento.
+- La escala de espaciado es más densa que en v5: `g-4` es `.75rem`, y el equivalente de `g-4` de v5 es
+  `g-7` con `1.5rem`.
+- Una pila de fuentes no debe entrecomillarse completa: `"Roboto, system-ui"` se convierte en un único
+  nombre de familia que contiene comas y nunca se resuelve, por lo que el navegador vuelve a serif.
+- No existe `.btn-primary` ni `Modal`. Las variantes son `.btn-solid`, `.btn-outline`, `.btn-subtle`,
+  `.btn-text` y `.btn-icon`, coloreadas por una clase `.theme-*` separada, y la ventana modal es
+  `<dialog class="dialog">` controlada por el plugin `Dialog`.
+- JavaScript es solo ESM y nunca establece `window.bootstrap`; los plugins se importan desde el bundle incluido.
+- `hx-swap="none"` sigue aplicando los swaps fuera de banda de la respuesta: el paso fuera de banda se
+  ejecuta antes del swap principal y la rama `none` solo omite ese swap principal.
+- Los valores de las cabeceras deben mantenerse en ASCII. Los navegadores exponen las cabeceras de respuesta
+  como Latin-1, por lo que el UTF-8 sin procesar de una cabecera (por ejemplo, un mensaje de toast con
+  acento) llega a JavaScript como mojibake; se escapa como `\uXXXX`.
