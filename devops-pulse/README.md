@@ -199,8 +199,10 @@ ignored.
 
 ## Templ differences found while porting this app
 
-Each one was measured against templ v0.3.1070, not assumed. The Jet-era record
-is in `docs/HALLAZGOS_JET_6.md`.
+Each one was measured against templ v0.3.1070, not assumed. The Jet-era findings
+document was retired on 2026-10-12, once Jet 6 was gone from the stack: it is no
+longer in the tree and it is recoverable from Git history with
+`git show 320ceed:docs/HALLAZGOS_JET_6.md`.
 
 - The generated output is minified: inter-element whitespace disappears and a
   line break between inline nodes becomes a single space. The DOM is equivalent,

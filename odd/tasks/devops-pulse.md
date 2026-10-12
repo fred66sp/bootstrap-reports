@@ -649,6 +649,8 @@ candidato no tiene ciclo de revisión nativa.
   views» y «Jet 6 traps found while migrating this app» en el README, la ruta del
   script de comprobación de clases corregida a `web/views/**/*.jet` y la
   afirmación «UNPROVEN» sobre el navegador sustituida por la evidencia observada.
+  Nota (2026-10-12): ese documento fue retirado después; ver «Enmienda» al final
+  de la iteración 5.
 
 ### Progreso de la iteración 5
 
@@ -675,6 +677,10 @@ candidato no tiene ciclo de revisión nativa.
   la tabla de coste medida y una sección explícita de límites y comprobaciones no
   realizadas. Se añaden las secciones «Jet 6 views» y «Jet 6 traps found while
   migrating this app» en `devops-pulse/README.md`.
+  Nota (2026-10-12): el documento de hallazgos fue retirado después; su contenido
+  queda en el historial de Git y las dos secciones del README siguen en el árbol
+  con los nombres de la era templ (`Templ views`, `Templ differences found while
+  porting this app`). Ver «Enmienda» al final de la iteración 5.
 - **Resultado:** la aplicación sirve exactamente el mismo HTML que antes de la
   migración (seis golden byte a byte, cinco frames SSE idénticos en el cable y
   tres rutas del servidor real comparadas con `cmp`) y renderiza de 2,7 a 3,3
@@ -718,3 +724,26 @@ candidato no tiene ciclo de revisión nativa.
 - **Pendiente, no bloqueante:** publicar en `origin` (`push`) no se hizo y
   requiere autorización explícita. La rama `feature/jet6-devops-pulse` se
   conserva en `e78bbe2`, idéntica a `main`.
+
+### Enmienda (2026-10-12) — retirada del documento de hallazgos de Jet
+
+- **Autorización:** el usuario autorizó retirar `docs/HALLAZGOS_JET_6.md` al
+  comprobar que `docs/` seguía describiendo un motor que el stack ya no usa
+  (`devops-pulse/go.mod` fija `github.com/a-h/templ v0.3.1070`; no queda ningún
+  archivo `*.jet` en el árbol).
+- **Motivo añadido:** el documento mantenía afirmaciones falsas contra el árbol
+  actual —`v6.3.3` «fijada exactamente en `devops-pulse/go.mod`», la skill
+  retirada `.agents/skills/jet-template-engine/SKILL.md` y tres pruebas
+  inexistentes (`TestBrokenViewFailsAtConstruction`,
+  `TestMissingIncludedViewDoesNotWritePartialOutput`,
+  `TestConcurrentRenderingMatchesFrozenBaseline`).
+- **Recuperación:** el contenido íntegro queda en el historial de Git, en el
+  commit `320ceed` (merge de `feature/templ-poc` en `main`), blob
+  `ff4f166286f26c094eb3735915f2de25a839bd6448d5344931ff92d455878788`:
+  `git show 320ceed:docs/HALLAZGOS_JET_6.md`.
+- **Lo que sigue vigente:** las secciones del README «Templ views» y «Templ
+  differences found while porting this app» —sucesoras de «Jet 6 views» y «Jet 6
+  traps found while migrating this app»— y las guardas de prueba que el
+  documento justificaba, conservadas en `devops-pulse/views_test.go`.
+- **Registro:** la traza de esta enmienda está en
+  `odd/tasks/retire-jet-findings-doc.md`.

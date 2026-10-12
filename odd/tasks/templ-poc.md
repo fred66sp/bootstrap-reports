@@ -98,6 +98,12 @@ Autorizado el 2026-10-12: se adopta templ como motor definitivo y se retira Jet.
   `alpinejs-interactivity`, `README.md` de skills), y una nota de registro
   histórico en `docs/HALLAZGOS_JET_6.md`. Retirada la skill
   `jet-template-engine`.
+  - Nota posterior (2026-10-12): el usuario autorizó retirar
+    `docs/HALLAZGOS_JET_6.md`, porque `docs/` seguía describiendo un motor que el
+    stack ya no usa. Su contenido queda en el historial de Git
+    (`git show 320ceed:docs/HALLAZGOS_JET_6.md`). Esta entrada describe lo que se
+    hizo en su momento y no se reescribe; el registro de la retirada está en
+    `odd/tasks/retire-jet-findings-doc.md`.
 - Estado Git: rama `feature/templ-poc`, árbol con cambios sin commitear y sin
   integración.
 
