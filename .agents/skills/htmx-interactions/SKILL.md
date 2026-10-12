@@ -16,10 +16,10 @@ description: Diseña interacciones HTMX basadas en HTML del servidor, swaps, for
 - CSRF para mutaciones, escape HTML, autorización por endpoint, no confiar en atributos del cliente.
 - No incluir HTML de origen no confiable; revisar CSP.
 
-## Contrato de fragmentos Jet 6
-- Los endpoints HTMX renderizan templates Jet de fragmentos sin documento HTML completo.
+## Contrato de fragmentos templ
+- Los endpoints HTMX renderizan componentes templ de fragmento sin documento HTML completo.
 - Si una vista sirve ambos tipos de solicitud, comprobar navegación normal, historial y peticiones parciales en tests.
-- No duplicar fragmentos entre rutas: extraer includes Jet cuando resulte útil.
+- No duplicar fragmentos entre rutas: reutilizar componentes templ cuando resulte útil.
 
 ## Principios obligatorios
 - Primero inspeccionar el repositorio, versiones, convenciones y pruebas. No inventar hechos: si no es verificable, indicar UNKNOWN.
@@ -34,4 +34,4 @@ description: Diseña interacciones HTMX basadas en HTML del servidor, swaps, for
 - Alpine.js: https://alpinejs.dev/start-here y https://alpinejs.dev/directives/data
 - Bootstrap 6: https://getbootstrap.com/docs/6.0/getting-started/ai/
 
-- Jet v6: https://pkg.go.dev/github.com/CloudyKit/jet/v6 y https://github.com/CloudyKit/jet/blob/master/docs/syntax.md
+- templ: https://templ.guide/ y https://pkg.go.dev/github.com/a-h/templ
