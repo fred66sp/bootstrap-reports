@@ -66,6 +66,15 @@ npx skills list --agent opencode
   números de commit ni a secciones por su título: un dato que importa está en el
   árbol, y lo que se retira, se retira, sin recetas para recuperarlo. El rastro
   de lo que se hizo pertenece a `odd/tasks/`, que sí es un registro histórico.
+- Antes de cerrar un cambio que **mueva, renombre o borre** contenido documental,
+  se barren las referencias del repositorio con `node scripts/check-docs.mjs` y se
+  declara el resultado en el informe. El script comprueba la **documentación viva**
+  (rutas citadas que ya no existen, apuntes por título de sección y recetas de
+  recuperación en `docs/`); deja fuera `odd/tasks/`, que cita a propósito rutas que
+  ya no existen porque es un registro histórico, y las copias restauradas de
+  `.agents/skills/bootstrap-*`, que no se editan a mano. **No** puede comprobar la
+  prosa que afirma lo que dice otro documento, y de eso sigue respondiendo la regla
+  de un lugar principal por dato.
 
 ## Skills del agente
 

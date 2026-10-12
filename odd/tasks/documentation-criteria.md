@@ -66,6 +66,17 @@ vacía lo prohíbe el propio criterio.
   README con sus títulos anteriores. A petición del usuario se retiró además el
   último rastro de la retirada: el registro de esa tarea ya no enseña a recuperar
   el documento borrado, y la regla de `AGENTS.md` lo prohíbe expresamente.
+- [x] DC-06 — Mecanismo anti-deriva, a raíz de la observación del usuario de que
+  las inconsistencias se repiten: `scripts/check-docs.mjs` (R1 rutas citadas que
+  ya no existen, R2 apuntes por título de sección, R3 recetas de recuperación en
+  `docs/`) y el paso obligatorio correspondiente en `AGENTS.md`. Verificado en
+  tres frentes: el árbol actual sale `ok — 86 referencias resueltas` con rc=0; los
+  cuatro defectos inyectados en `docs/` se detectan con su línea exacta y rc=1; y
+  la misma sonda en `odd/tasks/` **no** falla, lo que confirma la frontera
+  declarada. Quedan 49 rutas no ancladas a la raíz fuera del alcance, informadas
+  como número para no generar ruido. **Límite declarado:** no comprueba la prosa
+  que afirma lo que dice otro documento, que es la causa de una de las cuatro
+  roturas de hoy.
 
 ## Cierre
 
