@@ -90,11 +90,11 @@ El registro ODD de este repositorio vive en el gestor de tareas `tk/`, no en fic
 - Al crear una tarea en tk se asignan las etiquetas correspondientes del catálogo; el criterio completo está en `.agents/skills/tk/SKILL.md`.
 - Un frente de trabajo = una tarea de nivel superior: el título del frente y su objetivo en la descripción.
 - Cada spec o punto de alcance = un comentario.
-- Cada tarea del plan (`T#`, `DC-##`, …) = una subtarea; al cerrarla, su evidencia y su commit van en un comentario.
+- Cada tarea del plan (`T#`, `DC-##`, …) = una subtarea; al cerrarla, su evidencia va en un comentario.
 - La petición del usuario, literal, y las decisiones = comentarios: en tk son inmutables y conservan el orden.
 - El estado se lee en el tablero (`npm --prefix tk run server`) o con `tk/tk --db tk/.tacks/tacks.db --json list -a`.
 - Los documentos de `odd/tasks/*.md` anteriores a esta regla se conservan **congelados** como historia; no se crean documentos nuevos.
-- El cierre va con el commit: no se commitea nada que no esté revisado y claro para cerrar, y al commit la tarea se cierra. No se dejan tareas abiertas con el trabajo hecho.
+- El cierre va con la unidad de trabajo revisada: no se cierra una tarea con trabajo pendiente ni se deja abierta una tarea cuyo trabajo ya está claro para cerrar. El estado de Git no se registra en tk; se consulta con Git.
 
 ## Flujo del repositorio
 

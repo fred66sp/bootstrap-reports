@@ -89,9 +89,17 @@ tablero, no entra.
   nota o comentario en la tarea donde se vio. Solo pasa a subtarea si puede
   impedir cerrar el padre.
 - **`notes` es el relevo** entre sesiones: ahí va qué falta y de quién, porque se
-  sobrescribe y siempre refleja el estado actual. Los comentarios son el registro
-  de cómo se llegó hasta ahí.
-- **El cierre va con el commit.** No se commitea sin que el trabajo esté revisado y claro para cerrar; al commit, la tarea se cierra. Una tarea abierta con el trabajo hecho es un registro que miente.
+  sobrescribe y siempre refleja el estado actual. No repite `status`: si la tarea
+  está abierta o cerrada, eso se lee en tk.
+- **tk no registra estado de Git.** No se escriben ramas, hashes, «falta commit»,
+  «pendiente de commit» ni equivalentes en títulos, descripciones, notas o
+  comentarios. El estado de Git se consulta en Git; tk conserva alcance,
+  decisiones y relevo que no se deducen del repositorio.
+- **Los comentarios son historial de decisiones y evidencias propias de la tarea.**
+  No sustituyen a `git log` ni a `git status`.
+- **El cierre va con la unidad de trabajo revisada.** No se cierra una tarea con
+  trabajo pendiente ni se deja abierta una tarea cuyo trabajo ya está claro para
+  cerrar.
 
 **Para leer el estado**, `stats` y `ready --limit 1` bastan. `prime` vuelca el
 _backlog_ entero y es caro.
