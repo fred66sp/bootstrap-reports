@@ -87,6 +87,7 @@ npx skills list --agent opencode
 
 El registro ODD de este repositorio vive en el gestor de tareas `tk/`, no en ficheros.
 
+- Al crear una tarea en tk se asignan las etiquetas correspondientes del catálogo; el criterio completo está en `.agents/skills/tk/SKILL.md`.
 - Un frente de trabajo = una tarea de nivel superior: el título del frente y su objetivo en la descripción.
 - Cada spec o punto de alcance = un comentario.
 - Cada tarea del plan (`T#`, `DC-##`, …) = una subtarea; al cerrarla, su evidencia y su commit van en un comentario.

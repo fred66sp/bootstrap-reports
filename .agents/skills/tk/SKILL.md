@@ -30,6 +30,27 @@ directorio de trabajo (todos los comandos se ejecutan desde esta carpeta):
 ./tk --db .tacks/tacks.db --json stats
 ```
 
+## Etiquetas
+
+Al crear una tarea se asignan las etiquetas correspondientes del catálogo con
+`-t/--tags` (separadas por comas). Todo trabajo del registro ODD lleva `ODD`;
+los bloques de nivel superior llevan también `epic`; cada tarea recibe además
+un único tipo principal:
+
+| Etiqueta | Uso |
+|---|---|
+| `docs` | Documentación, registros, informes y traducciones |
+| `feat` | Capacidad, integración o aplicación nueva |
+| `fix` | Corrección de un defecto |
+| `refactor` | Reorganización interna sin cambio de comportamiento |
+| `test` | Pruebas, guardas y verificaciones |
+| `style` | Presentación: tipografía, color, espaciado o composición |
+| `improvement` | Mejora de lectura o uso sin defecto ni capacidad nueva |
+| `chore` | Andamiaje, configuración, dependencias, skills y tareas administrativas |
+
+Ejemplos: `./tk --db .tacks/tacks.db create -t ODD,feat --json "Nueva capacidad"`;
+una subtarea documental usa `-t ODD,docs` y un bloque nuevo `-t ODD,epic,feat`.
+
 ## Cómo funciona (verificado en tk 0.2.4)
 
 - **Jerarquía.** Una tarea de nivel superior es un bloque del proyecto; una
